@@ -1,0 +1,195 @@
+# Symfony の全体像
+
+10 分で Symfony をはじめてみよう！  
+この章では Symfony の背後にある最も重要な概念を説明します。
+そして、シンプルなプロジェクトを見ながら、どの様に始めるかを説明します。
+
+以前にウェブフレームワークを使ったことがある方なら、Symfony にすぐに慣れることができるでしょう。もし初めての方なら、新しいウェブアプリケーション開発の世界に歓迎致します。
+
+
+## インストール
+
+この章を読み進める前に、[Symfony Book のインストールの章](/doc/book/installation)を見て、PHP と Symfony の両方をインストールしてください。
+
+## 基本を理解する
+
+フレームワークの主な目的の１つは、整理されたコードを維持し続けることと、データベースの操作や HTML タグ、PHP コードが１つのスクリプトに混ざってしまう事を防ぐことで、アプリケーションが進化し続けることを可能にすることです。この目的を達成するには、最初にいくつかの基本概念を習得する必要があります。
+
+Symfony アプリケーションを開発する場合、開発者の責任はユーザーからのリクエスト（例: `http://localhost:8000/`）を関連するリソース（例: Homepage HTML ページ）にマッピングするコードを書くことです。
+
+実行されるコードはアクションとコントローラで定義されます。ユーザーのリクエストとそれらのコードとのマッピングはルーティング設定で定義されます。また、ブラウザに表示される内容は、通常、テンプレートを使用してレンダリングされます。
+
+あなたが `http://localhost:8000/app/example` をブラウズした時、Symfony は `src/AppBundle/Controller/DefaultController.php` ファイルに定義されたコントローラーを実行します。そして、`app/Resources/views/default/index.html.twig` テンプレートをレンダリングします。
+次のセクションでは、詳細にコントローラ、ルートおよびテンプレートの内部の仕組みを学びます。
+
+
+### アクションとコントローラー
+
+`src/AppBundle/Controller/DefaultController.php` ファイルを開けて下さい。
+次のようなコードが見れるはずです。（ここでは、`@Route` 設定は見ません。次のセクションで説明します。）
+
+<code php>
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class DefaultController extends Controller
+{
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function indexAction()
+    {
+        return $this->render('default/index.html.twig');
+    }
+}
+</code>
+
+Symfony アプリケーションではコントローラーは "Controller" で終わる名前の普通の PHP クラスです。
+この例ではコントローラーは Default と呼ばれ、PHP のクラスは `DefaultController`と呼ばれます。
+
+コントローラー内で定義されているメソッドはアクションと呼ばれます。それらは大抵、１つの URL と関連付けられ、メソッド名が "Action" で終わるよう命名されます。この例では Default コントローラーは index と呼ばれるアクションを１つだけ持ち、`indexAction`メソッド内に定義されます。
+
+アクションは通常10〜15行の短いコードになります。なぜなら、それらは必要な情報を生成するか取得する為に、アプリケーションの他の部分を呼ぶだけだからです。そして、それらはユーザーに結果を表示する為に、テンプレートをレンダリングします。
+
+この例では、index アクションは実質的に空です。他のメソッドを呼ぶ必要がないからです。アクションはただ HomePage コンテンツのテンプレートをレンダリングしているだけです。
+
+
+
+
+### ルーティング
+
+Symfony は設定されたパスに対してリクエストされた URL をマッチングして、リクエストをアクションに引き渡します。
+再び `src/AppBundle/Controller/DefaultController.php` ファイルを開いて `indexAction` メソッドの上の3行を見てみて下さい。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class DefaultController extends Controller
+{
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function indexAction()
+    {
+        return $this->render('default/index.html.twig');
+    }
+}
+</code>
+
+この3行は `@Route` アノテーションを使って、ルーティング設定を定義しています。PHP アノテーションは通常の PHP コードを記述せずにメソッドを設定する便利な方法です。通常の PHP コメントが `/*` で始まるのに対してアノテーションブロックは `/**` で始まることに注意してください。
+
+`@Route` の最初の引数はアクションを実行するトリガーとなる URL を定義します。
+URL にホスト名（例: http://example.com）を追加する必要はありません。これらの URL は常に相対的なものであり、パスと呼ばれます。
+ここでは `/` パスはアプリケーションのホームページを指しています。
+`@Route` の第二引数は（例: name="homepage"）オプションで、このルートの名前を設定しています。今はルート名は必要有りませんが、後で、ページをリンクする時にとても便利な物です。
+
+まとめると、`@Route("/", name="homepage")` アノテーションは `homgepage` というルートを作成し、
+ユーザーがアプリケーションの `/` パスをブラウズした時に、Default コントローラーの index アクションを実行します。
+
+- - -
+PHP アノテーションに加えて、ルートは YAML や、PHP ファイルで設定することもできます。
+詳細は [Symfony book のルーティングの章](/doc/book/routing)を参照してください。
+この柔軟性は Symfony の特徴の一つです。フレームワークは特定の設定フォーマットをユーザーに強いることはありません。
+- - -
+
+
+### テンプレート
+
+以下は index アクションで行っている唯一の PHP 処理です。
+
+<code php>
+return $this->render('default/index.html.twig');
+</code>
+
+`$this->render()` メソッドはテンプレートをレンダリングする便利なショートカットメソッドです。
+Symfony は Controller クラスを継承したコントローラクラスに、いくつかの便利なショートカットを提供します。
+
+デフォルトでは、アプリケーションテンプレートは `app/Resources/views/` ディレクトリに格納されています。
+したがって、`default/index.html.twig` テンプレートは `app/Resources/views/default/index.html.twig` ファイルを指します。
+そのファイルを開くと以下のようなコードが見れます。
+
+<code twig>
+{# app/Resources/views/default/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Welcome to Symfony</h1>
+
+    {# ... #}
+{% endblock %}
+</code>
+
+このテンプレートは [Twig](http://twig.sensiolabs.org/) で作成されています。Twig はモダンな PHP アプリケーションの為に作成されたテンプレートエンジンです。テンプレートの詳細は[このチュートリアルの第２部](/doc/quick_tour/the_view)で説明します。
+
+## 動作環境
+
+ここまでで、Symfony がどのように動くか理解できたことと思います。では、Symfony の各ページの下に表示されている物を詳しく見て行きましょう。
+Symfony のロゴと一緒に表示されている小さなバーに気がつくと思います。これはウェブデバッグツールバーといって、開発者のベストフレンドです！
+
+![web debug toolbar](http://symfony.com/doc/current/_images/web_debug_toolbar.png)
+
+最初に目にする物は氷山の一角です。バーのどこかをクリックしてプロファイラーを開いてください。リクエストやクエリーパラメータ、セキュリティ詳細、データベースクエリーに関するより詳細な情報を得ることができます。
+
+![profiler](http://symfony.com/doc/current/_images/profiler.png)
+
+このツールはアプリケーションに関する多くの内部情報を提供するので、サイトの訪問者がこれらの内部情報にアクセスすることを心配するかと思います。
+Symfony はこの問題を認識していて、本番運用サーバーでアプリケーションを動かしている時は、デバッグバーを表示しません。
+
+Symfony はどの様にローカルサーバーか本番運用サーバーかを知ることができるのでしょうか？  
+実行環境の概念を理解する為に、次へ読み進めていきましょう。
+
+
+
+
+
+
+
+
+### 環境とは？
+
+環境とはアプリケーションを動かす為に使用する設定のグループを表しています。
+Symfonyはデフォルトで `dev` と `prod` の２つの環境を定義しています。
+
+ - dev: ローカルでの開発に適した環境
+ - prod: 本番運用に最適化した環境
+
+`http://localhost:8000` にブラウザからアクセスした時は、`dev` 環境でアプリケーションを動かします。
+`prod` 環境でアプリケーションを動かすには、代わりに `http://localhost:8000/app.php` にアクセスします。
+URL に `def` 環境であることを常に表示したい場合は、`http://localhost:8000/app_dev.php` にアクセスするようにします。
+
+この２つの環境の主な違いは、`dev` は開発者に多くの情報を提供する為に最適化されていて、これはパフォーマンスを犠牲にしています。一方、`prod` はパフォーマンスを最適化していて、デッバッグ情報とデバッグツールバーを無効にしています。
+
+その他の環境間の違いはアプリケーションを動かす為に使う設定オプションです。
+`dev` 環境にアクセスした時には、Symfony は `app/config/config_dev.yml` 設定ファイルを読み込みます。
+`prod` 環境にアクセスした時には、`app/config/config_prod.yml` ファイルを読み込みます。
+
+一般的に環境は多くの部分で設定オプションを共有しています。共通な設定は `config.yml` に定義します。
+そして各環境で必要な固有の設定を上書きします。
+
+<code yaml>
+# app/config/config_dev.yml
+imports:
+    - { resource: config.yml }
+
+web_profiler:
+    toolbar: true
+    intercept_redirects: false
+</code>
+
+この例では、`config_dev.yml` 設定ファイルは共通設定である `config.yml` をインポートして、
+既存のウェブデバッグツールバー設定を自身の設定で上書きしています。
+
+より詳細な情報は[環境とフロントコントローラー](/doc/book/configuration)を参照してください。
+
+
+## まとめ
+
+おめでとうございます！ Symfony の初体験が完了しました。そんなに難しくは無かったでしょ？
+これからより多くの探索があると思います。しかし、既に Symfony が簡単に素早くウェブサイトを実装する方法を体験しました。
+もし、さらに Symfony を学びたいと思ったら、[次のセクション（ビュー）](/doc/quick_tour/the_view)へ進みましょう。

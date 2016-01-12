@@ -1,0 +1,334 @@
+# コントローラー
+
+あなたは既に Symfony のファンになってきていることでしょう。
+前置きはこれくらいにして、コントローラが何をしてくれるのかを見ていきましょう。
+
+
+
+## レスポンス
+
+Symfony はリクエスト-レスポンス型のフレームワークです。
+ユーザーがアプリケーションにリクエストを送ってきた時、Symfony はそのリクエストに関連した全ての情報をカプセル化する為にリクエストオブジェクトを作成します。
+同様に、コントローラーのアクションは Symfony がユーザーに返す HTML コンテンツを生成する為に使うレスポンスオブジェクを作成します。
+
+これまでの所、このチュートリアルで見てきた全てのアクションはレンダリングされたレスポンスを返すために `$this->render()` ショートカットを使っていました。
+もし必要であれば、任意のテキストを返すための Raw レスポンスを作成する事もできます。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+
+class DefaultController extends Controller
+{
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function indexAction()
+    {
+        return new Response('Welcome to Symfony!');
+    }
+}
+</code>
+
+
+
+## ルートパラメータ
+
+多くの場合、アプリケーションの URL は URL 内に変数にあたる部分を含みます。
+例えば、あなたがブログアプリケーションを作成している場合、
+記事を表示する為の URL は、アプリケーションが表示する記事を正確に知るために、記事のタイトルか何か他のユニークな ID を含みます。
+
+Symfony ではルートの変数部分は波括弧で囲みます（例、`/blog/read/{article_title}/`）。
+後でコントローラが各値を取得できるように変数部分にユニークな名前を割り当てます。
+
+アクション内でこの機能を見てみる為に、ルート変数を使った新しいアクションを作成してみましょう。
+`src/AppBundle/Controller/DefaultController.php` ファイルを開けて、`helloAction` を追加してください。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class DefaultController extends Controller
+{
+    // ...
+
+    /**
+     * @Route("/hello/{name}", name="hello")
+     */
+    public function helloAction($name)
+    {
+        return $this->render('default/hello.html.twig', array(
+            'name' => $name
+        ));
+    }
+}
+</code>
+
+ブラウザを開いて、この新しいアクションの実行結果を見るために `http://localhost:8000/hello/fabien` URL にアクセスしてください。
+アクションの結果の代わりに、エラーページが表示されたと思います。
+多分あなたが推測したように、このエラーの原因はまだ存在しないテンプレート（`default/hello.html.twig`）を表示しようとしたことです。
+
+次のように新規の `app/Resources/views/default/hello.html.twig` テンプレートを作成してください。
+
+<code twig>
+{# app/Resources/views/default/hello.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Hi {{ name }}! Welcome to Symfony!</h1>
+{% endblock %}
+</code>
+
+再度、`http://localhost:8000/hello/fabien` URL をブラウズしてください。
+渡された情報と共にコントローラが表示した新しいテンプレートが表示されるはずです。
+URLの最後の部分を変更して（例、`http://localhost:8000/hello/thomas`）、ブラウザをリロードすると、ページには違ったメッセージが表示されるはずです。
+URL の最後の部分を削除すると、Symfony はエラーを表示します。なぜなら、ルートは `name` が渡されるのを期待しているのに、それが渡されなかったからです。
+
+
+## フォーマットの使用
+
+今日では、ウェブアプリケーションは単なる HTML ページ以上の物を提供するべきです。
+RSS フィードの為の XML から Ajax リクエストの為の JSON まで、多くのフォーマットが存在します。
+Symfony でこれらのフォーマットをサポートできるのは `_format` という特殊な変数のおかげです。
+それはユーザーによってリクエストされたフォーマットを格納します。
+
+あたらしく `_format` 変数を追加するよう `hello` ルートを微調整してください。
+`html` を `_format` のデフォルトとします。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+
+// ...
+
+/**
+ * @Route("/hello/{name}.{_format}", defaults={"_format"="html"}, name="hello")
+ */
+public function helloAction($name, $_format)
+{
+    return $this->render('default/hello.'.$_format.'.twig', array(
+        'name' => $name
+    ));
+}
+</code>
+
+もちろん、いくつかのリクエストフォーマットをサポートしている場合、それぞれのフォーマット用のテンプレートを提供する必要が有ります。
+ここでは、新たに `hello.xml.twig` テンプレートを作成する必要があります。
+
+<code twig>
+<!-- app/Resources/views/default/hello.xml.twig -->
+<hello>
+    <name>{{ name }}</name>
+</hello>
+</code>
+
+`http://localhost:8000/hello/fabien` をブラウズした時、デフォルトフォーマットが `html` なので通常の HTML ページが表示されます。
+`http://localhost:8000/hello/fabien.html` をブラウズした時、再び HTML ページが表示されます。はっきりと `html` フォーマットを指定しているからです。
+最後に `http://localhost:8000/hello/fabien.xml` をブラウズすると、新しい XML テンプレートが表示されます。
+
+標準的なフォーマットの為に、Symfony はレスポンスの為の `Content-Type` ヘッダーを自動的に選択します。
+アクションでサポートするフォーマットを制限するには、`@Route` アノテーションの `requirements` オプションを使用します。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+
+// ...
+
+/**
+ * @Route("/hello/{name}.{_format}",
+ *     defaults = {"_format"="html"},
+ *     requirements = { "_format" = "html|xml|json" },
+ *     name = "hello"
+ * )
+ */
+public function helloAction($name, $_format)
+{
+    return $this->render('default/hello.'.$_format.'.twig', array(
+        'name' => $name
+    ));
+}
+</code>
+
+`hello` アクションは `/hello/fabien.xml` や `/hello/fabien.json` のような URL にマッチします。
+しかし、`/hello/fabien.js` のような URL にアクセスした場合は 404 エラーが表示されます。
+`_format` 変数の値が `requirements` に存在しないからです。
+
+
+## リダイレクト
+
+もし、他のページにユーザーをリダイレクトしたい時は、`redirectToRoute()` メソッドを使用します。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+class DefaultController extends Controller
+{
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function indexAction()
+    {
+        return $this->redirectToRoute('hello', array('name' => 'Fabien'));
+    }
+}
+</code>
+
+`redirectToRoute()` メソッドは引数にルート名とオプションでパラメータの配列を受け取ります。
+そして、これらの引数で生成されたURLにユーザーをリダイレクトします。
+
+
+## エラーページの表示
+
+エラーは必然的に全てのウェブアプリケーションの実行中に発生します。
+404 エラーの場合、コントローラー内で使用できる便利なショートカットメソッドがあります。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+// ...
+
+class DefaultController extends Controller
+{
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function indexAction()
+    {
+        // ...
+        throw $this->createNotFoundException();
+    }
+}
+</code>
+
+500 エラーの場合は、コントローラー内で標準的な PHP 例外をスローするだけです。
+Symfony は例外を適切な 500 エラーページに変換します。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+// ...
+
+class DefaultController extends Controller
+{
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function indexAction()
+    {
+        // ...
+        throw new \Exception('Something went horribly wrong!');
+    }
+}
+</code>
+
+
+
+## リクエストからの情報の取得
+
+時々、コントローラは言語や IP アドレス、URL のクエリーパラメータと言った、ユーザーリクエストに関する情報にアクセスする必要があります。
+これらの情報にアクセスする為に、アクションに `Request` タイプの引数を新たに追加します。
+新しい引数の名前は何でもいいのですが、`Request` クラスをタイプヒントに指定する必要があります。
+（Request クラスをインポートする `use` 行を追加するのを忘れないでください）
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+
+class DefaultController extends Controller
+{
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function indexAction(Request $request)
+    {
+        // is it an Ajax request?
+        $isAjax = $request->isXmlHttpRequest();
+
+        // what's the preferred language of the user?
+        $language = $request->getPreferredLanguage(array('en', 'fr'));
+
+        // get the value of a $_GET parameter
+        $pageName = $request->query->get('page');
+
+        // get the value of a $_POST parameter
+        $pageName = $request->request->get('page');
+    }
+}
+</code>
+
+テンプレート内でも、Symfony によって自動的に提供される特別な `app.request` 変数を通して、`Request` にアクセスすることが出来ます。
+
+<code twig>
+{{ app.request.query.get('page') }}
+
+{{ app.request.request.get('page') }}
+</code>
+
+## セッションへのデータの格納
+
+HTTP プロトコルはステートレスですが、Symfony はクライアント（ブラウザを使用した実際の人やボット、ウェブサービス等）を表現した便利なセッションオブジェクトを提供してくれます。
+リクエスト間で、Symfony は PHP 標準のセッションを使って、cookie に属性を保存します。
+
+どのコントローラでも簡単にセッションに属性を保存したり、取得することができます。
+
+<code php>
+use Symfony\Component\HttpFoundation\Request;
+
+public function indexAction(Request $request)
+{
+    $session = $request->getSession();
+
+    // store an attribute for reuse during a later user request
+    $session->set('foo', 'bar');
+
+    // get the value of a session attribute
+    $foo = $session->get('foo');
+
+    // use a default value if the attribute doesn't exist
+    $foo = $session->get('foo', 'default_value');
+}
+</code>
+
+また、次のリクエストの後で自動的に削除されるフラッシュメッセージを保存することもできます。
+これは、ユーザーを別のページ（メッセージが表示されるページ）にリダイレクトする前に、メッセージを保存するのに便利です。
+
+<code php>
+public function indexAction(Request $request)
+{
+    // ...
+
+    // store a message for the very next request
+    $this->addFlash('notice', 'Congratulations, your action succeeded!');
+}
+</code>
+
+以下のようにテンプレート内でメッセージを表示します。
+
+<code twig>
+{% for flashMessage in app.session.flashbag.get('notice') %}
+    <div class="flash-notice">
+        {{ flashMessage }}
+    </div>
+{% endfor %}
+</code>
+
+
+
+## まとめ
+
+この章はこれで終わりです。 10 分もかからなかったのではないでしょうか。
+
+あなたがこれまでに学んだすべての機能は、Symfony フレームワークのコアである FrameworkBundle の一部です。
+Bundle の仕組みがあるおかげで、Symfony ではすべてが拡張ま​​たは交換することができます。
+これが[次の章のテーマ](/doc/quick_tour/the_architecture)です。

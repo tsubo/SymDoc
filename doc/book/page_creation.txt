@@ -1,0 +1,75 @@
+# Symfony での最初のページ作成
+
+新しいページ（HTMLページかJSONのエンドポイントの何れか）を作成するには、シンプルな２つのステップがあります。
+
+1. **ルートの作成**  
+   ルートは、ページへの URL（例えば /about ）で、コントローラを指し示します。
+2. **コントローラの作成**  
+   コントローラは、あなたが書いた関数で、ページを作成します。  
+   あなたは、リクエスト情報を受け取るとそれを使って HTML コンテンツや JSON 文字列等を保持する Symfony のレスポンスを作成します。
+
+ちょうど、ウェブ上と同じように、全てのやり取りは HTTP リクエストによって開始されます。
+あなたの仕事は純粋でシンプルです。そのリクエストを理解してレスポンスを返すことです。
+
+
+
+## ページの作成：ルートとコントローラー
+
+- - -
+先に進む前に、[インストール](/doc/book/installation)の章を読んだか確認してください。
+そして、ブラウザで新しい Symfony のアプリケーションにアクセス出来ることを確認してください。
+- - -
+
+あなたが、ラッキーナンバーを生成して表示する `/lucky/number` ページを作成したいと仮定します。
+それを行うには、クラスを作成し、誰かが `/lucky/number` に来た時に実行されるメソッドをそのクラスの中に作成します。
+
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Response;
+
+class LuckyController
+{
+    /**
+     * @Route("/lucky/number")
+     */
+    public function numberAction()
+    {
+        $number = rand(0, 100);
+
+        return new Response(
+            '<html><body>Lucky number: '.$number.'</body></html>'
+        );
+    }
+}
+</code>
+
+先に進む前に、動作確認してみてください
+
+http://localhost:8000/app_dev.php/lucky/number
+
+- - -
+もし、[Apache や Nginx](/doc/cookbook/configuration/web_server_configuration) のヴァーチャルホストが適切に設定されているなら、
+`http://localhost:8000` をホスト名に置き換えてください。
+例、`http://symfony.dev/app_dev.php/lucky/number`
+- - -
+
+### JSON レスポンスの作成
+
+## 動的 URL パターン： /lucky/number/{count}
+
+## テンプレートの表示（サービスコンテナと）
+
+### テンプレートサービスの使用
+
+### テンプレートの作成
+
+## プロジェクトの探索
+
+## アプリケーションの設定
+
+## 次は何を？
+
+

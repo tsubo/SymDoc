@@ -1,0 +1,80 @@
+# Snippets
+
+- ちょっと複雑な書式の雛形です。
+- 編集ボタンを押して、内容をコピーして使って下さい。
+- 内容を追加して頂いても結構です。
+
+## 表
+
+^ヘッダ左寄せ  ^  ヘッダ中央  ^  ヘッダ右詰め^
+|項目左寄せ    |   項目中央   |   項目右寄せ|   
+|左寄せ（デフォルト）|左寄せ（デフォルト）|左寄せ（デフォルト）|
+
+## タブ表示
+
+<html>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#annotations" aria-controls="annotations" role="tab" data-toggle="tab">Annotations</a></li>
+    <li role="presentation"><a href="#yaml" aria-controls="yaml" role="tab" data-toggle="tab">YAML</a></li>
+    <li role="presentation"><a href="#xml" aria-controls="xml" role="tab" data-toggle="tab">XML</a></li>
+    <li role="presentation"><a href="#php" aria-controls="php" role="tab" data-toggle="tab">PHP</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="annotations">
+<pre><code>// src/AppBundle/Controller/LuckyController.php
+
+// ...
+class LuckyController
+{
+    /**
+     * @Route("/lucky/number/{count}")
+     */
+    public function numberAction()
+    {
+        // ...
+    }
+
+    // ...
+}      
+</code></pre>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="yaml">
+<pre><code># app/config/routing.yml
+lucky_number:
+    path:     /lucky/number/{count}
+    defaults: { _controller: AppBundle:Lucky:number }
+</code></pre>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="xml">
+<pre><code>&lt;!-- app/config/routing.xml --&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;routes xmlns=&quot;http://symfony.com/schema/routing&quot;
+xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+xsi:schemaLocation=&quot;http://symfony.com/schema/routing
+http://symfony.com/schema/routing/routing-1.0.xsd&quot;&gt;
+&lt;route id=&quot;lucky_number&quot; path=&quot;/lucky/number/{count}&quot;&gt;
+&lt;default key=&quot;_controller&quot;&gt;AppBundle:Lucky:number&lt;/default&gt;
+&lt;/route&gt;
+&lt;/routes&gt;
+</code></pre>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="php">
+<pre><code>// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('lucky_number', new Route('/lucky/number/{count}', array(
+    '_controller' => 'AppBundle:Lucky:number',
+)));
+
+return $collection;
+</code></pre>
+    </div>
+  </div>
+</html>
+
+※ XMLのソースコードは[HTMLエスケープ](http://webtools.dounokouno.com/htmlescape/)する必要があります。

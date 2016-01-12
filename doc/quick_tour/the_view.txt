@@ -1,0 +1,264 @@
+# ビュー
+
+チュートリアルの最初の 10 分を読み終えた後、あなたは Symfony がもう10分費やす価値があると判断しました。
+このチュートリアルの第２部では Twig の詳細について学びます。
+Twig は高速で柔軟でセキュアな PHP アプリケーションの為のテンプレートエンジンです。
+Twig はテンプレートをより簡素で読み読みやすい物にします。
+それはまた、ウェブデザイナーにとってもフレンドリーな物になります。
+
+
+
+
+## Twigに親しむ
+
+公式サイトの [Twig ドキュメント](http://twig.sensiolabs.org/documentation)はこのテンプレートエンジンの全てを学ぶためのベストなリソースです。このセクションでは主要な概要を素早く説明します。
+
+Twig テンプレートは任意の形式（HTML, CSS, JavaScript, XML, CSV, LaTeX, etc.）のコンテンツを生成するためのテキストファイルです。Twig の要素は次の区切り文字を使ってテンプレート内のコンテンツから区別されます。
+
+`{{ ... }}`  変数や式の結果を出力します
+
+`{% ... %}`  テンプレートのロジックを制御します。たとえば `for` ループや `if` 文を記述します。
+
+`{# ... #}`  コメントです。HTML のコメントと違って、レンダリング後は残りません。
+
+以下はいくつかの基本を示したシンプルなテンプレートです。テンプレートに渡された２つの変数、`page_title` と `navigation` を使用しています。
+
+<code twig>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ page_title }}</title>
+    </head>
+    <body>
+        <h1>{{ page_title }}</h1>
+
+        <ul id="navigation">
+            {% for item in navigation %}
+                <li><a href="{{ item.url }}">{{ item.label }}</a></li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
+</code>
+
+Symfony のでテンプレートをレンダリングするには、コントローラ内から `render` メソッドを使用します。
+テンプレートはその内容を生成するために変数が必要な場合には、`render` メソッドの第２引数を使用して配列として変数を渡します。
+
+<code php>
+$this->render('default/index.html.twig', array(
+    'variable_name' => 'variable_value',
+));
+</code>
+
+テンプレートには、文字列変数、配列変数、オブジェクト変数を渡すことができます。
+Twig ではそれらの違いを抽象化していて、ドット表記 `"."` で変数の属性にアクセスできます。
+
+次のコードはタイプ毎に、コントローラから渡された変数の内容を表示する方法を示します。
+
+<code twig>
+{# 1. Simple variables #}
+{# $this->render('template.html.twig', array(
+       'name' => 'Fabien')
+   ) #}
+{{ name }}
+
+{# 2. Arrays #}
+{# $this->render('template.html.twig', array(
+       'user' => array('name' => 'Fabien'))
+   ) #}
+{{ user.name }}
+
+{# alternative syntax for arrays #}
+{{ user['name'] }}
+
+{# 3. Objects #}
+{# $this->render('template.html.twig', array(
+       'user' => new User('Fabien'))
+   ) #}
+{{ user.name }}
+{{ user.getName }}
+
+{# alternative syntax for objects #}
+{{ user.name() }}
+{{ user.getName() }}
+</code>
+
+## テンプレートの継承
+
+多くの場合、プロジェクト内のテンプレートはヘッダーやフッターといった共通的な要素を共有します。
+Twig はテンプレートの継承を使って、エレガントにこの問題を解決します。
+この機能は基本テンプレートを作成することを可能にします。
+基本テンプレートはサイトの共通要素を全て含み、子テンプレートが上書き可能な `block` を定義します。
+
+`index.html.twig` テンプレートは `base.html.twig` テンプレートを継承することを示す `extends` タグを使用しています。
+
+<code twig>
+{# app/Resources/views/default/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Welcome to Symfony!</h1>
+{% endblock %}
+</code>
+
+`base.html.twig` テンプレートに対応する `app/Resources/views/base.html.twig` ファイルを開いて下さい。次のようなコードが見れるはずです。
+
+<code twig>
+{# app/Resources/views/base.html.twig #}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>
+</code>
+
+`{% block %}` タグはこの部分を子テンプレートが上書きできることをテンプレートエンジンに伝えます。
+この例のでは、`index.html.twig` テンプレートは `body` ブロックを上書きしています。
+しかし、`title` ブロックは上書きしていません。
+この場合、`base.html.twig` テンプレート内に定義されているデフォルトコンテンツが表示されます。
+
+
+
+## タグ、フィルター、関数
+
+Twig の最高な機能の 1 つはタグやフィルター、関数を使った拡張性です。
+次のサンプルを見てみて下さい。情報をユーザーに表示する前に変更する為のフィルターが多数使用されています。
+
+<code>
+<h1>{{ article.title|capitalize }}</h1>
+
+<p>{{ article.content|striptags|slice(0, 255) }} ...</p>
+
+<p>Tags: {{ article.tags|sort|join(", ") }}</p>
+
+<p>Activate your account before {{ 'next Monday'|date('M j, Y') }}</p>
+</code>
+
+フィルターや関数、タグに関する全てを知るに、[Twig ドキュメント](http://twig.sensiolabs.org/documentation)をチェックすることを忘れないでください。
+
+
+### インクルード
+
+テンプレート間でコードスニペットを共有する最適な方法は、他のテンプレートからインクルードできる部分的なテンプレートを作成することです。
+
+アプリケーションのいくつかのページに広告を表示したいと考えてみてください。
+最初に、`banner.html.twig` テンプレートを作成します。
+
+<code twig>
+{# app/Resources/views/ads/banner.html.twig #}
+<div id="ad-banner">
+    ...
+</div>
+</code>
+
+任意のページにこの広告を表示するには、`include()` 関数を使って `banner.html.twig` をインクルードします。
+
+<code twig>
+{# app/Resources/views/default/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Welcome to Symfony!</h1>
+
+    {{ include('ads/banner.html.twig') }}
+{% endblock %}
+</code>
+
+
+
+### コントローラの埋め込み
+
+もし、テンプレートに他のコントローラーの結果を埋め込みたいとしたらどうでしょう？
+これは Ajax を使っている時や、埋め込まれたテンプレートがメインのテンプレートでは利用できない変数を必要とする時にとても便利です。
+
+あなたのウェブサイトの中で最も人気のある記事を表示する `topArticlesAction` コントローラメソッドを作成したと仮定します。
+もし、このメソッドの結果（大抵は HTML コンテンツです）を `index` テンプレートの中に表示したいとしたら、`render()` 関数を使います。
+
+<code twig>
+{# app/Resources/views/index.html.twig #}
+{{ render(controller('AppBundle:Default:topArticles')) }}
+</code>
+
+ここでは、`render()` と `controller()` 関数は Default コントローラーの `topArticlesAction` アクションを参照する為に、特別な `AppBundle:Default:topArticles` という書式を使っています。（`AppBundle` という部分は後で説明します）
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+
+class DefaultController extends Controller
+{
+    public function topArticlesAction()
+    {
+        // look for the most popular articles in the database
+        $articles = ...;
+
+        return $this->render('default/top_articles.html.twig', array(
+            'articles' => $articles,
+        ));
+    }
+
+    // ...
+}
+</code>
+
+
+
+### リンク
+
+ウェブアプリケーションではページ間のリンクを作成することが必須です。
+テンプレートに URL をハードコーティングする代わりに、`path` 関数を使ってルート設定に基づく URL を生成します。
+そうすれば、全ての URL を設定を変更するだけで簡単に変更することができます。
+
+<code twig>
+<a href="{{ path('homepage') }}">Return to homepage</a>
+</code>
+
+`path` 関数は最初の引数にルート名を受け取ります。また、オプションとして第２引数にルートパラメータの配列を渡すことができます。
+
+- - -
+`url` 関数は `path` 関数にとても似ていますが、こちらは絶対パスの URL を生成します。email や RSS を表示する時にとても便利です。
+
+<code twig>
+<a href="{{ url('homepage') }}">Visit our website</a>.
+</code>
+- - -
+
+
+
+
+### アセット（画像、JavaScripts、Stylesheets）
+
+インターネットでは画像や JavaScript、Stylesheet を使います。
+Symfony はそれらを簡単に取り扱う `asset` 関数を提供しています。
+
+<code twig>
+<link href="{{ asset('css/blog.css') }}" rel="stylesheet" type="text/css" />
+
+<img src="{{ asset('images/logo.png') }}" />
+</code>
+
+`asset` 関数は `web/` ディレクトリ内の Web アセットを検索します。
+もし別のディレクトリにそれらを格納する場合は、Web アセットの管理方法を学ぶ為に[この記事](/doc/cookbook/assetic/asset_management)を読んでください。
+
+`asset` 関数を使うことで、アプリケーションはより移動しやすくなります。
+テンプレートのコードを変更することなく、アプリケーションのルートディレクトリを Web ルートディレクトリの別の場所に移動できるようになります。
+
+
+## まとめ
+
+Twig はシンプルでパワフルです。レイアウト、ブロック、テンプレート、インクルードのおかげで
+論理的で拡張可能な方法でテンプレートを整理するのがとても簡単になります。
+
+約 20 分、Symfony で作業をしました。しかし、あなたは既にちょっとすごいことが出来るようになりました。これが Symfony のパワーです。
+基本を学ぶことは簡単です。そして、あなたはすぐにこのシンプルさは非常に柔軟なアーキテクチャに覆われたものであることを学ぶでしょう。
+
+しかし、先走ってはいけません。最初に、もっとコントローラーについて学ぶ必要があります。
+そして、それは正にこのチュートリアルの[次のテーマ](/doc/quick_tour/the_controller)です。
+Symfony と、もう10分過ごす準備はできましたか？

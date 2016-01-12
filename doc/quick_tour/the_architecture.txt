@@ -1,0 +1,279 @@
+# アーキテクチャ
+
+あなたはヒーローです。誰がまだ、あなたが最初の３部を終えてここに居ると思ったでしょうか？
+あなたの努力はもうすぐ報われます。
+
+最初の３部ではフレームワークのアーキテクチャーについて詳しくは見てきませんでした。
+Symfony のアーキテクチャーは、さまざまなフレームワークの中でも際立っています。
+では、アーキテクチャーを詳しく見ていきましょう。
+
+## ディレクトリ構成
+
+Symfony アプリケーションのディレクトリ構成はとても柔軟ですが、次のような推奨構成があります。
+
+```
+my_project
+├── app      # アプリケーションの設定、テンプレート、翻訳
+├── bin      # 実行ファイル（例、bin/console ）
+├── src      # プロジェクトの PHP コード
+├── test     # 自動テスト（例、 Unit tests ）
+├── var      # 生成されるファイル（例、cache, logs, etc. ）
+├── vendor   # サードパティの依存ライブラリ
+└── web      # web ルートディレクトリ
+```
+
+
+
+
+### web ディレクトリ
+
+web ルートディレクトリは画像や stylesheets, JavaScript ファイル等の公開された静的なファイルを配置するディレクトリです。
+また、次に示すようなフロントコントローラーもここに配置されます。
+
+<code php>
+// web/app.php
+require_once __DIR__.'/../var/bootstrap.php.cache';
+require_once __DIR__.'/../app/AppKernel.php';
+
+use Symfony\Component\HttpFoundation\Request;
+
+$kernel = new AppKernel('prod', false);
+$kernel->loadClassCache();
+$request = Request::createFromGlobals();
+$response = $kernel->handle($request);
+$response->send();
+</code>
+
+フロントコントローラーは最初にカーネルクラス（`AppKernel`）を使って、アプリケーションを起動します。
+そして、PHP のグローバル変数を使ってリクエストオブジェクトを作成し、カーネルに渡します。
+最後に、カーネルから返されたレスポンスコンテンツをユーザーに送ります。
+
+
+
+### app ディレクトリ
+
+`AppKernel` クラスはアプリケーション設定のエントリポイントです。
+そして、それは `app/`ディレクトリに格納されています。
+
+このクラスは２つのメソッドを実装する必要があります。
+
+- `registerBundles()`
+ - アプリケーションを実行するのに必要なすべての Bundle の配列を返す必要があります。
+- `registerContainerConfiguration()`
+ - アプリケーションの設定を読み込みます。
+
+クラスのオートローディングは [Composer](https://getcomposer.org/) によって自動的に処理されます。
+これは何もしなくても、全ての PHP クラスを使用できる事を意味します。
+全ての依存ライブラリは `vendor/` ディレクトリの下に格納されますが、これは単なる慣習です。
+それらはサーバー上の何処でも、プロジェクトディレクトリ内の何処にでも保存することができます。
+
+
+
+
+## Bundle システム
+
+このセクションでは Symfony の最もパワフルで最強な機能の１つ、Bundle システムを紹介します。
+
+Bundle は他のソフトウェアでのプラグインのような物です。
+では、何故プラグインと呼ばずに Bundle と呼ぶのでしょう？
+それは、Symfony では、フレームワークのコア機能から、アプリケーションの為に記述するコードまで、全てが Bundle だからです。
+
+あなたがアプリケーションの為に記述する全てのコードは Bundle 内に組み込まれます。
+Symfony では、Bundle は単一の機能（ブログやフォーラム等）を実装し、構造化されたファイルのセットです（PHP ファイル, stylesheets, JavaScript, 画像等）。そして、それらは簡単に他の開発者と共有することができます。
+
+Symfonyでは Bundle は第一級市民です。これは、あなたがサードパーティーによってパッケージされた機能を使用したり、自身の Bundle を配布したりする柔軟性を提供します。アプリケーションで有効にする機能を選択したり、あなたが望む方法でそれらを最適化することを簡単に出来るようにしてくれます。
+最終的に、あなたのアプリケーションのコードはコアフレームワークと同じくらい重要になります。
+
+Symfony は既にアプリケーション開発をスタートする為に使う AppBundle 持っています。
+もし、アプリケーションを再利用可能なコンポーネントに分割する必要がある時は、自分自身の Bundle を作成することができます。
+
+
+
+
+
+### Bundle の登録
+
+アプリケーションは `AppKernel` クラスの `registerBundles()`メソッドで定義された Bundle で構成されています。
+各 Bundle のディレクトリには それ自身を説明する `xxxxBundle` クラスを持っています。
+
+<code php>
+// app/AppKernel.php
+public function registerBundles()
+{
+    $bundles = array(
+        new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+        new Symfony\Bundle\SecurityBundle\SecurityBundle(),
+        new Symfony\Bundle\TwigBundle\TwigBundle(),
+        new Symfony\Bundle\MonologBundle\MonologBundle(),
+        new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
+        new Symfony\Bundle\DoctrineBundle\DoctrineBundle(),
+        new Symfony\Bundle\AsseticBundle\AsseticBundle(),
+        new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+        new AppBundle\AppBundle(),
+    );
+
+    if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+        $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+        $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
+        $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+    }
+
+    return $bundles;
+}
+</code>
+
+すでにお話した AppBundle に加えて、カーネルが Symfony の一部として、FrameworkBundle や DoctrineBundl, SwiftmailerBundle, AsseticBundle といった他の Bundle を有効にしていることが分かります。
+ 
+
+
+### Bundle の設定
+
+各 Bundle は YAML や XML, PHP で書かれた設定ファイルでカスタマイズすることができます。
+Symfony のデフォルト設定のサンプルをご覧ください。
+
+<code yml>
+# app/config/config.yml
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+
+framework:
+    #esi:             ~
+    #translator:      { fallbacks: ['%locale%'] }
+    secret:          '%secret%'
+    router:
+        resource: '%kernel.root_dir%/config/routing.yml'
+        strict_requirements: '%kernel.debug%'
+    form:            true
+    csrf_protection: true
+    validation:      { enable_annotations: true }
+    templating:      { engines: ['twig'] }
+    default_locale:  '%locale%'
+    trusted_proxies: ~
+    session:         ~
+
+# Twig Configuration
+twig:
+    debug:            '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+
+# Swift Mailer Configuration
+swiftmailer:
+    transport: '%mailer_transport%'
+    host:      '%mailer_host%'
+    username:  '%mailer_user%'
+    password:  '%mailer_password%'
+    spool:     { type: memory }
+
+# ...
+</code>
+
+`framework` や `twig`, `swiftmailter` のような第１レベルは特定の Bundle の設定を定義します。
+例えば、`framework` は FrameworkBundle を設定します。一方、`swiftmailer` は SwiftmailerBundleを設定します。
+
+各環境向けの設定ファイルを用意することで、デフォルト設定を上書きすることができます。
+例えば、`dev` 環境は `config_dev.yml`ファイルを読み込みます。
+`config_dev.yml`ファイルはメインの設定ファイル（`config.yml`）をインポートして、デバッグツールを追加するために修正しています。
+
+<code yml>
+# app/config/config_dev.yml
+imports:
+    - { resource: config.yml }
+
+framework:
+    router:   { resource: '%kernel.root_dir%/config/routing_dev.yml' }
+    profiler: { only_exceptions: false }
+
+web_profiler:
+    toolbar: true
+    intercept_redirects: false
+
+# ...
+</code>
+
+
+### Bundle の拡張
+
+Bundle はコードを整理したり、設定するよい方法であることに加え、他の Bundle を拡張することもできます。
+Bundle のコントローラーやテンプレート、その他のファイルをカスタマイズする為に、既存の Bundle を継承することができます。
+
+#### 論理ファイル名
+
+Bundle からファイルを参照したい場合、`@BUNDLE_NAME/path/to/file`という表記を使います。
+Symfony は `@BUNDLE_NAME` を実際のバンドルのパスに変換します。
+例えば、Symfony は AppBundle の場所を知っているので、論理パス `@AppBundle/Controller/DefaultController.php` は `src/AppBundle/Controller/DefaultController.php` に変換されます。
+
+#### 論理コントローラー名
+
+コントローラーの場合は、`BUNDLE_NAME:CONTROLLER_NAME:ACTION_NAME` 表記を使って、アクションを参照する必要があります。
+例えば、`AppBundle:Default:index` は `AppBundle\Controller\DefaultController` クラスの `indexAction` にマップされます。
+
+#### Bundle の拡張
+
+これらの規約に従うことで、ファイルやコントローラー、テンプレートを上書きするために、[Bundle の継承](doc/cookbook/bundles/inheritance)を使うことができます。
+例えば、AppBundle を継承する `NewBundle` を作成ことができます。
+Symfony が `AppBundle:Default:index` コントローラーを読み込む時、最初に NewBundle 内の `DefaultController` を検索します。そして、それが存在しなかった時、AppBundle の中を検索します。
+これは、１つの Bundle が他の Bundle のほぼ全ての部分を上書きできる事を表しています。
+
+なぜ、Symfony が柔軟なのかをご理解いただけたでしょうか？あなたの Bundle をアプリケーション間で共有してください。ローカル環境に保存するか、グローバルにするかは、あなたの選択です。
+
+
+
+
+## vendor ディレクトリ
+
+多分、あなたのアプリケーションはサードパーティーのライブラリに依存するでしょう。
+それらは `vendor/` ディレクトリに格納されるべきです。
+このディレクトリは Composer によって、排他的に管理されている為、あなたは決してそれらに触るべきではありません。
+このディレクトリは既に、Symfony ライブラリや SwiftMailer, Doctrine ORM, Twig テンプレートシステム, そして他のサードパーティ製のライブラリと Bundle を含んでいます。
+
+
+
+## キャッシュとログ
+
+Symfony アプリケーションは YAML や XML PHP 等のフォーマットで定義された、いくつかの設定ファイルを含めることができます。
+各リクエスト毎に、これらのファイルの全てを解析し組み合わせる代わりに、Symfony はキャシュシステムを使います。
+実際には、アプリケーションの設定は最初のリクエスト時だけ解析されて、プレーンな PHP コードにコンパイルされ、
+`var/cache` ディレクトリに保存されます。
+
+開発環境では、Symfony は、あなたがファイルを変更した時に賢くキャッシュを更新します。
+しかし、本番運用環境では、スピードアップする為に、コードを変更したり、設定を変更した時にキャッシュをクリアするのはあなた自身で行う必要があります。`prod` 環境でキャッシュをクリアするには次のコマンドを実行します。
+
+```
+$ php bin/console cache:clear --env=prod
+```
+
+ウェブアプリケーションを開発している時は、上手くいかないことが多々有ります。
+`var/logs/` ディレクトリ内のログファイルはリクエストに関する全ての事を伝えてくれます。そして、問題の速やかな解決を助けてくれます。
+
+
+
+
+## コマンドラインインターフェース
+
+各アプリケーションにはメンテナンスを助けるコマンドラインインターフェースツール（`bin/console`）が組み込まれています。
+それは、退屈で繰り返し行うタスクを自動化することで、生産性を高めるコマンドを提供します。
+
+その機能をもっと知るには、引数無しでCLIツールを実行します。
+
+```
+$ php bin/console
+```
+
+`--help` オプションを使ってコマンドの使い方を調べることができます
+
+```
+$ php bin/console debug:router --help
+```
+
+
+
+
+## まとめ
+
+この章を読み終えたので、色々変更したり、自分用の Symfony を作ったりして、快適にするべきです。
+Symfony の全てはあなたの方法を引き出す様に設計されています。
+あなたの思うように気軽にディレクトリを動かしたりリネームしたりしてください。
+
+これでクイックツアーは完了です。テストからメールの送信まで、あなたが Symfony マスターになるにはまだ多くのことを学ぶ必要があります。これらのテーマを深掘りする準備はできましたか？[ブック](doc/book/index)に進んで、気になるテーマを選択してください。

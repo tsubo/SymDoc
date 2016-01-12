@@ -1,0 +1,309 @@
+# Symfony のインストールと設定
+
+この章の目的は Symfony で作成されたアプリケーションを動かすことです。Symfony は簡単に新規のアプリケーションを作成する為に、インストーラーを提供しています。
+
+
+## インストーラー
+
+新規のアプリケーションを作成するには、インストーラを使用します。インストーラーはシステムに１度だけインストールして、アプリケーションを作成する時に何度も使います。
+
+インストーラを使うには PHP 5.4 以上が必要です。まだ、PHP 5.3 を使っている場合は、
+[インストーラ以外でのアプリケーションの作成](#インストーラ以外でのアプリケーションの作成)を参照してください。
+
+
+
+### Linux と Mac OS X
+
+コマンドコンソールを開いて、以下のコマンドを実行します。
+
+```
+$ sudo curl -LsS https://symfony.com/installer -o /usr/local/bin/symfony
+$ sudo chmod a+x /usr/local/bin/symfony
+```
+
+システム内でグローバルな `symfony` コマンドになります。
+
+
+### Windows
+
+コマンドコンソールを開いて、以下のコマンドを実行します。
+
+```
+c:\> php -r "readfile('https://symfony.com/installer');" > symfony
+```
+
+ダウンロードした symfony ファイルをプロジェクトディレクトリに移動して、以下のように実行します。
+
+```
+c:\> move symfony c:\projects
+c:\projects\> php symfony
+```
+
+
+## アプリケーションの作成
+
+インストーラーが使えるようになったので、`new` コマンドで最初の Symfony アプリケーションを作成します。
+
+```
+# Linux, Mac OS X
+$ symfony new my_project_name
+
+# Windows
+c:\> cd projects/
+c:\projects\> php symfony new my_project_name
+```
+
+このコマンドは Symfony の最新の安定版バージョンを含む `my_project_name` というディレクトリを作成します。
+更に、インストーラーはシステムが Symfony アプリケーションの要件を満たしているかのチェックを行います。
+要件を満たしていない場合は、必要な変更の一覧を表示します。
+
+
+### Symfony バージョンの指定
+
+Symfony の特定のバージョンを使用する必要がある場合は、`new` コマンドの第二引数でバージョンを指定します。
+
+```
+# 任意のバージョンで最新の物をインストール
+$ symfony new my_project_name 2.8
+$ symfony new my_project_name 3.0
+
+# 特定のバージョンをインストール
+$ symfony new my_project_name 2.7.3
+$ symfony new my_project_name 2.8.1
+
+# BETAやRCバージョンをインストール (Symfonyのニューバージョンをテストする為に使います)
+$ symfony new my_project 3.0.0-BETA1
+$ symfony new my_project 2.7.0-RC1
+```
+
+インストーラーは LTS という特別なバージョンのインストールも可能です。LTS は[最新の Symfony の長期間サポートバージョン](https://symfony.com/doc/current/contributing/community/releases.html#releases-lts)を指します。
+
+```
+$ symfony new my_project_name lts
+```
+
+どの様なバージョンがあるか、どのバージョンを使うべきかを知る為に、[Symfony のリリースプロセス](https://symfony.com/doc/current/contributing/community/releases.html)を読んでください。
+
+
+## インストーラ以外でのアプリケーションの作成
+
+まだ、PHP 5.3を使っていたり、何らかの理由でインストーラーが使えない場合は、代わりに[Composer](https://getcomposer.org/)を使ってプロジェクトを作成することが出来ます。
+
+Composer はモダンな PHP アプリケーション開発で使用される、パッケージの依存管理ツールで、Symfony ベースの新規アプリケーションを作成するのにも使用できます。
+
+
+### グローバル環境への Composer のインストール
+
+[Composer のインストール](/doc/cookbook/composer)を参照してください。
+
+
+### Composer での Symfony アプリケーションの作成
+
+コンピュータに Composer をインストールしたら、create-project コマンドを実行して、最新の安定バージョンで Symfony アプリケーションを作成します。
+
+```
+$ composer create-project symfony/framework-standard-edition my_project_name
+```
+
+もし、特定のバージョンを指定したい場合は、以下のように指定します。
+
+```
+$ composer create-project symfony/framework-standard-edition my_project_name "3.0.*"
+```
+
+> インターネット回線が遅い場合は、Composer が動いていないように感じるかもしれません。
+> そのような時には、-vvv オプションを指定することで、Composer が詳細な表示を行ってくれます。
+
+
+## アプリケーションの実行
+
+Symfony は開発期間中、アプリケーションを実行するのに PHP のビルトインサーバーを利用します。
+以下のように実行します。
+
+```
+$ cd my_project_name/
+$ php bin/console server:run
+```
+
+ブラウザを開いて http://localhost:8000/ にアクセスすると `Welcome Page` が表示されます。
+
+![Welcome Page](https://symfony.com/doc/current/_images/welcome.png)
+
+`Welcome Page` の代わりに、空白のページやエラーページが表示されるかもしれません。それはディレクトリのパーミッションの設定ミスが原因で発生します。オペレーティングシステムに応じていくつかの解決策があります。それらは、[パーミッションの設定](#パーミッションの設定)を参照してください。
+
+> PHP のビルトインサーバーは PHP 5.4 以上のバージョンで使用できます。
+> PHP 5.3 を使っている場合は、ご利用のウェブサーバーで virtual host の設定が必要になります。
+
+`server:run` コマンドはアプリケーションの開発中のみ使用してください。
+本番環境でアプリケーションを実行する場合は、[ウェブサーバーの設定](/doc/cookbook/configuration/web_server_configuration)を参照してください。
+
+アプリケーションでの作業が完了した時には、以下のコマンドでサーバーを終了できます。
+
+```
+$ php bin/console server:stop
+```
+
+
+## 設定とセットアップのチェック
+
+Symfony のアプリケーションは設定確認用のツールを備えています。以下の URL にアクセスして設定を確認してください。
+
+```
+http://localhost:8000/config.php
+```
+
+もし何か問題があれば、先に進む前にそれらを修正してください。
+
+### パーミッションの設定
+
+Symfony のインストールでよくある問題の１つが `var/cache` や `var/logs` のパーミッションです。
+この２つのディレクトリはウェブサーバーとコマンドラインユーザーの両方に書き込み権限が必要です。
+Unix システムでは、ウェブサーバのユーザーとコマンドラインユーザーが違う場合に、
+次の解決策の何れかを行う必要があります。
+
+#### 1) CLI とウェブサーバーのユーザーを同じにする
+
+開発環境では、CLI とウェブサーバで同一の Unix ユーザーを使用するのが一般的です。そうすることで、新規のプロジェクトを設定する時のパーミッションの問題を回避することが出来ます。この方法はウェブサーバの設定ファイル（Apache の場合、`httpd.conf` や `apache2.conf`）を編集することで行います。設定ファイル内に CLI ユーザと同じユーザーを設定します（Apache の場合、User と Group 変数を設定します）。
+
+#### 2) chmod コマンドの +a オプションをサポートするシステム上で ACL を使う
+
+多くのシステムでは `chmod +a` コマンドが使えます。パーミッションの設定には、最初にこのコマンドを試してください。
+このコマンドは、実行中のウェブサーバーのユーザーを特定し、`HTTPUSER` 環境変数にセットします。
+そして、`chmod + a` コマンドで、`var/cache` と `var/logs` に `HTTPUSER` にセットしたユーザーと現在の CLI ユーザーの権限を加えます。
+このコマンドがエラーになる場合は、3) の方法を試してください。
+
+```
+$ rm -rf var/cache/*
+$ rm -rf var/logs/*
+
+$ HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
+$ sudo chmod +a "$HTTPDUSER allow delete,write,append,file_inherit,directory_inherit" var/cache var/logs
+$ sudo chmod +a "`whoami` allow delete,write,append,file_inherit,directory_inherit" var/cache var/logs
+```
+
+#### 3) chmod コマンドの +a オプションをサポートしないシステム上で ACL を使う
+
+いくつかのシステムでは `chmod +a` コマンドがサポートされていません。
+しかし、`setfacl` という別のツールをサポートしています。
+まず `setfacl` をインストールして、ファイルシステムの [ACL サポートを有効にする](https://help.ubuntu.com/community/FilePermissionsACLs)（Ubuntu の例）必要があります。
+このコマンドは、実行中のウェブサーバーのユーザーを特定し、`HTTPUSER` 環境変数にセットします。
+そして、 `setfacl` コマンドで、`var/cache` と `var/logs` に `HTTPUSER` にセットしたユーザーと現在の CLI ユーザーの権限を加えます。
+
+```
+$ HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
+$ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs
+$ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs
+```
+
+もし `setfacl` が上手く動かなかった時は `-n` オプションを付けて試してみてください。
+
+#### 4) ACL 以外の方法
+
+もし上記の方法が上手くいかない時は、`var/cache` と `var/logs` の `umask` を変更します。
+ウェブサーバーのユーザーと CLI ユーザーが同じグループに属しているかどうかで、グループか全てのユーザーのどちらかに権限を付与します。
+`umask` の設定は以下の行を `app/console`, `web/app.php`, `web/app_dev.php` ファイルの先頭に追加します。
+
+```
+umask(0002); // This will let the permissions be 0775, グループに許可
+
+// or
+
+umask(0000); // This will let the permissions be 0777, 全てのユーザーに許可
+```
+
+※ `umask` の変更はスレッドセーフではないので、ACL が使える時は ACL を使用することをお薦めします。
+
+
+## アプリケーションの更新
+
+この時点で、フル機能の Symfony アプリケーションを作成し、自身のプロジェクトで開発を始めることができました。
+Symfony アプリケーションは幾つもの外部ライブラリに依存しています。
+それらは `vendor` ディレクトリの中にダウンロードされて、Composer によって管理されています。
+
+これらのサードパーティー製のライブラリを頻繁に更新することは、バグやセキュリティ脆弱性を防止するための良い方法です。
+一度にそれらのライブラリを全て更新するには Composer の `update` コマンドを実行します。
+
+```
+$ cd my_project_name
+$ composer update
+```
+
+プロジェクトの複雑さに応じて、この更新プロセスは数分かかることがあります。
+
+> Symfonyはプロジェクトが依存しているライブラリにセキュリティ脆弱性が含まれていないかをチェックするコマンドを提供しています。
+> このコマンドを定期的に実行することは、すみやかに脆弱性を解決する為の良い方法です。
+
+
+```
+$ php bin/console security:check
+```
+
+
+## デモアプリケーションのインストール
+
+Symfony のデモアプリケーションは Symfony の推奨する開発方法を提示するアプリケーションです。
+このアプリケーションは初心者の学習ツールとして考えられたもので、そのソースコードには多くのコメントや便利な注意書きが含まれています。
+
+デモアプリケーションをダウンロードするには、インストーラーでの `demo` コマンドを実行します。
+
+```
+# Linux, Mac OS X
+$ symfony demo
+
+# Windows
+c:\projects\> php symfony demo
+```
+
+ダウンロードが完了したら、`symfony_demo` ディレクトリに移動して、PHP のビルトインサーバーを起動します。
+
+```
+$ cd symfony_demo
+$ php bin/console server:run
+
+# ブラウザで http://localhost:8000 にアクセス
+```
+
+
+## Symfony ディストリビューションのインストール
+
+ディストリビューションは配布様にパッケージされた物で、完全に動作するアプリケーションです。それは Symfony のコアライブラリや便利な Bundle、整理されたディレクトリ構成、いくつかのデフォルト設定を含んでいます。実際、上記のセクションで Symfony アプリケーションを作成した時には、Symfony Standard Edition というディストリビューションがダウンロードされています。
+
+Symfony Standard Edition は、これまでで最も人気のあるディストリビューションであり、Symfony を使いはじめる開発者の為のベストチョイスでもあります。
+しかし、Symfony コミュニティーは他にも人気のあるディストリビューションを公開しています。
+
+- [Symfony CMS Standard Edition](https://github.com/symfony-cmf/standard-edition)は
+Symfony フレームワークで構築されたアプリケーションに CMS の機能を簡単に追加する為の最適なディストリビューションです。
+
+- [Symfony REST Edition](https://github.com/gimler/symfony-rest-edition)は、FOSRestBundle を使って、RESTful API を提供するアプリケーションの開発方法を提示します。
+
+
+## バージョン管理システムの使用
+
+もし、[Git](http://git-scm.com/) のようなバージョン管理システムを使用しているなら、プロジェクトのコードを安全にコミットすることができます。なぜなら、Symfony アプリケーションは既に Symfony の為に準備した `.gitignore` を含んでいるからです。
+
+プロジェクトを Git 内に保存するベストな手順については、[Git に Symfony プロジェクトを保存する方法](doc/cookbook/workflow/new_project_git)を参照してください。
+
+### バージョン管理されたアプリケーションのチェックアウト方法
+
+アプリケーションの依存管理を Composer で行っている時、コードを Git リポジトリにコミットする前に `vendor` ディレクトリ全体を `.gitignore` ファイルに追加して、無視することをお薦めします。
+これは、Git リポジトリからアプリケーションをチェックアウトした時、`vendor` ディレクトリが存在せず、そのままでは動かないことを意味します。
+
+アプリケーションを実行出来るようにするには、チェックアウト後に Composer の `install` コマンドを実行して、アプリケーションが依存している全てのライブラリをインストールします。
+
+```
+$ cd my_project_name/
+$ composer install
+```
+
+どの様に Composer は依存関係を知るのでしょうか？ Symfony アプリケーションが Git リポジトリにコミットされた時、 `composer.json` と `composer.loclk` ファイルも一緒にコミットされます。これらのファイルは Composer にアプリケーションが必要とする依存関係やバージョンを伝えます。
+
+
+## 開発の開始
+
+完全に動作する Symfony アプリケーションを手に入れ、開発を始めることができるようになりました。
+ディストリビューションにはいくつかのサンプルコードが含まれているかもしれません。
+`README.md` ファイルをチェックしてみてください。
+
+もしあなたが Symfony の初心者なら、[はじめてのページ作成](doc/book/page_creation)をチェックしてみてください。ページの作成方法や設定の変更方法等、新しいアプリケーションで必要なことが学べます。
+
+また、[Cookbook](/doc/cookbook/index) もチェックしてみてください。そこには Symfony の各分野での問題を解決する様々な記事があります。

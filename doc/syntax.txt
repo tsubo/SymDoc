@@ -1,0 +1,402 @@
+# Markdown書式
+
+当サイトは[Dokuwiki](https://www.dokuwiki.org/ja:dokuwiki)にMarkdownプラグインをインストールして構築しています。その為、Wiki書式とMarkdown書式の両方が使えるのですが、**Markdown書式をメインとします**。Markdownプラグインが提供していない機能で必要なものはWiki表記で補うこととします。
+
+- Markdown書式をメインとする
+- 一部、Wiki書式で補う
+
+
+## ブロック要素
+
+### 段落
+
+段落は空行で分けます。
+
+以下のように記述すると
+```
+段落１
+段落１
+
+段落２
+```
+
+以下のように表示されます
+
+---
+
+段落１
+段落１
+
+段落２
+
+---
+
+※ 段落を変えずに改行したい場合は行末にスペースを２つ入れます。
+
+
+### ヘッダ
+
+以下のように記述します。
+
+```
+# ヘッダ１
+## ヘッダ２
+### ヘッダ３
+#### ヘッダ４
+```
+
+### 引用
+
+以下のように記述すると
+
+```
+> 引用１
+> 引用２
+> 
+> 引用３
+>
+>
+> 引用４
+```
+
+以下のように表示されます。
+
+> 引用１
+> 引用２
+> 
+> 引用３
+>
+>
+> 引用４
+
+
+### 箇条書き
+
+以下のように書くと
+
+```
+- 箇条書き１
+- 箇条書き２
+ - 箇条書き２１
+```
+
+以下のように表示されます
+
+- 箇条書き１
+- 箇条書き２
+ - 箇条書き２１
+
+
+### コード
+
+以下のように書くと
+
+> ```
+> 
+> コード１
+> 
+> コード２
+> 
+> ```
+
+以下のように表示されます
+
+```
+コード１
+コード２
+```
+
+
+### 水平線
+
+以下のように書くと
+
+```
+- - -
+---
+***
+```
+
+以下のように表示されます
+
+- - -
+---
+***
+
+
+## 範囲要素
+
+### リンク
+
+以下のように書くと
+
+```
+[Google](https://www.google.co.jp)
+```
+
+以下のように表示されます
+
+[Google](https://www.google.co.jp)
+
+
+### 強調
+
+以下のように書くと
+
+```
+ここが**重要**です
+
+ここが*斜体*です
+```
+
+以下のように表示されます
+
+- - -
+
+ここが**重要**です
+
+ここが*斜体*です
+
+- - -
+
+### コード
+
+以下のように書くと
+
+```
+文章の途中でも`ソースコード`が書けます
+```
+
+以下のように表示されます
+
+- - -
+文章の途中でも`ソースコード`が書けます
+- - -
+
+### 画像
+
+以下のように書くと
+
+```
+![SymfonyのBook](https://symfony.com/images/common/picto/learn_symfony_cookbook.png)
+```
+
+以下のように表示されます
+
+![SymfonyのBook](https://symfony.com/images/common/picto/learn_symfony_cookbook.png)
+
+## Wiki書式
+
+### ソースコード
+
+DokuwikiのMarkdownプラグインではSyntaxハイライト表示をしてくれないので、Wiki書式で補います。
+`php`, `twig`, `yaml`, `xml`等のプログラム言語のソースコードを表示する所で使います。
+
+以下のように記述すると
+
+```
+<code php>
+    ...
+</code>
+```
+
+以下のように表示されます
+
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Response;
+
+class LuckyController
+{
+    /**
+     * @Route("/lucky/number")
+     */
+    public function numberAction()
+    {
+        $number = rand(0, 100);
+
+        return new Response(
+            '<html><body>Lucky number: '.$number.'</body></html>'
+        );
+    }
+}
+</code>
+
+### 表
+
+DokuwikiのMarkdownプラグインでは表を表示してくれないので、Wiki書式で補います。
+
+以下のように書くと
+
+```
+^ヘッダ左寄せ  ^  ヘッダ中央  ^  ヘッダ右詰め^
+|項目左寄せ    |   項目中央   |   項目右寄せ|   
+|左寄せ（デフォルト）|左寄せ（デフォルト）|左寄せ（デフォルト）|
+```
+
+以下のように表示されます
+
+^ヘッダ左寄せ  ^  ヘッダ中央  ^  ヘッダ右詰め^
+|項目左寄せ    |   項目中央   |   項目右寄せ|   
+|左寄せ（デフォルト）|左寄せ（デフォルト）|左寄せ（デフォルト）|
+
+
+- ヘッダー行のセパレータは`^`を使います
+- 通常の行のセパレータは`|`を使います
+- 項目はデフォルトで左寄せです
+- 項目を右寄せにしたい場合は値の左にスペースを２つ入れます
+- 項目をセンタリングしたい場合は値の左右にスペースを２つ入れます
+
+
+### HTML
+
+`<html>`で囲んだ中で、HTMLのタグを使うことができます。
+
+```
+<html>
+  ここにHTMLタグを書けます
+</html>
+```
+
+当サイトではCSSのフレームワークにBootstrap3を使っています。Bootstrap3用のHTMLタグを使って、下記のようにタブを表示したい時に、`<html>`を使います。
+
+以下のように書くと
+
+```
+<html>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#annotations" aria-controls="annotations" role="tab" data-toggle="tab">Annotations</a></li>
+    <li role="presentation"><a href="#yaml" aria-controls="yaml" role="tab" data-toggle="tab">YAML</a></li>
+    <li role="presentation"><a href="#xml" aria-controls="xml" role="tab" data-toggle="tab">XML</a></li>
+    <li role="presentation"><a href="#php" aria-controls="php" role="tab" data-toggle="tab">PHP</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="annotations">
+<pre><code>// src/AppBundle/Controller/LuckyController.php
+
+// ...
+class LuckyController
+{
+    /**
+     * @Route("/lucky/number/{count}")
+     */
+    public function numberAction()
+    {
+        // ...
+    }
+
+    // ...
+}      
+</code></pre>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="yaml">
+<pre><code># app/config/routing.yml
+lucky_number:
+    path:     /lucky/number/{count}
+    defaults: { _controller: AppBundle:Lucky:number }
+</code></pre>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="xml">
+<pre><code>&lt;!-- app/config/routing.xml --&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;routes xmlns=&quot;http://symfony.com/schema/routing&quot;
+xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+xsi:schemaLocation=&quot;http://symfony.com/schema/routing
+http://symfony.com/schema/routing/routing-1.0.xsd&quot;&gt;
+&lt;route id=&quot;lucky_number&quot; path=&quot;/lucky/number/{count}&quot;&gt;
+&lt;default key=&quot;_controller&quot;&gt;AppBundle:Lucky:number&lt;/default&gt;
+&lt;/route&gt;
+&lt;/routes&gt;
+</code></pre>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="php">
+<pre><code>// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('lucky_number', new Route('/lucky/number/{count}', array(
+    '_controller' => 'AppBundle:Lucky:number',
+)));
+
+return $collection;
+</code></pre>
+    </div>
+  </div>
+</html>
+```
+
+以下のように表示されます
+<html>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#annotations" aria-controls="annotations" role="tab" data-toggle="tab">Annotations</a></li>
+    <li role="presentation"><a href="#yaml" aria-controls="yaml" role="tab" data-toggle="tab">YAML</a></li>
+    <li role="presentation"><a href="#xml" aria-controls="xml" role="tab" data-toggle="tab">XML</a></li>
+    <li role="presentation"><a href="#php" aria-controls="php" role="tab" data-toggle="tab">PHP</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="annotations">
+<pre><code>// src/AppBundle/Controller/LuckyController.php
+
+// ...
+class LuckyController
+{
+    /**
+     * @Route("/lucky/number/{count}")
+     */
+    public function numberAction()
+    {
+        // ...
+    }
+
+    // ...
+}      
+</code></pre>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="yaml">
+<pre><code># app/config/routing.yml
+lucky_number:
+    path:     /lucky/number/{count}
+    defaults: { _controller: AppBundle:Lucky:number }
+</code></pre>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="xml">
+<pre><code>&lt;!-- app/config/routing.xml --&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;routes xmlns=&quot;http://symfony.com/schema/routing&quot;
+xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+xsi:schemaLocation=&quot;http://symfony.com/schema/routing
+http://symfony.com/schema/routing/routing-1.0.xsd&quot;&gt;
+&lt;route id=&quot;lucky_number&quot; path=&quot;/lucky/number/{count}&quot;&gt;
+&lt;default key=&quot;_controller&quot;&gt;AppBundle:Lucky:number&lt;/default&gt;
+&lt;/route&gt;
+&lt;/routes&gt;
+</code></pre>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="php">
+<pre><code>// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('lucky_number', new Route('/lucky/number/{count}', array(
+    '_controller' => 'AppBundle:Lucky:number',
+)));
+
+return $collection;
+</code></pre>
+    </div>
+  </div>
+</html>
+
+※ XMLのソースコードは[HTMLエスケープ](http://webtools.dounokouno.com/htmlescape/)する必要があります。
+

@@ -1,0 +1,21 @@
+# 文章の編集方法
+
+<grid>
+<col md="6">
+<thumbnail>
+{{ /img/edit_button.jpg }}
+</thumbnail>
+
+画面右の文章編集ボタンをクリック
+</col>
+
+<col md="6">
+<thumbnail>
+{{ /img/edit_menu.jpg }}
+</thumbnail>
+
+画面上部の文章編集メニューを選択
+</col>
+</grid>
+
+文章は[Markdown書式](/guide/syntax)で記述します。

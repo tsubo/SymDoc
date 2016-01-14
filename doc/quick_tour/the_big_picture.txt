@@ -19,11 +19,11 @@ Symfony アプリケーションを開発する場合、開発者の責任はユ
 
 実行されるコードはアクションとコントローラで定義されます。ユーザーのリクエストとそれらのコードとのマッピングはルーティング設定で定義されます。また、ブラウザに表示される内容は、通常、テンプレートを使用してレンダリングされます。
 
-あなたが `http://localhost:8000/app/example` をブラウズした時、Symfony は `src/AppBundle/Controller/DefaultController.php` ファイルに定義されたコントローラーを実行します。そして、`app/Resources/views/default/index.html.twig` テンプレートをレンダリングします。
+あなたが `http://localhost:8000/app/example` をブラウズした時、Symfony は `src/AppBundle/Controller/DefaultController.php` ファイルに定義されたコントローラを実行します。そして、`app/Resources/views/default/index.html.twig` テンプレートをレンダリングします。
 次のセクションでは、詳細にコントローラ、ルートおよびテンプレートの内部の仕組みを学びます。
 
 
-### アクションとコントローラー
+### アクションとコントローラ
 
 `src/AppBundle/Controller/DefaultController.php` ファイルを開けて下さい。
 次のようなコードが見れるはずです。（ここでは、`@Route` 設定は見ません。次のセクションで説明します。）
@@ -46,10 +46,10 @@ class DefaultController extends Controller
 }
 </code>
 
-Symfony アプリケーションではコントローラーは "Controller" で終わる名前の普通の PHP クラスです。
-この例ではコントローラーは Default と呼ばれ、PHP のクラスは `DefaultController`と呼ばれます。
+Symfony アプリケーションではコントローラは "Controller" で終わる名前の普通の PHP クラスです。
+この例ではコントローラは Default と呼ばれ、PHP のクラスは `DefaultController`と呼ばれます。
 
-コントローラー内で定義されているメソッドはアクションと呼ばれます。それらは大抵、１つの URL と関連付けられ、メソッド名が "Action" で終わるよう命名されます。この例では Default コントローラーは index と呼ばれるアクションを１つだけ持ち、`indexAction`メソッド内に定義されます。
+コントローラ内で定義されているメソッドはアクションと呼ばれます。それらは大抵、１つの URL と関連付けられ、メソッド名が "Action" で終わるよう命名されます。この例では Default コントローラは index と呼ばれるアクションを１つだけ持ち、`indexAction`メソッド内に定義されます。
 
 アクションは通常10〜15行の短いコードになります。なぜなら、それらは必要な情報を生成するか取得する為に、アプリケーションの他の部分を呼ぶだけだからです。そして、それらはユーザーに結果を表示する為に、テンプレートをレンダリングします。
 
@@ -90,7 +90,7 @@ URL にホスト名（例: http://example.com）を追加する必要はあり�
 `@Route` の第二引数は（例: name="homepage"）オプションで、このルートの名前を設定しています。今はルート名は必要有りませんが、後で、ページをリンクする時にとても便利な物です。
 
 まとめると、`@Route("/", name="homepage")` アノテーションは `homgepage` というルートを作成し、
-ユーザーがアプリケーションの `/` パスをブラウズした時に、Default コントローラーの index アクションを実行します。
+ユーザーがアプリケーションの `/` パスをブラウズした時に、Default コントローラの index アクションを実行します。
 
 - - -
 PHP アノテーションに加えて、ルートは YAML や、PHP ファイルで設定することもできます。
@@ -185,7 +185,7 @@ web_profiler:
 この例では、`config_dev.yml` 設定ファイルは共通設定である `config.yml` をインポートして、
 既存のウェブデバッグツールバー設定を自身の設定で上書きしています。
 
-より詳細な情報は[環境とフロントコントローラー](/doc/book/configuration)を参照してください。
+より詳細な情報は[環境とフロントコントローラ](/doc/book/configuration)を参照してください。
 
 
 ## まとめ

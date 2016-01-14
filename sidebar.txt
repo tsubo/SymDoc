@@ -1,4 +1,3 @@
-### メニュー
 
 - [ホーム](/)
 - [クイックツアー](/doc/quick_tour/index)
@@ -9,10 +8,11 @@
 
 ---
 
-- [文章の編集方法](/doc/howto_edit)
-- [Markdown書式](/doc/syntax)
-- [Snippets](/doc/snippet)
-- [スタイルガイド](/doc/style_guide)
+- [文章の編集方法](/guide/howto_edit)
+- [Markdown書式](/guide/syntax)
+- [スニペット](/guide/snippet)
+- [ディレクトリ構成](/guide/directory_structure)
+- [スタイルガイド](/guide/style_guide)
 
 ---
 
@@ -20,12 +20,4 @@
 
 ---
 
-<html>
-<a href="http://b.hatena.ne.jp/entry/http://symdoc.kwalk.jp/" class="hatena-bookmark-button" data-hatena-bookmark-title="SymDoc | みんなで作るSymfonyの日本語ドキュメントWiki, 翻訳ボランティア募集中！" data-hatena-bookmark-layout="vertical-balloon" data-hatena-bookmark-lang="ja" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
-</html>
-
-<html>
-<a href="https://twitter.com/share" class="twitter-share-button"{count} data-url="http://symdoc.kwalk.jp/" data-size="large">Tweet</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-</html>
-
+{{page>ad&nofooter}}

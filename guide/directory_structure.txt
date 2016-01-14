@@ -1,0 +1,68 @@
+# ディレクトリ構成
+
+## 当サイトのディレクトリ構成
+
+```
+doc                                 # 3.0 version
+├── best_practices/
+│   ├── index
+│   └── ...
+├── book/
+│   ├── index
+│   ├── bundles
+│   └── ...
+├── bundles/
+│   ├── index
+│   └── ...
+├── cookbook/
+│   ├── assetic/
+│   │   ├── index
+│   │   └── ...
+│   ├── bundles/
+│   ├── configuration/
+│   ├── controller/
+│   ├── workflow/
+│   ├── index
+│   ├── composer
+│   └── ...
+└── quick_tour/
+     ├── index
+     ├── the_architecture
+     ├── the_big_picture
+     ├── the_controller
+     └── the_view
+```
+
+- ディレクトリ構成は、公式サイトの構成からバージョンディレクトリを取り除いた物とします。
+- Wiki ファイル名は、公式サイトの HTML ファイル名から拡張子を除いた物とします。
+- 当サイトで取り扱うドキュメントのバージョンは、公式サイトの current とし、現在は 3.0 version です。
+
+
+## 【参考】公式サイトのディレクトリ構成
+
+```
+doc
+├── current/                         # 3.0 version
+│   ├── best_practices/
+│   │   ├── index.html
+│   │   └── ...
+│   ├── book/
+│   │   ├── index.html
+│   │   └── ...
+│   ├── bundles/
+│   │   ├── index.html
+│   │   └── ...
+│   ├── cookbook/
+│   │   ├── index.html
+│   │   └── ...
+│   └── quick_tour/
+│        ├── the_architecture.html
+│        ├── the_big_picture.html
+│        ├── the_controller.html
+│        └── the_view.html
+├── master/                          # 3.1 version
+│   └── ...
+├── 2.8/
+│   └── ...
+└── ...
+```

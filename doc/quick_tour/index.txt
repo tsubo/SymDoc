@@ -2,5 +2,5 @@
 
 - [Symfony の全体像](/doc/quick_tour/the_big_picture)
 - [ビュー](/doc/quick_tour/the_view)
-- [コントローラー](/doc/quick_tour/the_controller)
-- [アーキテクチャー](/doc/quick_tour/the_architecture)
+- [コントローラ](/doc/quick_tour/the_controller)
+- [アーキテクチャ](/doc/quick_tour/the_architecture)

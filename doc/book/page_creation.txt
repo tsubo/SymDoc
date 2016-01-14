@@ -1,6 +1,6 @@
 # Symfony での最初のページ作成
 
-新しいページ（HTMLページかJSONのエンドポイントの何れか）を作成するには、シンプルな２つのステップがあります。
+新しいページ（HTML ページかJSONのエンドポイントの何れか）を作成するには、シンプルな２つのステップがあります。
 
 1. **ルートの作成**  
    ルートは、ページへの URL（例えば /about ）で、コントローラを指し示します。
@@ -13,7 +13,7 @@
 
 
 
-## ページの作成：ルートとコントローラー
+## ページの作成：ルートとコントローラ
 
 - - -
 先に進む前に、[インストール](/doc/book/installation)の章を読んだか確認してください。
@@ -56,20 +56,514 @@ http://localhost:8000/app_dev.php/lucky/number
 例、`http://symfony.dev/app_dev.php/lucky/number`
 - - -
 
+ラッキーナンバーを見ることができたら、おめでとうございます。宝くじを買いに走る前に、これがどの様に動いたかをチェックしてください。
+
+`numberAction()` の上の `@Route` はアノテーションと呼ばれていて、それは URL パターンを定義します。また、YAML（もしくは他のフォーマット）にルートを書くこともできます。詳しくは[ルーティング](/doc/book/routing)の章をを参照してください。実際、このドキュメント内の殆どのルートの例はタブを持っていて複数のフォーマットを見ることができます。
+
+アノテーションの下の `numberAction` メソッドはコントローラと呼ばれ、あなたがページを構築する場所になります。コントローラの唯一のルールは Symfony のレスポンスオブジェクトを返さなければならないことです。（そして、最終的にこのルールを曲げる方法も学ぶでしょう）
+
+- - -
+** URL 内の `app_dev.php` とは何でしょう？ **
+
+良い質問です。URL 内に `app_dev.php` を含むことによって、あなたは `web/app_dev.php` ファイルを通して Symfony を実行しています。
+それは、Symfony を `dev` 環境で起動します。これは、素晴らしいデバッグツールを有効にすると共に、キャッシュファイルを自動的に再構築します。
+本番運用環境では、`http://localhost:8000/lucky/number` のようなクリーンな URL を使うことになるでしょう。
+この URL は別の `web/app.php` ファイルを実行します。このファイルはスピードに最適化されています。
+詳しくは[環境](/doc/book/configuration#book-page-creation-prod-cache-clear)を参照してください。
+
+
+- - -
+
 ### JSON レスポンスの作成
+
+あなたがコントローラで返すレスポンスオブジェクトは HTML や JSON、画像や PDF のようなバイナリーファイルでさえも含めることができます。
+簡単に HTTP ヘッダーやステータスコードをセットすることができます。
+
+あなたがラッキーナンバーを返す JSON のエンドポイントを作成したいと仮定します。`LuckyController` に２つ目のメソッドを追加するだけです。
+
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+
+// ...
+class LuckyController
+{
+    // ...
+
+    /**
+     * @Route("/api/lucky/number")
+     */
+    public function apiNumberAction()
+    {
+        $data = array(
+            'lucky_number' => rand(0, 100),
+        );
+
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
+    }
+}
+</code>
+
+ブラウザで確認してみてください。
+
+http://localhost:8000/app_dev.php/api/lucky/number
+
+便利な `JsonResponse` を使って短縮することもできます。
+
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+
+// ...
+// --> don't forget this new use statement
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+class LuckyController
+{
+    // ...
+
+    /**
+     * @Route("/api/lucky/number")
+     */
+    public function apiNumberAction()
+    {
+        $data = array(
+            'lucky_number' => rand(0, 100),
+        );
+
+        // calls json_encode and sets the Content-Type header
+        return new JsonResponse($data);
+    }
+}
+</code>
+
 
 ## 動的 URL パターン： /lucky/number/{count}
 
+ワォ、あなたはよくやってます。しかし、Symfony のルーティングはもっと色々なことができます。
+あなたはいっぺんにに５つのラッキーナンバーを生成できるように、ユーザーが `/lucky/number/5` に行けるようにしたいと仮定します。
+ルートの最後に `{wildcard}` を追加します。
+
+<tabs>
+  * [Annotations](#tab1-annotations)
+  * [YAML](#tab1-yaml)
+  * [XML](#tab1-xml)
+  * [PHP](#tab1-php)
+
+<pane id="tab1-annotations">
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+
+// ...
+class LuckyController
+{
+    /**
+     * @Route("/lucky/number/{count}")
+     */
+    public function numberAction()
+    {
+        // ...
+    }
+
+    // ...
+}
+</code>
+</pane>
+
+<pane id="tab1-yaml">
+<code yml>
+# app/config/routing.yml
+lucky_number:
+    path:     /lucky/number/{count}
+    defaults: { _controller: AppBundle:Lucky:number }
+</code>
+</pane>
+
+<pane id="tab1-xml">
+<code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="lucky_number" path="/lucky/number/{count}">
+        <default key="_controller">AppBundle:Lucky:number</default>
+    </route>
+</routes>
+</code>
+</pane>
+
+<pane id="tab1-php">
+<code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('lucky_number', new Route('/lucky/number/{count}', array(
+    '_controller' => 'AppBundle:Lucky:number',
+)));
+
+return $collection;
+</code>
+</pane>
+
+</tabs>
+
+`{count}` プレースホルダーによって、ページヘの URL が変わっています。
+URL は `/lucky/number/*` にマッチングします。例えば、`/lucky/number/5` にマッチングします。
+この URL の良い所は、値にアクセスして、それをコントローラで使用できるところです。
+
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+// ...
+
+class LuckyController
+{
+
+    /**
+     * @Route("/lucky/number/{count}")
+     */
+    public function numberAction($count)
+    {
+        $numbers = array();
+        for ($i = 0; $i < $count; $i++) {
+            $numbers[] = rand(0, 100);
+        }
+        $numbersList = implode(', ', $numbers);
+
+        return new Response(
+            '<html><body>Lucky numbers: '.$numbersList.'</body></html>'
+        );
+    }
+
+    // ...
+}
+</code>
+
+`/lucky/number/XX` に行って試してみてください。 `XX` は 任意の数値に置き換えて下さい。
+
+http://localhost:8000/app_dev.php/lucky/number/7
+
+７つのラッキーナンバーが表示されるはずです。コントローラの引数に `$placeholder` を追加することで、ルート内の `{placeholder}` の値を取得することができます。コントローラの引数と、ルート内のプレースホルダが同じ名前であることを確認してください。
+
+ルートシステムは、より多くのことができます。複数プレースホルダ（例、`/blog/{category}/{page}`）やプレースホルダをオプションにして、正規表現との一致を強制するようなこと（例えば、`{count}` は数値であること）等をサポートできます。
+
+これらの全ての機能を調べて、ルーティングのエキスパートになるには、[ルーティング](/doc/book/routing)の章を参照してください。
+
+
+  
+
 ## テンプレートの表示（サービスコンテナと）
+
+コントローラから HTML を戻している場合、恐らく、あなたはテンプレートを使用したいでしょう。
+幸いにも、Symfony には簡単で強力でとても楽しいテンプレート言語である Twig が付いています。
+
+これまでの所、LuckyController は何のクラスも継承していません。Twig や他の Symfony のツールを簡単に使う方法は Symfony の基本クラス `Controller` を継承することです。
+
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+
+// ...
+// --> add this new use statement
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class LuckyController extends Controller
+{
+    // ...
+}
+</code>
+
 
 ### テンプレートサービスの使用
 
+基本クラス Controller を継承することで LuckyController を変更することは何もありません。
+ただ、それは Symfony の Controller が持っている**サービスコンテナ**へのアクセスを可能にしてくれます。
+サービスコンテナは Symfony 内の全ての便利なオブジェクトへのアクセスを提供してくれます。
+それらの便利なオブジェクトは**サービス**と呼ばれています。Symfony は Twig テンプレートやログ出力等の多数のサービスオブジェクトを搭載しています。
+
+Twig テンプレートを表示するには、`tamplating` サービスを使用します。
+
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+
+// ...
+class LuckyController extends Controller
+{
+    /**
+     * @Route("/lucky/number/{count}")
+     */
+    public function numberAction($count)
+    {
+        // ...
+        $numbersList = implode(', ', $numbers);
+
+        $html = $this->container->get('templating')->render(
+            'lucky/number.html.twig',
+            array('luckyNumberList' => $numbersList)
+        );
+
+        return new Response($html);
+    }
+
+    // ...
+}
+</code>
+
+ドキュメントを読み続けていくと、この重要な**サービスコンテナ**について、より多くの事を学ぶでしょう。
+今のところ、それが多くのオブジェクトを保持していて、`template` や `logger` のようなニックネームを使って、オブジェクトを取得（`get()`）出来ることだけを知っておいて下さい。
+`templating` サービスは [Twig エンジン](http://api.symfony.com/3.0/Symfony/Bundle/TwigBundle/TwigEngine.html)のインスタンスで、`render()`メソッドを持っています。
+
+しかし、テンプレートの表示は Controller クラスの `render()` ショートカットメソッドを使って、もっと簡単にできます。
+Controller クラスを継承することで、たくさんの `render()`のようなショートカットを使用できるようになります。
+
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+
+// ...
+/**
+ * @Route("/lucky/number/{count}")
+ */
+public function numberAction($count)
+{
+    // ...
+
+    /*
+    $html = $this->container->get('templating')->render(
+        'lucky/number.html.twig',
+        array('luckyNumberList' => $numbersList)
+    );
+
+    return new Response($html);
+    */
+
+    // render: a shortcut that does the same as above
+    return $this->render(
+        'lucky/number.html.twig',
+        array('luckyNumberList' => $numbersList)
+    );
+}
+</code>
+
+これらのショートカットメソッドをもっと知るには[コントローラ](/doc/book/controller)の章を参照してください。
+
+- - -
+より高度なユーザーの為に、[サービスとしてコントローラを登録する方法](/doc/cookbook/controller/service)もあります
+- - -
+
+
 ### テンプレートの作成
+
+ここでブラウザをリロードすると、エラーが表示されます。
+
+> Unable to find template "lucky/number.html.twig"
+
+このエラーを解決する為に、新しく `app/Resources/views/lucky` ディレクトリを作成して、その中に `number.html.twig` ファイルを作成してください。
+
+<tabs>
+  * [Twig](#tab-twig)
+  * [PHP](#tab-php)
+
+<pane id="tab-twig">
+<code twig>
+{# app/Resources/views/lucky/number.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Lucky Numbers: {{ luckyNumberList }}</h1>
+{% endblock %}
+</code>
+</pane>
+
+<pane id="tab-php">
+<code php>
+<!-- app/Resources/views/lucky/number.html.php -->
+<?php $view->extend('base.html.php') ?>
+
+<?php $view['slots']->start('body') ?>
+    <h1>Lucky Numbers: <?php echo $view->escape($luckyNumberList) ?>
+<?php $view['slots']->stop() ?>
+</code>
+</pane>
+
+</tabs>
+
+ようこそ、Twig へ！ このサンプルファイルは既に基本を提示しています。`{{ 変数名 }}`書式は何かを表示する為に使用されます。
+`luckcyNumberList` はコントローラ内でコールされた `render` からテンプレート内に渡された変数です。
+
+`{% extends 'base.html.twig %}` はレイアウトファイルを指し示しています。レイアウトファイルは `app/Resources/views/base.html.twig` にあり、新規のプロジェクトに付属していた物です。
+それは、何の装飾もされていない本当に基本的なもので、あなたがカスタマイズしてください。
+`{% block body %}` 部分は `base.html.twig` レイアウトの中に、コンテンツを差し込む為の Twig の[継承システム](doc/book/templating#twig-inheritance)を使用します。
+
+テンプレートの表示を見るために、ブラウザをリフレッシュしてください。
+
+http://localhost:8000/app_dev.php/lucky/number/9
+
+ブラウザでページの HTML ソースコードを見てみてください。`base.html.twig` のおかげで、HTML の基本構造を得ることが出来ています。
+
+これは、まだ、Twig のパワーの表面的な物に過ぎません。
+配列のループや他のテンプレートの表示、その他のクールな機能をマスターする準備ができたら、[テンプレート](/doc/book/templating)の章を読んでください。
+
+
 
 ## プロジェクトの探索
 
+あなたは既に、柔軟な URL を作成し、継承を使ってテンプレートを表示しました。そして、JSON のエンドポイントも作成しました。ナイス！
+
+プロジェクト内のファイルを探索し、分かりやすく説明する時が来ました。
+あなたは既に２つの最も重要なディレクトリの中で作業しました。
+
+- `app/`
+ - 設定やテンプレートを格納しています。基本的に PHP コードはここにはありません。
+- `src/`
+ - あなたの PHP コードはここに格納します。
+
+99% の時間は、`src/` か `app/` で仕事をするでしょう。
+あなたがより高度になるにつれ、これらの中で何ができるのかを学んでいくでしょう。
+
+`app/` ディレクトリはまた、いくつか他の物も保持しています。例えば `app/AppKernel.php` です。
+これは、あなたが新しいバンドルを有効にする為に使います。（これは、`app/` 内にある、非常に短い PHP ファイルのリストの１つです。）
+
+`src/` ディレクトリは、`src/AppBundle` ディレクトリだけを持っています。全てがその中にあります。
+バンドルはプラグインのようなものです。そして、あなたは[オープンソースのバンドル](http://knpbundles.com/) を探すことができ、それらをプロジェクトに追加することができます。あなたが書くコードもバンドルに含まれ、一般的には *AppBundle* に含めます。複数のバンドルを作成する理由や（ヒント：複数のプロジェクト間でコードを共有する）、詳細を調べるには、[バンドル](/doc/book/bundles) の章を参照してください。
+
+プロジェクト内の別のディレクトリはどうでしょう？
+
+- `web/`
+ - これはプロジェクトの為のドキュメントルートです。CSS や画像、アプリケーションを実行する Symfony のフロントコントローラ（`app_dev.php` と `app.php`）のような公開されてアクセスが可能な全てのファイルを含みます。
+- `tests/`
+ - アプリケーションの自動テストをここに格納します
+- `bin/`
+ - バイナリファイルを格納します。最も重要なのが `console` ファイルです。Symfony のコマンドは `console` を介して実行されます。
+- `var/`
+ - キャッシュ（`var/cache/`）やログ（`var/logs/`）といった自動的に生成されるファイルを格納します。
+- `vendor/`
+ - サードパーティ製のライブラリやパッケージ、バンドルが [Composer](https://getcomposer.org/) によってここにダウンロードされます。このディレクトリ内の物は変更してはいけません。
+
+Symfony は柔軟です。必要であれば、デフォルトのディレクトリ構造を簡単に上書きすることができます。詳細は[Symfony のデフォルトディレクトリ構造を上書きする方法](/doc/cookbook/configuration/override_dir_structure)を参照してください。
+ 
+
+ 
+
+
+
 ## アプリケーションの設定
+
+Symfony にはいくつかの組み込みバンドルが付属しています。（`app/AppKernel.php` ファイルを開けてみてください）
+そして、恐らく、更にインストールすることになるでしょう。
+バンドルのメイン設定ファイルは `app/config/config.yml` です。
+
+<tabs>
+  * [YAML](#tab3-yaml)
+  * [XML](#tab3-xml)
+  * [PHP](#tab3-php)
+
+<pane id="tab3-yaml">
+<code yml>
+# app/config/config.yml
+
+# ...
+framework:
+    secret: '%secret%'
+    router:
+        resource: '%kernel.root_dir%/config/routing.yml'
+    # ...
+
+twig:
+    debug:            '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+
+# ...
+</code>
+</pane>
+
+<pane id="tab3-xml">
+<code xml>
+<!-- app/config/config.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xmlns:twig="http://symfony.com/schema/dic/twig"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd
+        http://symfony.com/schema/dic/symfony
+        http://symfony.com/schema/dic/symfony/symfony-1.0.xsd
+        http://symfony.com/schema/dic/twig
+        http://symfony.com/schema/dic/twig/twig-1.0.xsd">
+
+    <!-- ... -->
+
+    <framework:config secret="%secret%">
+        <framework:router resource="%kernel.root_dir%/config/routing.xml" />
+        <!-- ... -->
+    </framework:config>
+
+    <!-- Twig Configuration -->
+    <twig:config debug="%kernel.debug%" strict-variables="%kernel.debug%" />
+
+    <!-- ... -->
+</container>
+</code>
+</pane>
+
+<pane id="tab3-php">
+<code php>
+// app/config/config.php
+// ...
+
+$container->loadFromExtension('framework', array(
+    'secret' => '%secret%',
+    'router' => array(
+        'resource' => '%kernel.root_dir%/config/routing.php',
+    ),
+    // ...
+));
+
+// Twig Configuration
+$container->loadFromExtension('twig', array(
+    'debug'            => '%kernel.debug%',
+    'strict_variables' => '%kernel.debug%',
+));
+
+// ...
+</code>
+</pane>
+
+</tabs>
+
+`framework` キーは FrameworkBundle を設定し、`twig` キーは TwigBundle を設定します。
+Symfony の振る舞いの多くは、この設定ファイル内の１つのオプションを変更することによって、制御されます。
+詳しくは[設定リファレンス](http://symfony.com/doc/current/reference/index.html)を参照してください。
+
+もしくは、便利な `bin/console` コマンドを使って、キー以下の全ての有効な設定のダンプを取得します。
+
+```
+$ php bin/console config:dump-reference framework
+```
+
+Symfony の設定システムには、環境のインクルードやインポート、パラメータ等、もっと多くの機能があります。
+詳細は[設定](/doc/book/configuration)の章を参照してください。
+
 
 ## 次は何を？
 
+おめでとうございます！
+あなたは Symfony を習得しはじめました。
+そして、機能的で、速く、メンテナンス性の高いアプリケーションの新しい構築方法全体を学び始めました。
 
+以下の章を読んで、基本の習得を追える時が来ました
+
+- [コントローラ](/doc/book/controller)
+- [ルーティング](/doc/book/routing)
+- [テンプレートの作成と使用](/doc/book/templating)
+
+そして、[Symfoy ブック](/doc/book/index)で[サービスコンテナ](/doc/book/service_container)や[フォーム](/doc/book/forms)、[Doctrine](/doc/book/doctrine)等を学びます。
+
+また、より高度で、多くの問題を解決する "How To" 記事が詰まった、[クックブック](/doc/cookbook/index)もあります。
+
+楽しんでください！

@@ -1,0 +1,330 @@
+# Markdown書式
+
+当サイトは[Dokuwiki](https://www.dokuwiki.org/ja:dokuwiki)にMarkdownプラグインをインストールして構築しています。その為、Wiki書式とMarkdown書式の両方が使えるのですが、**Markdown書式をメインとします**。Markdownプラグインが提供していない機能で必要なものはWiki表記で補うこととします。
+
+- Markdown書式をメインとする
+- 一部、Wiki書式で補う
+
+
+## ブロック要素
+
+### 段落
+
+段落は空行で分けます。
+
+以下のように記述すると
+```
+段落１
+段落１
+
+段落２
+```
+
+以下のように表示されます
+
+---
+
+段落１
+段落１
+
+段落２
+
+---
+
+※ 段落を変えずに改行したい場合は行末にスペースを２つ入れます。
+
+
+### ヘッダ
+
+以下のように記述します。
+
+```
+# ヘッダ１
+## ヘッダ２
+### ヘッダ３
+#### ヘッダ４
+```
+
+### 引用
+
+以下のように記述すると
+
+```
+> 引用１
+> 引用２
+> 
+> 引用３
+>
+>
+> 引用４
+```
+
+以下のように表示されます。
+
+> 引用１
+> 引用２
+> 
+> 引用３
+>
+>
+> 引用４
+
+
+### 箇条書き
+
+以下のように書くと
+
+```
+- 箇条書き１
+- 箇条書き２
+ - 箇条書き２１
+```
+
+以下のように表示されます
+
+- 箇条書き１
+- 箇条書き２
+ - 箇条書き２１
+
+
+### コード
+
+以下のように書くと
+
+> ```
+> 
+> コード１
+> 
+> コード２
+> 
+> ```
+
+以下のように表示されます
+
+```
+コード１
+コード２
+```
+
+
+### 水平線
+
+以下のように書くと
+
+```
+- - -
+---
+***
+```
+
+以下のように表示されます
+
+- - -
+---
+***
+
+
+## 範囲要素
+
+### リンク
+
+以下の様に書くと
+
+```
+- [外部リンク](https://www.google.co.jp)
+- [内部リンク](/doc/book/installation)
+- [内部リンク（アンカー付き）](/doc/book/installation#アプリケーションの作成)
+- [ページ内リンク（アンカー）](#ブロック要素)
+```
+
+以下のように表示されます
+
+---
+
+- [外部リンク](https://www.google.co.jp)
+- [内部リンク](/doc/book/installation)
+- [内部リンク（アンカー付き）](/doc/book/installation#アプリケーションの作成)
+- [ページ内リンク（アンカー）](#ブロック要素)
+
+---
+
+### 強調
+
+以下のように書くと
+
+```
+ここが**重要**です
+
+ここが*斜体*です
+```
+
+以下のように表示されます
+
+- - -
+
+ここが**重要**です
+
+ここが*斜体*です
+
+- - -
+
+### コード
+
+以下のように書くと
+
+```
+文章の途中でも`ソースコード`が書けます
+```
+
+以下のように表示されます
+
+- - -
+文章の途中でも`ソースコード`が書けます
+- - -
+
+### 画像
+
+以下のように書くと
+
+```
+![SymfonyのBook](https://symfony.com/images/common/picto/learn_symfony_cookbook.png)
+```
+
+以下のように表示されます
+
+![SymfonyのBook](https://symfony.com/images/common/picto/learn_symfony_cookbook.png)
+
+## Wiki書式
+
+### ソースコード
+
+DokuwikiのMarkdownプラグインではSyntaxハイライト表示をしてくれないので、Wiki書式で補います。
+`php`, `twig`, `yaml`, `xml`等のプログラム言語のソースコードを表示する所で使います。
+
+以下のように記述すると
+
+```
+<code php>
+    ...
+</code>
+```
+
+以下のように表示されます
+
+<code php>
+// src/AppBundle/Controller/LuckyController.php
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Response;
+
+class LuckyController
+{
+    /**
+     * @Route("/lucky/number")
+     */
+    public function numberAction()
+    {
+        $number = rand(0, 100);
+
+        return new Response(
+            '<html><body>Lucky number: '.$number.'</body></html>'
+        );
+    }
+}
+</code>
+
+### 表
+
+DokuwikiのMarkdownプラグインでは表を表示してくれないので、Wiki書式で補います。
+
+以下のように書くと
+
+```
+^ヘッダ左寄せ  ^  ヘッダ中央  ^  ヘッダ右詰め^
+|項目左寄せ    |   項目中央   |   項目右寄せ|   
+|左寄せ（デフォルト）|左寄せ（デフォルト）|左寄せ（デフォルト）|
+```
+
+以下のように表示されます
+
+^ヘッダ左寄せ  ^  ヘッダ中央  ^  ヘッダ右詰め^
+|項目左寄せ    |   項目中央   |   項目右寄せ|   
+|左寄せ（デフォルト）|左寄せ（デフォルト）|左寄せ（デフォルト）|
+
+
+- ヘッダー行のセパレータは`^`を使います
+- 通常の行のセパレータは`|`を使います
+- 項目はデフォルトで左寄せです
+- 項目を右寄せにしたい場合は値の左にスペースを２つ入れます
+- 項目をセンタリングしたい場合は値の左右にスペースを２つ入れます
+
+
+
+### タブパネル
+
+以下のように書くと
+
+```
+<tabs>
+  * [Twig](#tab-twig)
+  * [PHP](#tab-php)
+
+<pane id="tab-twig">
+<code twig>
+{# app/Resources/views/lucky/number.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Lucky Numbers: {{ luckyNumberList }}</h1>
+{% endblock %}
+</code>
+</pane>
+
+<pane id="tab-php">
+<code php>
+<!-- app/Resources/views/lucky/number.html.php -->
+<?php $view->extend('base.html.php') ?>
+
+<?php $view['slots']->start('body') ?>
+    <h1>Lucky Numbers: <?php echo $view->escape($luckyNumberList) ?>
+<?php $view['slots']->stop() ?>
+</code>
+</pane>
+
+</tabs>
+```
+
+- アスタリスク `*` の前にはスペースが２つ必要です。
+- １ページに複数タブパネルを配置する場合は `#xxxxx` や `id="xxxxx"` がページ内でユニークになるように命名してください。
+
+
+以下のように表示されます
+
+<tabs>
+  * [Twig](#tab-twig)
+  * [PHP](#tab-php)
+
+<pane id="tab-twig">
+<code twig>
+{# app/Resources/views/lucky/number.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Lucky Numbers: {{ luckyNumberList }}</h1>
+{% endblock %}
+</code>
+</pane>
+ 
+<pane id="tab-php">
+<code php>
+<!-- app/Resources/views/lucky/number.html.php -->
+<?php $view->extend('base.html.php') ?>
+
+<?php $view['slots']->start('body') ?>
+    <h1>Lucky Numbers: <?php echo $view->escape($luckyNumberList) ?>
+<?php $view['slots']->stop() ?>
+</code>
+</pane>
+
+</tabs>

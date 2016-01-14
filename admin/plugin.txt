@@ -1,0 +1,13 @@
+# Plugin
+
+すぐに忘れてしまうプラグイン関連の URL
+
+## SyntaxHighlightJS
+
+- https://www.dokuwiki.org/plugin:syntaxhighlightjs
+- https://highlightjs.org/
+
+## Bootstrap Wrapper Plugin
+
+- https://www.dokuwiki.org/plugin:bootswrapper
+- http://www.lotar.altervista.org/dokuwiki/wiki/plugin/bootswrapper

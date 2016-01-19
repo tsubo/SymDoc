@@ -1,10 +1,10 @@
-# Book
+# Symfony Book
 
 - [Symfony and HTTP Fundamentals](/doc/book/http_fundamentals)
 - [Symfony versus Flat PHP](/doc/book/from_flat_php_to_symfony)
 - [Symfony のインストールと設定](/doc/book/installation)
 - [Symfony での最初のページ作成](/doc/book/page_creation)
-- [Controller](/doc/book/controller)
+- [コントローラ](/doc/book/controller)
 - [Routing](/doc/book/routing)
 - [Creating and Using Templates](/doc/book/templating)
 - [Configuring Symfony (and Environments)](/doc/book/configuration)

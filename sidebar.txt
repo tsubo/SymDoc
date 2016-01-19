@@ -1,18 +1,22 @@
 
-- [ホーム](/)
-- [クイックツアー](/doc/quick_tour/index)
-- [Book](/doc/book/index)
-- [Best Practices](/doc/best_practices/index)
-- [Cookbook](/doc/cookbook/index)
-- [Bundles](/doc/bundles/index)
+- {{fa>home}} [ホーム](/)
 
 ---
 
-- [文章の編集方法](/guide/howto_edit)
-- [Markdown書式](/guide/syntax)
-- [スニペット](/guide/snippet)
-- [ディレクトリ構成](/guide/directory_structure)
-- [スタイルガイド](/guide/style_guide)
+// ドキュメントメニュー
+{{page>/doc/start&noheader&nofooter}}
+
+// ドキュメントサブメニュー
+<WRAP menu>
+{{nsnote>start&exclude=start,help:start,user:start}}
+</WRAP>
+
+---
+
+// ヘルプナビゲーション
+{{navi>/help/navi_menu}}
+
+- [お問い合わせ](/contact)
 
 ---
 
@@ -20,4 +24,8 @@
 
 ---
 
-{{page>ad&nofooter}}
+// バナー
+<WRAP banner>
+{{pagenote}}
+</WRAP>
+

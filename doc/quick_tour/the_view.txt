@@ -222,13 +222,15 @@ class DefaultController extends Controller
 
 `path` 関数は最初の引数にルート名を受け取ります。また、オプションとして第２引数にルートパラメータの配列を渡すことができます。
 
-- - -
+<well>
+<WRAP hint></WRAP>
+
 `url` 関数は `path` 関数にとても似ていますが、こちらは絶対パスの URL を生成します。email や RSS を表示する時にとても便利です。
 
 <code twig>
 <a href="{{ url('homepage') }}">Visit our website</a>.
 </code>
-- - -
+</well>
 
 
 

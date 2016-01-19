@@ -18,4 +18,6 @@
 </col>
 </grid>
 
-文章は[Markdown書式](/guide/syntax)で記述します。
+- 文章は[Markdown書式](/help/syntax)で記述します。
+- ユーザー登録やログインは不要です。
+

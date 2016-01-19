@@ -5,28 +5,28 @@
 ```
 doc                                 # 3.0 version
 ├── best_practices/
-│   ├── index
+│   ├── start                      # start は index.html 相当
 │   └── ...
 ├── book/
-│   ├── index
+│   ├── start
 │   ├── bundles
 │   └── ...
 ├── bundles/
-│   ├── index
+│   ├── start
 │   └── ...
 ├── cookbook/
 │   ├── assetic/
-│   │   ├── index
+│   │   ├── start
 │   │   └── ...
 │   ├── bundles/
 │   ├── configuration/
 │   ├── controller/
 │   ├── workflow/
-│   ├── index
+│   ├── start
 │   ├── composer
 │   └── ...
 └── quick_tour/
-     ├── index
+     ├── start
      ├── the_architecture
      ├── the_big_picture
      ├── the_controller
@@ -35,6 +35,7 @@ doc                                 # 3.0 version
 
 - ディレクトリ構成は、公式サイトの構成からバージョンディレクトリを取り除いた物とします。
 - Wiki ファイル名は、公式サイトの HTML ファイル名から拡張子を除いた物とします。
+- `start` ファイルは、公式サイトの `index.html` と同等の物です。
 - 当サイトで取り扱うドキュメントのバージョンは、公式サイトの current とし、現在は 3.0 version です。
 
 

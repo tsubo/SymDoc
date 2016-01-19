@@ -10,20 +10,20 @@ Symfonyアプリケーションの依存性の管理やプロジェクトへの�
 
 次のように２つのコマンドを実行します。
 
-```
+<code bash>
 $ curl -sS https://getcomposer.org/installer | php
 $ sudo mv composer.phar /usr/local/bin/composer
-```
+</code>
 
 > もし curl コマンドが使用できない場合は、
 > https://getcomposer.org/installer から、
 > installerファイルを手動でダウンロードして、実行します。
 
 
-```
+<code bash>
 $ php installer
 $ sudo mv composer.phar /usr/local/bin/composer
-```
+</code>
 
 ## WindowsへのComposerのインストール
 

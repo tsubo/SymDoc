@@ -4,39 +4,44 @@
 ぜひ、皆さんのお力をお貸し下さい。
 
 - Symfony v3.0 が対象です。
-- **どなたでも、[すぐに編集](#文章の編集方法)が可能です。**
-- ドキュメントは [Markdown 書式](/guide/syntax)で記述します。
-
-## クイックツアーの翻訳完了！
-
-[クイックツアー](/doc/quick_tour/index)の翻訳が完了しました。ご協力ありがとうございました。
-
+- どなたでも、**[すぐに編集](#文章の編集方法)**が可能です。
+- ドキュメントは [Markdown 書式](/help/syntax)で記述します。
 
 ## Book の翻訳者募集中！
 
-現在、[Book](https://symfony.com/doc/current/book/index.html) の**翻訳ボランティアを募集中**です。  
-1人1ページで**19人の有志**が必要です。
+<grid>
+
+<col md="6">
 
 - Symfony コミュニティへの貢献として
 - 自分の理解を深めるため
 - 新人研修の課題として
 - IT翻訳の腕試してして
 
-ぜひ、ご協力ください。  
+1人1ページで**19人の有志**が必要です。  
+ぜひ、ご協力ください。
 
+**[バナー表示キャンペーン](/help/banner)**実施中！  
+</col>
+
+<col md="6">
 <gchart 350x120 pie3d #008000 #ffffff left "進捗率">
-完了 = 2
+完了 = 3
 翻訳中 = 1
-募集中 = 16
+募集中 = 15
 </gchart>
+</col>
 
-^目次 ^  募集中/翻訳中/完了  ^備考 ^
+</grid>
+
+
+^目次 ^  募集中/翻訳中/完了  ^備考（翻訳者名等） ^
 |[Symfony and HTTP Fundamentals](/doc/book/http_fundamentals)|  募集中  | |
 |[Symfony versus Flat PHP](/doc/book/from_flat_php_to_symfony)|  募集中  | |
 |[Symfony のインストールと設定](/doc/book/installation)|  完了  | |
 |[Symfony での最初のページ作成](/doc/book/page_creation)|  完了  |  |
-|[コントローラ](/doc/book/controller)|  翻訳中  | tsubo |
-|[Routing](/doc/book/routing)|  募集中  | |
+|[コントローラ](/doc/book/controller)|  完了  |  |
+|[ルーティング](/doc/book/routing)|  翻訳中  | tsubo |
 |[Creating and Using Templates](/doc/book/templating)|  募集中  | |
 |[Configuring Symfony (and Environments)](/doc/book/configuration)|  募集中  | |
 |[The Bundle System](/doc/book/bundles)|  募集中  | |
@@ -54,5 +59,5 @@
 
 ## 文章の編集方法
 
-{{page>/guide/howto_edit&noheader}}
+{{page>/help/howto_edit&noheader}}
 

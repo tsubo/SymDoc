@@ -1,4 +1,4 @@
-# クイックツアー
+# Symfony クイックツアー
 
 - [Symfony の全体像](/doc/quick_tour/the_big_picture)
 - [ビュー](/doc/quick_tour/the_view)

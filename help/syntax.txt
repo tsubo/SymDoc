@@ -87,23 +87,23 @@
  - 箇条書き２１
 
 
-### コード
+### ブロック
 
 以下のように書くと
 
 > ```
 > 
-> コード１
+> 文章１
 > 
-> コード２
+> 文章２
 > 
 > ```
 
 以下のように表示されます
 
 ```
-コード１
-コード２
+文章１
+文章２
 ```
 
 
@@ -194,12 +194,13 @@
 
 ![SymfonyのBook](https://symfony.com/images/common/picto/learn_symfony_cookbook.png)
 
+
 ## Wiki書式
 
 ### ソースコード
 
 DokuwikiのMarkdownプラグインではSyntaxハイライト表示をしてくれないので、Wiki書式で補います。
-`php`, `twig`, `yaml`, `xml`等のプログラム言語のソースコードを表示する所で使います。
+`php`, `twig`, `yml`, `xml`, `bash`等のプログラム言語のソースコードを表示する所で使います。
 
 以下のように記述すると
 
@@ -234,6 +235,104 @@ class LuckyController
 }
 </code>
 
+### 注意書き
+
+以下のように書くと
+
+```
+<well>
+<WRAP note></WRAP>
+
+ここに文章を書きます。[リンク](http://google.com)も効きます。
+</well>
+```
+
+以下のように表示されます
+
+<well>
+<WRAP note></WRAP>
+
+ここに文章を書きます。[リンク](http://google.com)も効きます。
+</well>
+
+以下のように書くと
+
+```
+<well><WRAP note></WRAP>注釈</well>
+<well><WRAP hint></WRAP>ヒント</well>
+<well><WRAP ref></WRAP>関連</well>
+<well><WRAP addon></WRAP>補足</well>
+```
+
+以下のように表示されます
+
+<well><WRAP note></WRAP>注釈</well>
+<well><WRAP hint></WRAP>ヒント</well>
+<well><WRAP ref></WRAP>関連</well>
+<well><WRAP addon></WRAP>補足</well>
+
+
+### タブパネル
+
+以下のように書くと
+
+```
+<tabs>
+  * [Twig](#tab-twig)
+  * [PHP](#tab-php)
+
+<pane id="tab-twig"><code twig>
+{# app/Resources/views/lucky/number.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Lucky Numbers: {{ luckyNumberList }}</h1>
+{% endblock %}
+</code></pane>
+
+<pane id="tab-php"><code php>
+<!-- app/Resources/views/lucky/number.html.php -->
+<?php $view->extend('base.html.php') ?>
+
+<?php $view['slots']->start('body') ?>
+    <h1>Lucky Numbers: <?php echo $view->escape($luckyNumberList) ?>
+<?php $view['slots']->stop() ?>
+</code></pane>
+
+</tabs>
+```
+
+- アスタリスク `*` の前にはスペースが２つ必要です。
+- １ページに複数タブパネルを配置する場合は `#xxxxx` や `id="xxxxx"` がページ内でユニークになるように命名してください。
+
+
+以下のように表示されます
+
+<tabs>
+  * [Twig](#tab-twig)
+  * [PHP](#tab-php)
+
+<pane id="tab-twig"><code twig>
+{# app/Resources/views/lucky/number.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Lucky Numbers: {{ luckyNumberList }}</h1>
+{% endblock %}
+</code></pane>
+
+<pane id="tab-php"><code php>
+<!-- app/Resources/views/lucky/number.html.php -->
+<?php $view->extend('base.html.php') ?>
+
+<?php $view['slots']->start('body') ?>
+    <h1>Lucky Numbers: <?php echo $view->escape($luckyNumberList) ?>
+<?php $view['slots']->stop() ?>
+</code></pane>
+
+</tabs>
+
+
 ### 表
 
 DokuwikiのMarkdownプラグインでは表を表示してくれないので、Wiki書式で補います。
@@ -259,72 +358,24 @@ DokuwikiのMarkdownプラグインでは表を表示してくれないので、W
 - 項目を右寄せにしたい場合は値の左にスペースを２つ入れます
 - 項目をセンタリングしたい場合は値の左右にスペースを２つ入れます
 
+### 画像のリンク
 
-
-### タブパネル
+DokuwikiのMarkdownプラグインでは画像のリンクが出来ないので、Wiki書式で補います。  
+当サイトのドキュメントでは、あまり使う必要はないと思いますが...
 
 以下のように書くと
 
 ```
-<tabs>
-  * [Twig](#tab-twig)
-  * [PHP](#tab-php)
-
-<pane id="tab-twig">
-<code twig>
-{# app/Resources/views/lucky/number.html.twig #}
-{% extends 'base.html.twig' %}
-
-{% block body %}
-    <h1>Lucky Numbers: {{ luckyNumberList }}</h1>
-{% endblock %}
-</code>
-</pane>
-
-<pane id="tab-php">
-<code php>
-<!-- app/Resources/views/lucky/number.html.php -->
-<?php $view->extend('base.html.php') ?>
-
-<?php $view['slots']->start('body') ?>
-    <h1>Lucky Numbers: <?php echo $view->escape($luckyNumberList) ?>
-<?php $view['slots']->stop() ?>
-</code>
-</pane>
-
-</tabs>
+[[http://www.symfony.com|{{https://symfony.com/images/common/picto/learn_symfony_cookbook.png}}]]
 ```
-
-- アスタリスク `*` の前にはスペースが２つ必要です。
-- １ページに複数タブパネルを配置する場合は `#xxxxx` や `id="xxxxx"` がページ内でユニークになるように命名してください。
-
 
 以下のように表示されます
 
-<tabs>
-  * [Twig](#tab-twig)
-  * [PHP](#tab-php)
+[[http://www.symfony.com|{{https://symfony.com/images/common/picto/learn_symfony_cookbook.png}}]]
 
-<pane id="tab-twig">
-<code twig>
-{# app/Resources/views/lucky/number.html.twig #}
-{% extends 'base.html.twig' %}
+## その他
 
-{% block body %}
-    <h1>Lucky Numbers: {{ luckyNumberList }}</h1>
-{% endblock %}
-</code>
-</pane>
- 
-<pane id="tab-php">
-<code php>
-<!-- app/Resources/views/lucky/number.html.php -->
-<?php $view->extend('base.html.php') ?>
+- [スニペットページ](/help/snippets) - ちょっと複雑な書式をコピペして使えます
+- [スタイルガイド](/help/style)
 
-<?php $view['slots']->start('body') ?>
-    <h1>Lucky Numbers: <?php echo $view->escape($luckyNumberList) ?>
-<?php $view['slots']->stop() ?>
-</code>
-</pane>
 
-</tabs>

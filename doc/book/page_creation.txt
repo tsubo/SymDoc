@@ -11,14 +11,22 @@
 ちょうど、ウェブ上と同じように、全てのやり取りは HTTP リクエストによって開始されます。
 あなたの仕事は純粋でシンプルです。そのリクエストを理解してレスポンスを返すことです。
 
+<well>
+<WRAP ref></WRAP>
+
+ビデオチュートリあるがお好みでしたら、KnpUniversity のスクリーンキャストシリーズ「[Symfony で楽しい開発](http://knpuniversity.com/screencast/symfony)」をチェックしてください。
+</well>
+
 
 
 ## ページの作成：ルートとコントローラ
 
-- - -
+<well>
+<WRAP hint></WRAP>
+
 先に進む前に、[インストール](/doc/book/installation)の章を読んだか確認してください。
 そして、ブラウザで新しい Symfony のアプリケーションにアクセス出来ることを確認してください。
-- - -
+</well>
 
 あなたが、ラッキーナンバーを生成して表示する `/lucky/number` ページを作成したいと仮定します。
 それを行うには、クラスを作成し、誰かが `/lucky/number` に来た時に実行されるメソッドをそのクラスの中に作成します。
@@ -50,11 +58,13 @@ class LuckyController
 
 http://localhost:8000/app_dev.php/lucky/number
 
-- - -
+<well>
+<WRAP hint></WRAP>
+
 もし、[Apache や Nginx](/doc/cookbook/configuration/web_server_configuration) のヴァーチャルホストが適切に設定されているなら、
 `http://localhost:8000` をホスト名に置き換えてください。
 例、`http://symfony.dev/app_dev.php/lucky/number`
-- - -
+</well>
 
 ラッキーナンバーを見ることができたら、おめでとうございます。宝くじを買いに走る前に、これがどの様に動いたかをチェックしてください。
 
@@ -62,7 +72,9 @@ http://localhost:8000/app_dev.php/lucky/number
 
 アノテーションの下の `numberAction` メソッドはコントローラと呼ばれ、あなたがページを構築する場所になります。コントローラの唯一のルールは Symfony のレスポンスオブジェクトを返さなければならないことです。（そして、最終的にこのルールを曲げる方法も学ぶでしょう）
 
-- - -
+<well>
+<WRAP addon></WRAP>
+
 ** URL 内の `app_dev.php` とは何でしょう？ **
 
 良い質問です。URL 内に `app_dev.php` を含むことによって、あなたは `web/app_dev.php` ファイルを通して Symfony を実行しています。
@@ -70,9 +82,8 @@ http://localhost:8000/app_dev.php/lucky/number
 本番運用環境では、`http://localhost:8000/lucky/number` のようなクリーンな URL を使うことになるでしょう。
 この URL は別の `web/app.php` ファイルを実行します。このファイルはスピードに最適化されています。
 詳しくは[環境](/doc/book/configuration#book-page-creation-prod-cache-clear)を参照してください。
+</well>
 
-
-- - -
 
 ### JSON レスポンスの作成
 
@@ -351,9 +362,12 @@ public function numberAction($count)
 
 これらのショートカットメソッドをもっと知るには[コントローラ](/doc/book/controller)の章を参照してください。
 
-- - -
+<well>
+<WRAP hint></WRAP>
+
 より高度なユーザーの為に、[サービスとしてコントローラを登録する方法](/doc/cookbook/controller/service)もあります
-- - -
+</well>
+
 
 
 ### テンプレートの作成
@@ -444,9 +458,11 @@ http://localhost:8000/app_dev.php/lucky/number/9
 - `vendor/`
  - サードパーティ製のライブラリやパッケージ、バンドルが [Composer](https://getcomposer.org/) によってここにダウンロードされます。このディレクトリ内の物は変更してはいけません。
 
-Symfony は柔軟です。必要であれば、デフォルトのディレクトリ構造を簡単に上書きすることができます。詳細は[Symfony のデフォルトディレクトリ構造を上書きする方法](/doc/cookbook/configuration/override_dir_structure)を参照してください。
- 
+<well>
+<WRAP ref></WRAP>
 
+Symfony は柔軟です。必要であれば、デフォルトのディレクトリ構造を簡単に上書きすることができます。詳細は [Symfony のデフォルトディレクトリ構造を上書きする方法](/doc/cookbook/configuration/override_dir_structure)を参照してください。
+</well>
  
 
 
@@ -542,9 +558,9 @@ Symfony の振る舞いの多くは、この設定ファイル内の１つのオ
 
 もしくは、便利な `bin/console` コマンドを使って、キー以下の全ての有効な設定のダンプを取得します。
 
-```
+<code bash>
 $ php bin/console config:dump-reference framework
-```
+</code>
 
 Symfony の設定システムには、環境のインクルードやインポート、パラメータ等、もっと多くの機能があります。
 詳細は[設定](/doc/book/configuration)の章を参照してください。
@@ -562,8 +578,8 @@ Symfony の設定システムには、環境のインクルードやインポー
 - [ルーティング](/doc/book/routing)
 - [テンプレートの作成と使用](/doc/book/templating)
 
-そして、[Symfoy ブック](/doc/book/index)で[サービスコンテナ](/doc/book/service_container)や[フォーム](/doc/book/forms)、[Doctrine](/doc/book/doctrine)等を学びます。
+そして、[Symfoy ブック](/doc/book/start)で[サービスコンテナ](/doc/book/service_container)や[フォーム](/doc/book/forms)、[Doctrine](/doc/book/doctrine)等を学びます。
 
-また、より高度で、多くの問題を解決する "How To" 記事が詰まった、[クックブック](/doc/cookbook/index)もあります。
+また、より高度で、多くの問題を解決する "How To" 記事が詰まった、[クックブック](/doc/cookbook/start)もあります。
 
 楽しんでください！

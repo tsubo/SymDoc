@@ -3,12 +3,17 @@
 
 ---
 
-// ドキュメントメニュー
-{{page>/doc/start&noheader&nofooter}}
+- [クイックツアー](/doc/quick_tour/start)
+- [Book](/doc/book/start)
+- [Best Practices](/doc/best_practices/start)
+- [Cookbook](/doc/cookbook/start)
+- [Bundles](/doc/bundles/start)
 
-// ドキュメントサブメニュー
+- [Components](https://symfony.com/doc/current/components/index.html)
+- [Reference](https://symfony.com/doc/current/reference/index.html)
+
 <WRAP menu>
-{{nsnote>start&exclude=start,help:start,user:start}}
+{{nsindex>sub_menu}}
 </WRAP>
 
 ---
@@ -24,8 +29,8 @@
 
 ---
 
-// バナー
 <WRAP banner>
-{{pagenote}}
+{{adinclude}}
 </WRAP>
 
+{{page>admin:topuser&nofooter}}

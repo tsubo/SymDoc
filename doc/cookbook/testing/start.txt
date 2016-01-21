@@ -1,0 +1,12 @@
+# Recipes about Testing
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^ 
+| [How to Simulate HTTP Authentication in a Functional Test](/doc/cookbook/testing/http_authentication) |  募集中  | | |
+| [How to Simulate Authentication with a Token in a Functional Test](/doc/cookbook/testing/simulating_authentication) |  募集中  | | |
+| [How to Test the Interaction of several Clients](/doc/cookbook/testing/insulating_clients) |  募集中  | | |
+| [How to Use the Profiler in a Functional Test](/doc/cookbook/testing/profiling) |  募集中  | | |
+| [How to Test Code that Interacts with the Database](/doc/cookbook/testing/database) |  募集中  | | |
+| [How to Test Doctrine Repositories](/doc/cookbook/testing/doctrine) |  募集中  | | |
+| [How to Customize the Bootstrap Process before Running Tests](/doc/cookbook/testing/bootstrap) |  募集中  | | |
+| [(email) How to Test that an Email is Sent in a Functional Test](/doc/cookbook/email/testing) |  募集中  | | |
+| [(form) How to Unit Test your Forms](/doc/cookbook/form/unit_testing) |  募集中  | | |

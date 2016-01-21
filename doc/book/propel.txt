@@ -1,1 +1,5 @@
-# Databases and Propel
+# データベースと Propel
+
+Propel は[アクティブレコードパターン](https://ja.wikipedia.org/wiki/Active_Record)で実装された、PHPの為の、オープンソースのオブジェクトリレーショナルマッパー（ORM）です。それは、データを保存したり、取得する為の シンプルな API を提供し、オブジェクトを使って、データベースへのアクセスを可能にします。Propel 実行時の属性取得の負荷を軽減する為のコード生成や抽象化層として PDO を使用します。
+
+数年前は、Propel は Doctrine よりも非常に人気がありました。しかし、その人気は休息に減少しています。それが理由で、もはや Symfony のドキュメントに Propel は含まれません。Symfony プロジェクトで Propel を使う方法は、[PropelBundleの公式ドキュメント](https://github.com/propelorm/PropelBundle/blob/1.4/Resources/doc/index.markdown)を参照してください。

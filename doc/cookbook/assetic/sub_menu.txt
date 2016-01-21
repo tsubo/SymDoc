@@ -1,0 +1,8 @@
+# Recipes about Assetic
+
+- [How to Use Assetic for Asset Management](/doc/cookbook/assetic/asset_management)
+- [Combining, Compiling and Minimizing Web Assets with PHP Libraries](/doc/cookbook/assetic/php)
+- [How to Minify CSS/JS Files (Using UglifyJS and UglifyCSS)](/doc/cookbook/assetic/uglifyjs)
+- [How to Minify JavaScripts and Stylesheets with YUI Compressor](/doc/cookbook/assetic/yuicompressor)
+- [How to Use Assetic for Image Optimization with Twig Functions](/doc/cookbook/assetic/jpeg_optimize)
+- [How to Apply an Assetic Filter to a specific File Extension](/doc/cookbook/assetic/apply_to_option)

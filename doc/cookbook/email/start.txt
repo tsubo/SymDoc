@@ -1,0 +1,9 @@
+# Recipies about Email
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Send an Email](/doc/cookbook/email/email) |  募集中  | | |
+| [How to Use Gmail to Send Emails](/doc/cookbook/email/gmail) |  募集中  | | |
+| [How to Use the Cloud to Send Emails](/doc/cookbook/email/cloud) |  募集中  | | |
+| [How to Work with Emails during Development](/doc/cookbook/email/dev_environment) |  募集中  | | |
+| [How to Spool Emails](/doc/cookbook/email/spool) |  募集中  | | |
+| [How to Test that an Email is Sent in a Functional Test](/doc/cookbook/email/testing) |  募集中  | | |

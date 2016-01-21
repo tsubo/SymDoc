@@ -1,0 +1,10 @@
+# Recipes about Console
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Create a Console Command](/doc/cookbook/console/console_command) |  募集中  | | |
+| [How to Use the Console](/doc/cookbook/console/usage) |  募集中  | | |
+| [How to Style a Console Command](/doc/cookbook/console/style) |  募集中  | | |
+| [How to Call a Command from a Controller](/doc/cookbook/console/command_in_controller) |  募集中  | | |
+| [How to Generate URLs and Send Emails from the Console](/doc/cookbook/console/sending_emails) |  募集中  | | |
+| [How to Enable Logging in Console Commands](/doc/cookbook/console/logging) |  募集中  | | |
+| [How to Define Commands as Services](/doc/cookbook/console/commands_as_services) |  募集中  | | |

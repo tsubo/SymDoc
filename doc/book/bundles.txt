@@ -1,1 +1,156 @@
-# The Bundle System
+# バンドルシステム
+
+バンドルは他のソフトウェアのプラグインと同様な物です。しかし、さらに良いです。
+その違いのポイントは、Symfony では、フレームワーク機能のコアから、あなたのアプリケーションの為に書いたコードまで、全てがバンドルだということです。
+バンドルは Symfony において、第一級市民です。これは、あなたが[サードパーティー](http://knpbundles.com/)によってパッケージされた機能を使用したり、自身の バンドルを配布したりする柔軟性を提供します。アプリケーションで有効にする機能を選択したり、あなたが望む方法でそれらを最適化することを簡単に出来るようにしてくれます。
+
+<well>
+<WRAP note></WRAP>
+
+ここで基本を学びますが、詳細は[再利用可能なバンドルのベストプラクティス](/doc/cookbook/bundles/best_practices)を参照してください。
+</well>
+
+バンドルは１つの機能を実装する為にディレクトリ内にシンプルに構成されたファイル群です。
+あたなは、ブログバンドルやフォーラムバンドル、ユーザー管理のためのバンドル等を作ることができます（これらの多くは、オープンソースのバンドルとしてすでに存在しています）。各ディレクトリには、PHPファイル、テンプレート、スタイルシート、JavaScript ファイル、テスト、何か他のものを含め、その機能に関連するすべてのものが含まれています。全ての機能がバンドル内に存在しています。
+
+アプリケーションでバンドルを使用するには、`AppKernel` クラスの `registerBundles()` メソッド内に登録して、有効にする必要があります。
+
+<code php>
+// app/AppKernel.php
+public function registerBundles()
+{
+    $bundles = array(
+        new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+        new Symfony\Bundle\SecurityBundle\SecurityBundle(),
+        new Symfony\Bundle\TwigBundle\TwigBundle(),
+        new Symfony\Bundle\MonologBundle\MonologBundle(),
+        new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
+        new Symfony\Bundle\DoctrineBundle\DoctrineBundle(),
+        new Symfony\Bundle\AsseticBundle\AsseticBundle(),
+        new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+        new AppBundle\AppBundle(),
+    );
+
+    if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+        $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+        $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
+        $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+    }
+
+    return $bundles;
+}
+</code>
+
+`registerBundles()` メソッドを使用すると、アプリケーションで使用されているバンドルを完全にコントロールできます（コア Symfony バンドルを含む）。
+
+<well>
+<WRAP hint></WRAP>
+
+バンドルはオートロード（`app/autoload.php` で設定されたオートローダー経由で）できるのであれば、何処に格納することも可能です。
+</well>
+
+
+## バンドルの作成
+
+Symfony スタンダードエディションには、フル機能のバンドルを作成する為の、便利なツールが付いています。
+もちろん、手動でバンドルを作成することも、とても簡単です。
+
+バンドルシステムがどれだけシンプルかを見せる為に、新たに `AcmeTestBundle` を作成し、それを有効にします。
+
+<well>
+<WRAP hint></WRAP>
+
+`Acme` 部分は単なるダミーの名前です。その部分は、あなたやあなたの組織を表す、ベンダー名で置き換えるべきです。（例、ABC社の場合は、ABCTestBundle）
+</well>
+
+`src/Acme/TestBundle/` ディレクトリを作成し、新規に `AcmeTestBundle.php` ファイルを追加することから始めます。
+
+<code php>
+// src/Acme/TestBundle/AcmeTestBundle.php
+namespace Acme\TestBundle;
+
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+
+class AcmeTestBundle extends Bundle
+{
+}
+</code>
+
+<well>
+<WRAP hint></WRAP>
+
+AcmeTestBundle の名前は、標準的な[バンドル命名規則](/doc/cookbook/bundles/best_practices#bundles-naming-conventions)に従っています。
+</well>
+
+この空のクラスが新しいバンドルを作成する為に必要な唯一の物です。
+このクラスは一般的にからですが、とてもパワフルで、バンドルの振る舞いをカスタマイズする為に使用されます。
+
+では、バンドルを作成したので、`AppKernel` クラスを通して、それを有効化します。
+
+<code php>
+// app/AppKernel.php
+public function registerBundles()
+{
+    $bundles = array(
+        // ...
+
+        // register your bundle
+        new Acme\TestBundle\AcmeTestBundle(),
+    );
+    // ...
+
+    return $bundles;
+}
+</code>
+
+それは、まだ何もしていませんが、AcmeTestBundle を使う準備ができました。
+
+もっと簡単な方法： Symfony はまた、基本的なバンドルの雛形を生成するコマンドラインインターフェースを提供しています。
+
+<code bash>
+$ php bin/console generate:bundle --namespace=Acme/TestBundle
+</code>
+
+このコマンドは、カスタマイズ可能なコントローラやテンプレート、ルーティングを生成します。
+後で Symfony のコマンドラインツールについて詳しく説明します。
+
+<well>
+<WRAP hint></WRAP>
+
+新しいバンドルを作成したり、サードパーティのバンドルを使用するたびに、バンドルが `registerBundles()`で有効になっているか確認してください。
+`generate:bundle` コマンドを使用した時は、この有効化は自動的に行われます。
+</well>
+
+
+
+## バンドルディレクトリ構成
+
+バンドルのディレクトリ構成はシンプルで柔軟です。
+デフォルトでは、バンドルシステムは、全てのバンドル間でコードの一貫性が保たれる様に、一連の規約に従います。
+AcmeDemoBundle を見てみましょう。それは、バンドルの最も一般的な要素のいくつかが含まれています。
+
+- `Controller/`
+ - バンドルのコントローラを格納する。（例、RandomController.php）
+
+- `DependencyInjection/`
+ - サービス設定をインポートでき、コンパイラパスを登録できる、いくつかの依存性注入拡張クラスを格納する。（このディレクトリは必須ではありません。）
+
+- `Resources/config/`
+ - ルーティング設定（例、`routing.yml`）を含む、設定ファイルを格納する。
+
+- `Resources/views/`
+ - コントローラ名で整理された、テンプレートを格納する。（例、`Hello/index.html.twig`）
+
+- `Resources/public/`
+ - アセットファイル（画像、スタイルシート等）を格納する。それらは、`assets:install` コンソールコマンドを使って、プロジェクトの `web/` ディレクトリにコピーされるか、シンボリックリンクされる。
+
+- `Tests/`
+ - バンドルのテストを格納する。
+
+バンドルは実装する機能に応じて、小さくも、大きくもできます。バンドルには必要なファイルのみを格納し、それ以外の物は不要です。
+
+読み進めていくと、データベースへのオブジェクトの保存方法やフォームの作成とバリデーション、翻訳、テストの書き方等を学ぶでしょう。それぞれがバンドルの範囲内で、それ自身の場所と役割を持っています。
+
+
+
+

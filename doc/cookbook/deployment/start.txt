@@ -1,0 +1,7 @@
+# Recipes about Deployment
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Deploy a Symfony Application](/doc/cookbook/deployment/tools) |  募集中  | | |
+| [Deploying to Microsoft Azure Website Cloud](/doc/cookbook/deployment/azure-website) |  募集中  | | |
+| [Deploying to Heroku Cloud](/doc/cookbook/deployment/heroku) |  募集中  | | |
+| [Deploying to Platform.sh](/doc/cookbook/deployment/platformsh) |  募集中  | | |

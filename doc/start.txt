@@ -4,6 +4,6 @@
 - [Book](/doc/book/start)
 - [Best Practices](/doc/best_practices/start)
 - [Cookbook](/doc/cookbook/start)
-- [Components](/doc/components/start)
-- [Bundles](/doc/bundles/start)
+- [Components](https://symfony.com/doc/current/components/index.html)
+- [Bundles](https://symfony.com/doc/bundles/)
 - [Reference](https://symfony.com/doc/current/reference/index.html)

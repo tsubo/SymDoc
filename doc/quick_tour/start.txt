@@ -1,6 +1,7 @@
 # Symfony クイックツアー
 
-- [Symfony の全体像](/doc/quick_tour/the_big_picture)
-- [ビュー](/doc/quick_tour/the_view)
-- [コントローラ](/doc/quick_tour/the_controller)
-- [アーキテクチャ](/doc/quick_tour/the_architecture)
+^   タイトル                                          ^  状態  ^  翻訳更新日   ^  備考  ^
+| [Symfony の全体像](/doc/quick_tour/the_big_picture) |  v3.0   |  2016/01/18  | |
+| [ビュー](/doc/quick_tour/the_view)                  |  v3.0   |  2016/01/18  | |
+| [コントローラ](/doc/quick_tour/the_controller)      |  v3.0   |  2016/01/12  | |
+| [アーキテクチャ](/doc/quick_tour/the_architecture)  |  v3.0   |  2016/01/16  | |

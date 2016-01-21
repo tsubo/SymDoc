@@ -1,0 +1,5 @@
+# Recipes about Web Server
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Use PHP's built-in Web Server](/doc/cookbook/web_server/built_in) |  募集中  | | |
+| [(configuration) Configuring a Web Server](/doc/cookbook/configuration/web_server_configuration) |  募集中  | | |

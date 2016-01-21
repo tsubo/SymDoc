@@ -1,0 +1,6 @@
+# Recipes about Service Container
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Define Non Shared Services](/doc/cookbook/service_container/shared) |  募集中  | | |
+| [How to Work with Compiler Passes in Bundles](/doc/cookbook/service_container/compiler_passes) |  募集中  | | |
+| [(Event Dispatcher) How to Create Event Listeners and Subscribers](/doc/cookbook/event_dispatcher/event_listener) |  募集中  | | |

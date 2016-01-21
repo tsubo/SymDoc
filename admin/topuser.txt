@@ -1,0 +1,2 @@
+
+{{topusers>auto&top=10}}

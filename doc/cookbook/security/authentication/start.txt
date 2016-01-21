@@ -1,0 +1,20 @@
+# Recipes about Security Authentication
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Build a Traditional Login Form](/doc/cookbook/security/form_login_setup) |  募集中  | | |
+| [How to Load Security Users from the Database (the Entity Provider)](/doc/cookbook/security/entity_provider) |  募集中  | | |
+| [How to Create a Custom Authentication System with Guard](/doc/cookbook/security/guard-authentication) |  募集中  | | |
+| [How to Add &quot;Remember Me&quot; Login Functionality](/doc/cookbook/security/remember_me) |  募集中  | | |
+| [How to Impersonate a User](/doc/cookbook/security/impersonating_user) |  募集中  | | |
+| [How to Customize your Form Login](/doc/cookbook/security/form_login) |  募集中  | | |
+| [How to Create a custom User Provider](/doc/cookbook/security/custom_provider) |  募集中  | | |
+| [How to Create a Custom Form Password Authenticator](/doc/cookbook/security/custom_password_authenticator) |  募集中  | | |
+| [How to Authenticate Users with API Keys](/doc/cookbook/security/api_key_authentication) |  募集中  | | |
+| [How to Create a custom Authentication Provider](/doc/cookbook/security/custom_authentication_provider) |  募集中  | | |
+| [Using pre Authenticated Security Firewalls](/doc/cookbook/security/pre_authenticated) |  募集中  | | |
+| [How to Change the default Target Path Behavior](/doc/cookbook/security/target_path) |  募集中  | | |
+| [Using CSRF Protection in the Login Form](/doc/cookbook/security/csrf_in_login_form) |  募集中  | | |
+| [How to Choose the Password Encoder Algorithm Dynamically](/doc/cookbook/security/named_encoders) |  募集中  | | |
+| [How to Use multiple User Providers](/doc/cookbook/security/multiple_user_providers) |  募集中  | | |
+| [How to Restrict Firewalls to a Specific Request](/doc/cookbook/security/firewall_restriction) |  募集中  | | |
+| [How to Restrict Firewalls to a Specific Host](/doc/cookbook/security/host_restriction) |  募集中  | | |

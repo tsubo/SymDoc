@@ -1,0 +1,4 @@
+# Recipes about Front-end
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [Using Bower with Symfony](/doc/cookbook/frontend/bower) |  募集中  | | |

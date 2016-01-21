@@ -1,0 +1,11 @@
+# Recipies about Routing
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Force Routes to always Use HTTPS or HTTP](/doc/cookbook/routing/scheme) |  募集中  | | |
+| [How to Allow a &quot;/&quot; Character in a Route Parameter](/doc/cookbook/routing/slash_in_parameter) |  募集中  | | |
+| [How to Configure a Redirect without a custom Controller](/doc/cookbook/routing/redirect_in_config) |  募集中  | | |
+| [How to Use HTTP Methods beyond GET and POST in Routes](/doc/cookbook/routing/method_parameters) |  募集中  | | |
+| [How to Use Service Container Parameters in your Routes](/doc/cookbook/routing/service_container_parameters) |  募集中  | | |
+| [How to Create a custom Route Loader](/doc/cookbook/routing/custom_route_loader) |  募集中  | | |
+| [Redirect URLs with a Trailing Slash](/doc/cookbook/routing/redirect_trailing_slash) |  募集中  | | |
+| [How to Pass Extra Information from a Route to a Controller](/doc/cookbook/routing/extra_information) |  募集中  | | |

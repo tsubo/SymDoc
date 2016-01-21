@@ -1,0 +1,7 @@
+# Recipes about Controller
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^ 
+| [Controller](/doc/cookbook/controller/start) |  募集中  | | |
+| [How to Customize Error Pages](/doc/cookbook/controller/error_pages) |  募集中  | | |
+| [How to Define Controllers as Services](/doc/cookbook/controller/service) |  募集中  | | |
+| [How to Upload Files](/doc/cookbook/controller/upload_file) |  募集中  | | |

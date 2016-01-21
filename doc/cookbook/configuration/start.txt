@@ -1,0 +1,14 @@
+# Recipes about Configuration
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Master and Create new Environments](/doc/cookbook/configuration/environments) |  募集中  | | |
+| [Building your own Framework with the MicroKernelTrait](/doc/cookbook/configuration/micro-kernel-trait) |  募集中  | | |
+| [How to Override Symfony's default Directory Structure](/doc/cookbook/configuration/override_dir_structure) |  募集中  | | |
+| [Using Parameters within a Dependency Injection Class](/doc/cookbook/configuration/using_parameters_in_dic) |  募集中  | | |
+| [Understanding how the Front Controller, Kernel and Environments Work together](/doc/cookbook/configuration/front_controllers_and_kernel) |  募集中  | | |
+| [How to Set external Parameters in the Service Container](/doc/cookbook/configuration/external_parameters) |  募集中  | | |
+| [How to Use the Apache Router](/doc/cookbook/configuration/apache_router) |  募集中  | | |
+| [Configuring a Web Server](/doc/cookbook/configuration/web_server_configuration) |  募集中  | | |
+| [How to Organize Configuration Files](/doc/cookbook/configuration/configuration_organization) |  募集中  | | |
+| [(Doctrine) How to Use PdoSessionHandler to Store Sessions in the Database](/doc/cookbook/doctrine/pdo_session_storage) |  募集中  | | |
+| [(Doctrine) How to Use MongoDbSessionHandler to Store Sessions in a MongoDB Database](/doc/cookbook/doctrine/mongodb_session_storage) |  募集中  | | |

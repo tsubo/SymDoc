@@ -1,0 +1,16 @@
+# Recipes about Doctrine
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^ 
+| [How to Handle File Uploads with Doctrine](/doc/cookbook/doctrine/file_uploads) |  募集中  | | |
+| [How to use Doctrine Extensions: Timestampable, Sluggable, Translatable, etc.](/doc/cookbook/doctrine/common_extensions) |  募集中  | | |
+| [How to Register Event Listeners and Subscribers](/doc/cookbook/doctrine/event_listeners_subscribers) |  募集中  | | |
+| [How to Use Doctrine DBAL](/doc/cookbook/doctrine/dbal) |  募集中  | | |
+| [How to Generate Entities from an Existing Database](/doc/cookbook/doctrine/reverse_engineering) |  募集中  | | |
+| [How to Work with multiple Entity Managers and Connections](/doc/cookbook/doctrine/multiple_entity_managers) |  募集中  | | |
+| [How to Register custom DQL Functions](/doc/cookbook/doctrine/custom_dql_functions) |  募集中  | | |
+| [How to Define Relationships with Abstract Classes and Interfaces](/doc/cookbook/doctrine/resolve_target_entity) |  募集中  | | |
+| [How to Provide Model Classes for several Doctrine Implementations](/doc/cookbook/doctrine/mapping_model_classes) |  募集中  | | |
+| [How to Implement a simple Registration Form](/doc/cookbook/doctrine/registration_form) |  募集中  | | |
+| [How to Use PdoSessionHandler to Store Sessions in the Database](/doc/cookbook/doctrine/pdo_session_storage) |  募集中  | | |
+| [How to Use MongoDbSessionHandler to Store Sessions in a MongoDB Database](/doc/cookbook/doctrine/mongodb_session_storage) |  募集中  | | |
+| [Console Commands](/doc/cookbook/doctrine/console) | | | |

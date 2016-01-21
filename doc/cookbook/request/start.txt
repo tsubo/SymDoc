@@ -1,0 +1,6 @@
+# Recipes about Request
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Configure Symfony to Work behind a Load Balancer or a Reverse Proxy](/doc/cookbook/request/load_balancer_reverse_proxy) |  募集中  | | |
+| [How to Register a new Request Format and Mime Type](/doc/cookbook/request/mime_type) |  募集中  | | |
+| [(session) Making the Locale &quot;Sticky&quot; during a User's Session](/doc/cookbook/session/locale_sticky_session) |  募集中  | | |

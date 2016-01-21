@@ -1,0 +1,7 @@
+# Recipes about Profiler
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Create a custom Data Collector](/doc/cookbook/profiler/data_collector) |  募集中  | | |
+| [How to Use Matchers to Enable the Profiler Conditionally](/doc/cookbook/profiler/matchers) |  募集中  | | |
+| [Switching the Profiler Storage](/doc/cookbook/profiler/storage) |  募集中  | | |
+| [How to Access Profiling Data Programmatically](/doc/cookbook/profiler/profiling_data) |  募集中  | | |

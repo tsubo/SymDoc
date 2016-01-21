@@ -1,0 +1,11 @@
+# Recipes about Session
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [Session Proxy Examples](/doc/cookbook/session/proxy_examples) |  募集中  | | |
+| [Making the Locale &quot;Sticky&quot; during a User's Session](/doc/cookbook/session/locale_sticky_session) |  募集中  | | |
+| [Configuring the Directory where Session Files are Saved](/doc/cookbook/session/sessions_directory) |  募集中  | | |
+| [Bridge a legacy Application with Symfony Sessions](/doc/cookbook/session/php_bridge) |  募集中  | | |
+| [Limit Session Metadata Writes](/doc/cookbook/session/limit_metadata_writes) |  募集中  | | |
+| [(Doctrine) How to Use PdoSessionHandler to Store Sessions in the Database](/doc/cookbook/doctrine/pdo_session_storage) |  募集中  | | |
+| [(Doctrine) How to Use MongoDbSessionHandler to Store Sessions in a MongoDB Database](/doc/cookbook/doctrine/mongodb_session_storage) |  募集中  | | |
+| [Avoid Starting Sessions for Anonymous Users](/doc/cookbook/session/avoid_session_start) |  募集中  | | |

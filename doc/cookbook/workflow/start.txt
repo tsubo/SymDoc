@@ -1,0 +1,5 @@
+# Recipes about Workflow
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Create and Store a Symfony Project in Git](/doc/cookbook/workflow/new_project_git) |  募集中  | | |
+| [How to Create and Store a Symfony Project in Subversion](/doc/cookbook/workflow/new_project_svn) |  募集中  | | |

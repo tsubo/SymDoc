@@ -1,1 +1,264 @@
-# Configuring Symfony (and Environments)
+# Symfony の設定と環境
+
+アプリケーションは、あなたのアプリケーションの機能や能力を表すバンドルの集合で構成されています。
+各バンドルは YAML や XML, PHP によって書かれた設定ファイルでカスタマイズすることが出来ます。
+デフォルトでは、メインの設定ファイルは `app/config` ディレクトリに存在し、
+あなたの好みに応じて、`config.yml` や `config.xml`, `config.php` の何れかになります。
+
+<tabs>
+  * [YAML](#tab1-yaml)
+  * [XML](#tab1-xml)
+  * [PHP](#tab1-php)
+
+<pane id="tab1-yaml"><code yml>
+# app/config/config.yml
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+
+framework:
+    secret:          '%secret%'
+    router:          { resource: '%kernel.root_dir%/config/routing.yml' }
+    # ...
+
+# Twig Configuration
+twig:
+    debug:            '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+
+# ...
+</code></pane>
+
+<pane id="tab1-xml"><code xml>
+<!-- app/config/config.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xmlns:twig="http://symfony.com/schema/dic/twig"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd
+        http://symfony.com/schema/dic/symfony
+        http://symfony.com/schema/dic/symfony/symfony-1.0.xsd
+        http://symfony.com/schema/dic/twig
+        http://symfony.com/schema/dic/twig/twig-1.0.xsd">
+
+    <imports>
+        <import resource="parameters.yml" />
+        <import resource="security.yml" />
+    </imports>
+
+    <framework:config secret="%secret%">
+        <framework:router resource="%kernel.root_dir%/config/routing.xml" />
+        <!-- ... -->
+    </framework:config>
+
+    <!-- Twig Configuration -->
+    <twig:config debug="%kernel.debug%" strict-variables="%kernel.debug%" />
+
+    <!-- ... -->
+</container>
+</code></pane>
+
+<pane id="tab1-php"><code php>
+// app/config/config.php
+$this->import('parameters.yml');
+$this->import('security.yml');
+
+$container->loadFromExtension('framework', array(
+    'secret' => '%secret%',
+    'router' => array(
+        'resource' => '%kernel.root_dir%/config/routing.php',
+    ),
+    // ...
+));
+
+// Twig Configuration
+$container->loadFromExtension('twig', array(
+    'debug'            => '%kernel.debug%',
+    'strict_variables' => '%kernel.debug%',
+));
+
+// ...
+</code></pane>
+</tabs>
+
+<well>
+<WRAP note></WRAP>
+
+次の[環境](#環境)節で、各ファイルフォーマットの読み込み方法の詳細を学びます。
+</well>
+
+`framework` や `twig` のような最初のレベルの各エントリは特定のバンドルの為の設定を定義します。
+例えば、`framework` キーは Symfony のコアである FrameworkBundleの設定を定義します。
+そして、ルーティングやテンプレート、他のコアシステムの設定を含みます。
+
+今は、各セクションの具体的なオプションについては心配しないでください。
+設定ファイルは適切なデフォルト値を持っています。
+Symfony の各セクションを調べて、読んでいけば、各機能の具体的な設定オプションを知ることができます。
+
+<well>
+<WRAP addon></WRAP>
+
+**設定フォーマット**
+
+章全体を通して、全ての設定例は３つのフォーマット（YAML, XML, PHP）で表示されます。それぞれに、メリット、デメリットがあります。どれを使うかは、あなた次第です。
+
+- YAML: シンプルでクリーンで読みやすいです。（詳細は [YAML フォーマット](/doc/components/yaml/yaml_format)を参照してください）
+- XML: 時には YAML よりも強力で、IDE の自動補完でサポートされます。
+- PHP: 非常に強力ですが、標準的な設定フォーマットよりも読みにくいです。
+
+</well>
+
+
+
+## デフォルト設定のダンプ
+
+コンソールで `config:dump-reference` コマンドを使用して、バンドルのデフォルト設定を YAML で表示することができます。
+次の例は、デフォルトの FrameworkBundle の設定を表示しています。
+
+<code bash>
+$ php bin/console config:dump-reference FrameworkBundle
+</code>
+
+エイリアス（設定キー）を使用することもできます。
+
+<code bash>
+$ php bin/console config:dump-reference framework
+</code>
+
+<well>
+<WRAP note></WRAP>
+
+自分のバンドルの設定を追加する方法は、クックブックの[バンドル内のサービス設定をロードする方法](/doc/cookbook/bundles/extension)を参照してください。
+</well>
+
+
+
+### 環境
+
+アプリケーションは様々な環境で実行することができます。それぞれの環境は、同じ PHP コード（フロントコントローラを除いて）を共有していますが、それぞれ別の設定ファイルを使用します。
+例えば、`dev` 環境は警告やエラーのログを出力しますが、`prod` 環境はエラーのみをログ出力します。
+`dev` 環境（開発者の為の）では、いくつかのファイルは各リクエスト毎に再構築されますが、`prod` 環境ではキャッシュされます。
+全ての環境は同じコンピュータ上に存在します。そして、同じアプリケーションを実行します。
+
+Symfony プロジェクトは一般的は３つの環境を持っています（dev, test, prod）。しかし、新しい環境を作成するのは簡単です。
+単に、ブラウザでフロントコントローラを変更することによって、違う環境でアプリケーションを表示することが出来ます。
+`dev` 環境でアプリケーションを表示するには、開発用フロントコントローラ（`app_dev.php`）を通してアプリケーションにアクセスします。
+
+<code bash>
+http://localhost/app_dev.php/random/10
+</code>
+
+もし、`prod` 環境でアプリケーションがどの様に動くかを見たい時は、代わりに本番用フロントコントローラ（`app.php`）にアクセスします。
+
+<code bash>
+http://localhost/app.php/random/10
+</code>
+
+`prod` 環境はスピードに最適化されているので、設定やルーティング、Twig テンプレートは フラットな PHP クラスにコンパイルされてキャッシュされます。`prod` 環境で表示部分を変更した時には、キャッシュが再構築されるように、それらをクリアする必要があります。
+
+<code bash>
+$ php bin/console cache:clear --env=prod --no-debug
+</code>
+
+<well>
+<WRAP note></WRAP>
+
+`web/app.php` ファイルを開くと、`prod` 環境を使用することが明示的に設定されているのを見ることができます。
+
+<code php>
+$kernel = new AppKernel('prod', false);
+</code>
+
+このファイルをコピーして、`prod` を何か別の値に変更することで、新しい環境のフロントコントローラを作成することが出来ます。
+</well>
+
+<well>
+<WRAP note></WRAP>
+
+自動テストを動かす時には、`test` 環境が使用されます。そして、それはブラウザからは直接アクセスされません。
+詳細は、[テストの章](/doc/book/testing)を参照してください。
+</well>
+
+
+
+
+## 環境設定
+
+`AppKernel` クラスは、あなたが選択した設定ファイルを実際に読み込む責任があります。
+
+<code php>
+// app/AppKernel.php
+public function registerContainerConfiguration(LoaderInterface $loader)
+{
+    $loader->load(
+        __DIR__.'/config/config_'.$this->getEnvironment().'.yml'
+    );
+}
+</code>
+
+設定を書くのに、XML か PHP を使いたいのなら、`.yml` 拡張子を `.xml` か `.php` に変更することができます。
+各環境が、それぞれの設定ファイルを読み込むも忘れないでください。
+`dev` 環境の設定ファイルを見てみましょう。
+
+<tabs>
+  * [YAML](#tab2-yaml)
+  * [XML](#tab2-xml)
+  * [PHP](#tab2-php)
+
+<pane id="tab2-yaml"><code yml>
+# app/config/config_dev.yml
+imports:
+    - { resource: config.yml }
+
+framework:
+    router:   { resource: '%kernel.root_dir%/config/routing_dev.yml' }
+    profiler: { only_exceptions: false }
+
+# ...
+</code></pane>
+
+<pane id="tab2-xml"><code xml>
+<!-- app/config/config_dev.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd
+        http://symfony.com/schema/dic/symfony
+        http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
+
+    <imports>
+        <import resource="config.xml" />
+    </imports>
+
+    <framework:config>
+        <framework:router resource="%kernel.root_dir%/config/routing_dev.xml" />
+        <framework:profiler only-exceptions="false" />
+    </framework:config>
+
+    <!-- ... -->
+</container>
+</code></pane>
+
+<pane id="tab2-php"><code php>
+// app/config/config_dev.php
+$loader->import('config.php');
+
+$container->loadFromExtension('framework', array(
+    'router' => array(
+        'resource' => '%kernel.root_dir%/config/routing_dev.php',
+    ),
+    'profiler' => array('only-exceptions' => false),
+));
+
+// ...
+</code></pane>
+</tabs>
+
+`imports` キーは PHP の `include` 文と同様で、最初にメイン設定ファイル（`config.yml`）がロードされるのを保証します。
+ファイルの残りの部分は、ロギングを増やしたり、開発環境で助けとなる他の設定の為に、デフォルト設定を調整します。
+
+`prod` と `test` 環境も同じモデルに従います。各環境は基本設定ファイルをインポートして、テク亭の環境のニーズにあわせて、その設定値を変更します。これは単なる慣習ですが、設定の多くを再利用可能にし、環境間の違いのみをカスタマイズすることを可能にします。

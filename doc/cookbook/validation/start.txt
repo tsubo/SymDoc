@@ -1,0 +1,5 @@
+# Recipes about Validation
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^ 
+| [How to Create a custom Validation Constraint](/doc/cookbook/validation/custom_constraint) |  募集中  | | |
+| [How to Handle Different Error Levels](/doc/cookbook/validation/severity) |  募集中  | | |

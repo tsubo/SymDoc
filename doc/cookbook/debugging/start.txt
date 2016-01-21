@@ -1,0 +1,4 @@
+# Recipes about Debugging
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Optimize your Development Environment for Debugging](/doc/cookbook/debugging) |  募集中  | | |

@@ -1,3 +1,15 @@
 # Symfony Best Practices
 
-Bookが終わったらトライする！
+^  タイトル                                                                 ^  状態    ^  翻訳更新日      ^ 備考 ^
+| [The Symfony Framework Best Practices](/doc/best_practices/introduction)  |  募集中  |              | |
+| [Creating the Project](/doc/best_practices/creating-the-project)          |  募集中  |              | |
+| [Configuration](/doc/best_practices/configuration)                        |  募集中  |              | |
+| [Organizing Your Business Logic](/doc/best_practices/business-logic)      |  募集中  |              | |
+| [Controllers](/doc/best_practices/controllers)                            |  募集中  |              | |
+| [Templates](/doc/best_practices/templates)                                |  募集中  |              | |
+| [Forms](/doc/best_practices/forms)                                        |  募集中  |              | |
+| [Internationalization](/doc/best_practices/i18n)                          |  募集中  |              | |
+| [Security](/doc/best_practices/security)                                  |  募集中  |              | |
+| [Web Assets](/doc/best_practices/web-assets)                              |  募集中  |              | |
+| [Tests](/doc/best_practices/tests)                                        |  募集中  |              | |
+

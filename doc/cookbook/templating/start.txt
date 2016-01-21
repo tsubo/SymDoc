@@ -1,0 +1,8 @@
+# Recipes about Templating
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Inject Variables into all Templates (i.e. global Variables)](/doc/cookbook/templating/global_variables) |  募集中  | | |
+| [How to Use and Register Namespaced Twig Paths](/doc/cookbook/templating/namespaced_paths) |  募集中  | | |
+| [How to Use PHP instead of Twig for Templates](/doc/cookbook/templating/PHP) |  募集中  | | |
+| [How to Write a custom Twig Extension](/doc/cookbook/templating/twig_extension) |  募集中  | | |
+| [How to Render a Template without a custom Controller](/doc/cookbook/templating/render_without_controller) |  募集中  | | |

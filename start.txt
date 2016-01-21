@@ -1,6 +1,6 @@
 # Symfony3 ドキュメント Wiki
 
-このサイトは、みんなで Symfony のドキュメントを作成・維持する為の Wiki サイトです。  
+このサイトは、みんなで Symfony の日本語ドキュメントを作成・維持する為の Wiki サイトです。  
 ぜひ、皆さんのお力をお貸し下さい。
 
 - Symfony v3.0 が対象です。
@@ -26,36 +26,15 @@
 
 <col md="6">
 <gchart 350x120 pie3d #008000 #ffffff left "進捗率">
-完了 = 3
+完了 = 6
 翻訳中 = 1
-募集中 = 15
+募集中 = 11
 </gchart>
 </col>
 
 </grid>
 
-
-^目次 ^  募集中/翻訳中/完了  ^備考（翻訳者名等） ^
-|[Symfony and HTTP Fundamentals](/doc/book/http_fundamentals)|  募集中  | |
-|[Symfony versus Flat PHP](/doc/book/from_flat_php_to_symfony)|  募集中  | |
-|[Symfony のインストールと設定](/doc/book/installation)|  完了  | |
-|[Symfony での最初のページ作成](/doc/book/page_creation)|  完了  |  |
-|[コントローラ](/doc/book/controller)|  完了  |  |
-|[ルーティング](/doc/book/routing)|  翻訳中  | tsubo |
-|[Creating and Using Templates](/doc/book/templating)|  募集中  | |
-|[Configuring Symfony (and Environments)](/doc/book/configuration)|  募集中  | |
-|[The Bundle System](/doc/book/bundles)|  募集中  | |
-|[Databases and Doctrine](/doc/book/doctrine)|  募集中  | |
-|[Databases and Propel](/doc/book/propel)|  募集中  | |
-|[Testing](/doc/book/testing)|  募集中  | |
-|[Validation](/doc/book/validation)|  募集中  | |
-|[Forms](/doc/book/forms)|  募集中  | |
-|[Security](/doc/book/security)|  募集中  | |
-|[HTTP Cache](/doc/book/http_cache)|  募集中  | |
-|[Translations](/doc/book/translation)|  募集中  | |
-|[Service Container](/doc/book/service_container)|  募集中  | |
-|[Performance](/doc/book/performance)|  募集中  | |
-
+{{page>/doc/book/start&noheader&nofooter}}
 
 ## 文章の編集方法
 

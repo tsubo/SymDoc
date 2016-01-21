@@ -1,0 +1,5 @@
+# Recipes about Cache
+
+^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
+| [How to Use Varnish to Speed up my Website](/doc/cookbook/cache/varnish) |  募集中  | | |
+| [Caching Pages that Contain CSRF Protected Forms](/doc/cookbook/cache/form_csrf_caching) |  募集中  | | |

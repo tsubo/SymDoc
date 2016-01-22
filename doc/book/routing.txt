@@ -1,12 +1,248 @@
 # ルーティング
 
+美しい URL はウェブアプリケーションにとって必須です。`index.php?article_id=57`のような醜い URL よりも、`/read/intro-to-symfony`のような物が一般的になっています。
+
+柔軟性を持つことはさらに重要です。仮に、ページの URL を `/blog` から `/news` へ変更する必要があるとしましょう。
+この変更の為に、どれだけのリンクを探して、変更する必要があるでしょうか？
+Symfony のルーターを使っていれば、この変更は簡単にできます。
+
+Symfony のルーターでは、アプリケーション内の異なる領域にマップするような、クリエイティブな URL を定義することができます。
+この章を終えると、次のことができるようになります。
+
+- コントローラへマップする複雑なルートの作成
+- テンプレートやコントローラ内での URL の生成
+- バンドル（もしくはそれ以外）からのルーティングリソースの読み込み
+- ルートのデバッグ
+
+
+
+
+
+
 ## アクションへのルーティング
+
+ルートは URL パスからコントローラへのマップです。
+例えば、`/blog/my-post` や `/blog/all-about-symfony` のような URL にマッチして、
+ブログエントリを探して表示するコントローラに URLの一部 を送りたいとしましょう。
+このルートはシンプルです。
+
+<tabs>
+  * [Annotations](#tab1-annotations)
+  * [YAML](#tab1-yaml)
+  * [XML](#tab1-xml)
+  * [PHP](#tab1-php)
+
+<pane id="tab1-annotations"><code php>
+// src/AppBundle/Controller/BlogController.php
+namespace AppBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+
+class BlogController extends Controller
+{
+    /**
+     * @Route("/blog/{slug}", name="blog_show")
+     */
+    public function showAction($slug)
+    {
+        // ...
+    }
+}
+</code></pane>
+
+<pane id="tab1-yaml"><code yml>
+# app/config/routing.yml
+blog_show:
+    path:      /blog/{slug}
+    defaults:  { _controller: AppBundle:Blog:show }
+</code></pane>
+
+<pane id="tab1-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="blog_show" path="/blog/{slug}">
+        <default key="_controller">AppBundle:Blog:show</default>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab1-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('blog_show', new Route('/blog/{slug}', array(
+    '_controller' => 'AppBundle:Blog:show',
+)));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+`blog_show` ルートに定義されたパスは `/blog/*` の様に動きます。ワイルドカード部分には `slug` という名前が与えられています。
+`/blog/my-blog-post` という URL の場合、`slug` 変数は `my-blog-post` という値を取得し、コントローラで使用されます。`blog_show` はルートの名前で、ユニークに命名される必要があります。後ほど、URL を生成するために、使います。
+
+もし、アノテーションが好きでなかったり、SensioFrameworkExtraBundle に依存したくないといった理由で、アノテーションを使いたくない時には、Yaml や XML、PHP を使用することが出来ます。
+これらのフォーマットでは、`_controller` パラメータは特別なキーです。それは、URL がルートにマッチした時、どのコントローラを実行するかを Symfony に伝えます。`_controller` にセットしている文字列は[論理名](#コントローラネーミングパターン)と呼ばれています。それは、特定の PHP クラスやメソッドを指し示すパターンに従っています。この例の場合、`AppBundle:Blog:show` は `AppBundle\Controller\BlogController::showAction`を指し示しています。
+
+おめでとうございます！あなたは、初めてのルートを作成し、コントローラに接続しました。
+そして、`/blog/my-post` にアクセスした時には、`showAction` コントローラが実行され、`$slug` 変数には `my-post` が入ります。
+
+Symfony ルーターの目的は、リクエストの URL をコントローラにマップすることです。
+進んでいくと、あなたは、もっと複雑な URL でも、簡単にマッピングを行う、あらゆる種類のトリックを学びます。
+
+
 
 ## ルーティングの裏側
 
-## ルーティングの作成
+アプリケーションへのリクエストが発生すると、それにはクライアントが要求しているリソースへのアドレスが含まれています。
+このアドレスは URL（または URI）といい、`/contact` や `/blog/read-me` のようになります。
+例えば、次の HTTP リクエストを見てください。
+
+<code bash>
+GET /blog/my-blog-post
+</code>
+
+Symfony ルーティングシステムの目的は、この URL を解析してどのコントローラを実行するかを決定することです。
+全体のプロセスは次のようになります。
+
+ 1. リクエストは Symfony のフロントコントローラ（例、`app.php`）によって処理されます。
+ 2. Symfony のコア（Kernel）は、ルーターにリクエストを調べるように依頼します。
+ 3. ルーターは入ってきた URL を特定のルートにマッチングします。そして、実行すべきコントローラを含む、ルートに関する情報を返します。
+ 4. Kernel は最終的にレスポンスオブジェクトを返す、コントローラを実行します。
+
+![Symfony request flow](https://symfony.com/doc/current/_images/request-flow.png)
+
+ルーティング層は、入ってきた URL を実行するコントローラに変換するツールです。
+
+
+## ルートの作成
+
+Symfony は １つのルーティング設定ファイルからアプリケーションの為の全てのルートを読み込みます。
+そのファイルは通常は `app/config/routing.yml` です。しかし、アプリケーションの設定ファイル（`app/config/config.yml`）を使って、何にでも（XML や PHP を含む）設定することができます。
+
+<tabs>
+  * [YAML](#tab2-yaml)
+  * [XML](#tab2-xml)
+  * [PHP](#tab2-php)
+
+<pane id="tab2-yaml"><code yml>
+# app/config/config.yml
+framework:
+    # ...
+    router: { resource: '%kernel.root_dir%/config/routing.yml' }
+</code></pane>
+
+<pane id="tab2-xml"><code xml>
+<!-- app/config/config.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd
+        http://symfony.com/schema/dic/symfony
+        http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
+
+    <framework:config>
+        <!-- ... -->
+        <framework:router resource="%kernel.root_dir%/config/routing.xml" />
+    </framework:config>
+</container>
+</code></pane>
+
+<pane id="tab2-php"><code php>
+// app/config/config.php
+$container->loadFromExtension('framework', array(
+    // ...
+    'router' => array(
+        'resource' => '%kernel.root_dir%/config/routing.php',
+    ),
+));
+</code></pane>
+
+</tabs>
+
+<well>
+<WRAP hint></WRAP>
+
+全てのルートは１つのファイルから読み込まれるのですが、追加のルーティングリソースを含めるのが一般的です。
+そうするには、メインのルーティング設定ファイルの中で、インクルードすべき、外部のファイルを指示するだけです。
+詳細は[外部ルーティングリソースのインクルード](#外部ルーティングリソースのインクルード)を参照してください。
+</well>
+
 
 ### ルート設定の基本
+
+ルートを定義するのは簡単です。そして、一般的なアプリケーションは多くのルートを持ちます。
+基本的なルートはマッチされる `path` と `defaults` 配列の２つのパートで構成されます。
+
+<tabs>
+  * [Annotations](#tab3-annotations)
+  * [YAML](#tab3-yaml)
+  * [XML](#tab3-xml)
+  * [PHP](#tab3-php)
+
+<pane id="tab3-annotations"><code php>
+// src/AppBundle/Controller/MainController.php
+
+// ...
+class MainController extends Controller
+{
+    /**
+     * @Route("/")
+     */
+    public function homepageAction()
+    {
+        // ...
+    }
+}
+</code></pane>
+
+<pane id="tab3-yaml"><code yml>
+# app/config/routing.yml
+_welcome:
+    path:      /
+    defaults:  { _controller: AppBundle:Main:homepage }
+</code></pane>
+
+<pane id="tab3-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="_welcome" path="/">
+        <default key="_controller">AppBundle:Main:homepage</default>
+    </route>
+
+</routes>
+</code></pane>
+
+<pane id="tab3-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('_welcome', new Route('/', array(
+    '_controller' => 'AppBundle:Main:homepage',
+)));
+
+return $collection;
+</code></pane>
+
+</tabs>
 
 ### プレイスホルダー
 
@@ -28,7 +264,7 @@
 
 ## ルートパラメータとコントローラの引数
 
-## 外部リソースのインクルード
+## 外部ルーティングリソースのインクルード
 
 ### インポートされたルートのプレフィックス
 

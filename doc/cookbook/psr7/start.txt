@@ -1,4 +1,4 @@
-# Recipes about PSR7
+## Recipes about PSR7
 
 ^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
-| [The PSR-7 Bridge](/doc/cookbook/psr7) |  募集中  | | |
+| [The PSR-7 Bridge](/doc/cookbook/psr7/psr7) |  募集中  | | |

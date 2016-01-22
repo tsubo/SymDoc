@@ -1,0 +1,8 @@
+# Recipes about Logging
+
+- [How to Use Monolog to Write Logs](/doc/cookbook/logging/monolog)
+- [How to Configure Monolog to Email Errors](/doc/cookbook/logging/monolog_email)
+- [How to Configure Monolog to Display Console Messages](/doc/cookbook/logging/monolog_console)
+- [How to Configure Monolog to Exclude 404 Errors from the Log](/doc/cookbook/logging/monolog_regex_based_excludes)
+- [How to Log Messages to different Files](/doc/cookbook/logging/channels_handlers)
+

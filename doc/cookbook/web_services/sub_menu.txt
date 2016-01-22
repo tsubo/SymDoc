@@ -1,0 +1,4 @@
+# Recipes about Web Services
+
+- [How to Create a SOAP Web Service in a Symfony Controller](/doc/cookbook/web_services/php_soap_extension)
+

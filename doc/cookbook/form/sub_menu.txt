@@ -1,0 +1,15 @@
+# Recipies about Form
+
+- [How to Customize Form Rendering](/doc/cookbook/form/form_customization)
+- [How to Use Data Transformers](/doc/cookbook/form/data_transformers)
+- [How to Dynamically Modify Forms Using Form Events](/doc/cookbook/form/dynamic_form_modification)
+- [How to Embed a Collection of Forms](/doc/cookbook/form/form_collections)
+- [How to Create a Custom Form Field Type](/doc/cookbook/form/create_custom_field_type)
+- [How to Create a Form Type Extension](/doc/cookbook/form/create_form_type_extension)
+- [How to Reduce Code Duplication with "inherit_data"](/doc/cookbook/form/inherit_data_option)
+- [How to Unit Test your Forms](/doc/cookbook/form/unit_testing)
+- [How to Configure empty Data for a Form Class](/doc/cookbook/form/use_empty_data)
+- [How to Use the submit() Function to Handle Form Submissions](/doc/cookbook/form/direct_submit)
+- [(Validation) How to Create a custom Validation Constraint](/doc/cookbook/validation/custom_constraint)
+- [(Doctrine) How to Handle File Uploads with Doctrine](/doc/cookbook/doctrine/file_uploads)
+

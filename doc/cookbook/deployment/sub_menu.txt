@@ -1,0 +1,7 @@
+# Recipes about Deployment
+
+- [How to Deploy a Symfony Application](/doc/cookbook/deployment/tools)
+- [Deploying to Microsoft Azure Website Cloud](/doc/cookbook/deployment/azure-website)
+- [Deploying to Heroku Cloud](/doc/cookbook/deployment/heroku)
+- [Deploying to Platform.sh](/doc/cookbook/deployment/platformsh)
+

@@ -1,0 +1,11 @@
+# Recipies about Routing
+
+- [How to Force Routes to always Use HTTPS or HTTP](/doc/cookbook/routing/scheme)
+- [How to Allow a "/" Character in a Route Parameter](/doc/cookbook/routing/slash_in_parameter)
+- [How to Configure a Redirect without a custom Controller](/doc/cookbook/routing/redirect_in_config)
+- [How to Use HTTP Methods beyond GET and POST in Routes](/doc/cookbook/routing/method_parameters)
+- [How to Use Service Container Parameters in your Routes](/doc/cookbook/routing/service_container_parameters)
+- [How to Create a custom Route Loader](/doc/cookbook/routing/custom_route_loader)
+- [Redirect URLs with a Trailing Slash](/doc/cookbook/routing/redirect_trailing_slash)
+- [How to Pass Extra Information from a Route to a Controller](/doc/cookbook/routing/extra_information)
+

@@ -1,4 +1,4 @@
 # Recipes about Composer
 
 ^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
-| [Installing Composer](/doc/cookbook/composer) |  募集中  | | |
+| [Installing Composer](/doc/cookbook/composer/composer) |  募集中  | | |

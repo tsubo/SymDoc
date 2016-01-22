@@ -1,0 +1,4 @@
+# Recipes about Install and Upgrade
+
+- [How to Install or Upgrade to the Latest, Unreleased Symfony Version](/doc/cookbook/install/unstable_versions)
+

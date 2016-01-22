@@ -1,0 +1,16 @@
+# Recipes about Doctrine
+
+- [How to Handle File Uploads with Doctrine](/doc/cookbook/doctrine/file_uploads)
+- [How to use Doctrine Extensions: Timestampable, Sluggable, Translatable, etc.](/doc/cookbook/doctrine/common_extensions)
+- [How to Register Event Listeners and Subscribers](/doc/cookbook/doctrine/event_listeners_subscribers)
+- [How to Use Doctrine DBAL](/doc/cookbook/doctrine/dbal)
+- [How to Generate Entities from an Existing Database](/doc/cookbook/doctrine/reverse_engineering)
+- [How to Work with multiple Entity Managers and Connections](/doc/cookbook/doctrine/multiple_entity_managers)
+- [How to Register custom DQL Functions](/doc/cookbook/doctrine/custom_dql_functions)
+- [How to Define Relationships with Abstract Classes and Interfaces](/doc/cookbook/doctrine/resolve_target_entity)
+- [How to Provide Model Classes for several Doctrine Implementations](/doc/cookbook/doctrine/mapping_model_classes)
+- [How to Implement a simple Registration Form](/doc/cookbook/doctrine/registration_form)
+- [How to Use PdoSessionHandler to Store Sessions in the Database](/doc/cookbook/doctrine/pdo_session_storage)
+- [How to Use MongoDbSessionHandler to Store Sessions in a MongoDB Database](/doc/cookbook/doctrine/mongodb_session_storage)
+- [Console Commands](/doc/cookbook/doctrine/console)
+

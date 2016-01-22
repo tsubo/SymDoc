@@ -2,7 +2,7 @@
 
 ^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
 | [Session Proxy Examples](/doc/cookbook/session/proxy_examples) |  募集中  | | |
-| [Making the Locale &quot;Sticky&quot; during a User's Session](/doc/cookbook/session/locale_sticky_session) |  募集中  | | |
+| [Making the Locale "Sticky" during a User's Session](/doc/cookbook/session/locale_sticky_session) |  募集中  | | |
 | [Configuring the Directory where Session Files are Saved](/doc/cookbook/session/sessions_directory) |  募集中  | | |
 | [Bridge a legacy Application with Symfony Sessions](/doc/cookbook/session/php_bridge) |  募集中  | | |
 | [Limit Session Metadata Writes](/doc/cookbook/session/limit_metadata_writes) |  募集中  | | |

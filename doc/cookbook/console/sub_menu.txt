@@ -1,0 +1,10 @@
+# Recipes about Console
+
+- [How to Create a Console Command](/doc/cookbook/console/console_command)
+- [How to Use the Console](/doc/cookbook/console/usage)
+- [How to Style a Console Command](/doc/cookbook/console/style)
+- [How to Call a Command from a Controller](/doc/cookbook/console/command_in_controller)
+- [How to Generate URLs and Send Emails from the Console](/doc/cookbook/console/sending_emails)
+- [How to Enable Logging in Console Commands](/doc/cookbook/console/logging)
+- [How to Define Commands as Services](/doc/cookbook/console/commands_as_services)
+

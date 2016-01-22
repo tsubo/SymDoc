@@ -1,0 +1,4 @@
+# Recipes about Composer
+
+- [Installing Composer](/doc/cookbook/composer/composer)
+

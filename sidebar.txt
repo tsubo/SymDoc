@@ -1,3 +1,4 @@
+~~NOCACHE~~
 
 - {{fa>home}} [ホーム](/)
 
@@ -7,14 +8,19 @@
 - [Book](/doc/book/start)
 - [Best Practices](/doc/best_practices/start)
 - [Cookbook](/doc/cookbook/start)
-- [Bundles](/doc/bundles/start)
 
 - [Components](https://symfony.com/doc/current/components/index.html)
+- [Bundles](https://symfony.com/doc/bundles/)
 - [Reference](https://symfony.com/doc/current/reference/index.html)
 
+/*
 <WRAP menu>
 {{nsindex>sub_menu}}
 </WRAP>
+*/
+
+// ここはテンプレートで置換
+%SIDEBARTOC%
 
 ---
 
@@ -34,3 +40,6 @@
 </WRAP>
 
 {{page>admin:topuser&nofooter}}
+
+---
+

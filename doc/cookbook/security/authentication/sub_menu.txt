@@ -1,0 +1,20 @@
+# Recipes about Security Authentication
+
+- [How to Build a Traditional Login Form](/doc/cookbook/security/authentication/form_login_setup)
+- [How to Load Security Users from the Database (the Entity Provider)](/doc/cookbook/security/authentication/entity_provider)
+- [How to Create a Custom Authentication System with Guard](/doc/cookbook/security/authentication/guard-authentication)
+- [How to Add "Remember Me" Login Functionality](/doc/cookbook/security/authentication/remember_me)
+- [How to Impersonate a User](/doc/cookbook/security/authentication/impersonating_user)
+- [How to Customize your Form Login](/doc/cookbook/security/authentication/form_login)
+- [How to Create a custom User Provider](/doc/cookbook/security/authentication/custom_provider)
+- [How to Create a Custom Form Password Authenticator](/doc/cookbook/security/authentication/custom_password_authenticator)
+- [How to Authenticate Users with API Keys](/doc/cookbook/security/authentication/api_key_authentication)
+- [How to Create a custom Authentication Provider](/doc/cookbook/security/authentication/custom_authentication_provider)
+- [Using pre Authenticated Security Firewalls](/doc/cookbook/security/authentication/pre_authenticated)
+- [How to Change the default Target Path Behavior](/doc/cookbook/security/authentication/target_path)
+- [Using CSRF Protection in the Login Form](/doc/cookbook/security/authentication/csrf_in_login_form)
+- [How to Choose the Password Encoder Algorithm Dynamically](/doc/cookbook/security/authentication/named_encoders)
+- [How to Use multiple User Providers](/doc/cookbook/security/authentication/multiple_user_providers)
+- [How to Restrict Firewalls to a Specific Request](/doc/cookbook/security/authentication/firewall_restriction)
+- [How to Restrict Firewalls to a Specific Host](/doc/cookbook/security/authentication/host_restriction)
+

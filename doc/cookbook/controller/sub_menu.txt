@@ -1,0 +1,7 @@
+# Recipes about Controller
+
+- [Controller](/doc/cookbook/controller/start)
+- [How to Customize Error Pages](/doc/cookbook/controller/error_pages)
+- [How to Define Controllers as Services](/doc/cookbook/controller/service)
+- [How to Upload Files](/doc/cookbook/controller/upload_file)
+

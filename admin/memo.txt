@@ -1,0 +1,11 @@
+# サイトの運営メモ
+
+## ワンライナー
+
+### サブメニューの作成
+
+`doc/cookbook/` で `*/start.txt` から `*/sub_menu.txt` を作成
+
+<code bash>
+$ find . -mindepth 2 -name start.txt | awk '{line = $0; sub("start.txt", "sub_menu.txt", line); cmd = sprintf("start2menu.awk %s > %s", $0, line); system(cmd)}'
+</code>

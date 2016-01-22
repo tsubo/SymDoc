@@ -1,100 +1,102 @@
+~~NOTOC~~
+
 # Symfony Cookbook
 
-<WRAP h2>Assetic</WRAP>
+## Assetic
 {{page>/doc/cookbook/assetic/start&noheader&nofooter}}
 
-<WRAP h2>Bundles</WRAP>
+## Bundles
 {{page>/doc/cookbook/bundles/start&noheader&nofooter}}
 
-<WRAP h2>Cache</WRAP>
+## Cache
 {{page>/doc/cookbook/cache/start&noheader&nofooter}}
 
-<WRAP h2>Composer</WRAP>
+## Composer
 {{page>/doc/cookbook/composer/start&noheader&nofooter}}
 
-<WRAP h2>Configuration</WRAP>
+## Configuration
 {{page>/doc/cookbook/configuration/start&noheader&nofooter}}
 
-<WRAP h2>Console</WRAP>
+## Console
 {{page>/doc/cookbook/console/start&noheader&nofooter}}
 
-<WRAP h2>Controller</WRAP>
+## Controller
 {{page>/doc/cookbook/controller/start&noheader&nofooter}}
 
-<WRAP h2>Debugging</WRAP>
+## Debugging
 {{page>/doc/cookbook/debugging/start&noheader&nofooter}}
 
-<WRAP h2>Deployment</WRAP>
+## Deployment
 {{page>/doc/cookbook/deployment/start&noheader&nofooter}}
 
-<WRAP h2>Doctrine</WRAP>
+## Doctrine
 {{page>/doc/cookbook/doctrine/start&noheader&nofooter}}
 
-<WRAP h2>Email</WRAP>
+## Email
 {{page>/doc/cookbook/email/start&noheader&nofooter}}
 
-<WRAP h2>Event Dispatcher</WRAP>
+## Event Dispatcher
 {{page>/doc/cookbook/event_dispatcher/start&noheader&nofooter}}
 
-<WRAP h2>Expressions</WRAP>
+## Expressions
 {{page>/doc/cookbook/expression/start&noheader&nofooter}}
 
-<WRAP h2>Form</WRAP>
+## Form
 {{page>/doc/cookbook/form/start&noheader&nofooter}}
 
-<WRAP h2>Front-end</WRAP>
+## Front-end
 {{page>/doc/cookbook/frontend/start&noheader&nofooter}}
 
-<WRAP h2>Install and Upgrade</WRAP>
+## Install and Upgrade
 {{page>/doc/cookbook/install/start&noheader&nofooter}}
 
-<WRAP h2>Logging</WRAP>
+## Logging
 {{page>/doc/cookbook/logging/start&noheader&nofooter}}
 
-<WRAP h2>Profiler</WRAP>
+## Profiler
 {{page>/doc/cookbook/profiler/start&noheader&nofooter}}
 
-<WRAP h2>Request</WRAP>
+## Request
 {{page>/doc/cookbook/request/start&noheader&nofooter}}
 
-<WRAP h2>Routing</WRAP>
+## Routing
 {{page>/doc/cookbook/routing/start&noheader&nofooter}}
 
-<WRAP h2>Security Authentication (Identifying/Logging in the User)</WRAP>
+## Security Authentication (Identifying/Logging in the User)
 {{page>/doc/cookbook/security/authentication/start&noheader&nofooter}}
 
-<WRAP h2>Security Authorization (Denying Access)</WRAP>
+## Security Authorization (Denying Access)
 {{page>/doc/cookbook/security/authorization/start&noheader&nofooter}}
 
-<WRAP h2>Serializer</WRAP>
+## Serializer
 {{page>/doc/cookbook/serializer/start&noheader&nofooter}}
 
-<WRAP h2>Service Container</WRAP>
+## Service Container
 {{page>/doc/cookbook/service_container/start&noheader&nofooter}}
 
-<WRAP h2>Sessions</WRAP>
+## Sessions
 {{page>/doc/cookbook/session/start&noheader&nofooter}}
 
-<WRAP>PSR-7</WRAP>
+## PSR-7
 {{page>/doc/cookbook/psr7/start&noheader&nofooter}}
 
-<WRAP h2>Templating</WRAP>
+## Templating
 {{page>/doc/cookbook/templating/start&noheader&nofooter}}
 
-<WRAP h2>Testing</WRAP>
+## Testing
 {{page>/doc/cookbook/testing/start&noheader&nofooter}}
 
-<WRAP h2>Upgrading</WRAP>
+## Upgrading
 {{page>/doc/cookbook/upgrade/start&noheader&nofooter}}
 
-<WRAP h2>Validation</WRAP>
+## Validation
 {{page>/doc/cookbook/validation/start&noheader&nofooter}}
 
-<WRAP h2>Web Server</WRAP>
+## Web Server
 {{page>/doc/cookbook/web_server/start&noheader&nofooter}}
 
-<WRAP h2>Web Services</WRAP>
+## Web Services
 {{page>/doc/cookbook/web_services/start&noheader&nofooter}}
 
-<WRAP h2>Workflow</WRAP>
+## Workflow
 {{page>/doc/cookbook/workflow/start&noheader&nofooter}}

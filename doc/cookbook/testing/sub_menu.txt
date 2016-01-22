@@ -1,0 +1,12 @@
+# Recipes about Testing
+
+- [How to Simulate HTTP Authentication in a Functional Test](/doc/cookbook/testing/http_authentication)
+- [How to Simulate Authentication with a Token in a Functional Test](/doc/cookbook/testing/simulating_authentication)
+- [How to Test the Interaction of several Clients](/doc/cookbook/testing/insulating_clients)
+- [How to Use the Profiler in a Functional Test](/doc/cookbook/testing/profiling)
+- [How to Test Code that Interacts with the Database](/doc/cookbook/testing/database)
+- [How to Test Doctrine Repositories](/doc/cookbook/testing/doctrine)
+- [How to Customize the Bootstrap Process before Running Tests](/doc/cookbook/testing/bootstrap)
+- [(email) How to Test that an Email is Sent in a Functional Test](/doc/cookbook/email/testing)
+- [(form) How to Unit Test your Forms](/doc/cookbook/form/unit_testing)
+

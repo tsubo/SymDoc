@@ -1,0 +1,7 @@
+# Recipes about Event Dispatcher
+
+- [How to Set Up Before and After Filters](/doc/cookbook/event_dispatcher/before_after_filters)
+- [How to Extend a Class without Using Inheritance](/doc/cookbook/event_dispatcher/class_extension)
+- [How to Customize a Method Behavior without Using Inheritance](/doc/cookbook/event_dispatcher/method_behavior)
+- [How to Create Event Listeners and Subscribers](/doc/cookbook/event_dispatcher/event_listener)
+

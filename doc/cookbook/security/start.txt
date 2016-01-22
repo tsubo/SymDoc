@@ -1,0 +1,10 @@
+# Recipes about Security
+
+## Security Authentication
+
+{{page>/doc/cookbook/security/authentication/start&noheader&nofooter}}
+
+
+## Security Authorization
+
+{{page>/doc/cookbook/security/authorization/start&noheader&nofooter}}

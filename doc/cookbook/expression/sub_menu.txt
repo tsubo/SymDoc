@@ -1,0 +1,4 @@
+# Recipes about Expressions
+
+- [How to use Expressions in Security, Routing, Services, and Validation](/doc/cookbook/expression/expressions)
+

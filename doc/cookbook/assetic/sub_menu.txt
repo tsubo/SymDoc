@@ -6,3 +6,4 @@
 - [How to Minify JavaScripts and Stylesheets with YUI Compressor](/doc/cookbook/assetic/yuicompressor)
 - [How to Use Assetic for Image Optimization with Twig Functions](/doc/cookbook/assetic/jpeg_optimize)
 - [How to Apply an Assetic Filter to a specific File Extension](/doc/cookbook/assetic/apply_to_option)
+

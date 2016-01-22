@@ -1,0 +1,5 @@
+# Recipes about Cache
+
+- [How to Use Varnish to Speed up my Website](/doc/cookbook/cache/varnish)
+- [Caching Pages that Contain CSRF Protected Forms](/doc/cookbook/cache/form_csrf_caching)
+

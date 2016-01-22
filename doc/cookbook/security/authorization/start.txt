@@ -1,9 +1,9 @@
 # Recipes about Security Authorization
 
 ^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
-| [How to Use Voters to Check User Permissions](/doc/cookbook/security/voters) |  募集中  | | |
-| [How to Use Access Control Lists (ACLs)](/doc/cookbook/security/acl) |  募集中  | | |
-| [How to Use advanced ACL Concepts](/doc/cookbook/security/acl_advanced) |  募集中  | | |
-| [How to Force HTTPS or HTTP for different URLs](/doc/cookbook/security/force_https) |  募集中  | | |
-| [How to Secure any Service or Method in your Application](/doc/cookbook/security/securing_services) |  募集中  | | |
-| [How Does the Security access_control Work?](/doc/cookbook/security/access_control) |  募集中  | | |
+| [How to Use Voters to Check User Permissions](/doc/cookbook/security/authorization/voters) |  募集中  | | |
+| [How to Use Access Control Lists (ACLs)](/doc/cookbook/security/authorization/acl) |  募集中  | | |
+| [How to Use advanced ACL Concepts](/doc/cookbook/security/authorization/acl_advanced) |  募集中  | | |
+| [How to Force HTTPS or HTTP for different URLs](/doc/cookbook/security/authorization/force_https) |  募集中  | | |
+| [How to Secure any Service or Method in your Application](/doc/cookbook/security/authorization/securing_services) |  募集中  | | |
+| [How Does the Security access_control Work?](/doc/cookbook/security/authorization/access_control) |  募集中  | | |

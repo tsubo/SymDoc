@@ -1,0 +1,9 @@
+# Recipes about Security Authorization
+
+- [How to Use Voters to Check User Permissions](/doc/cookbook/security/authorization/voters)
+- [How to Use Access Control Lists (ACLs)](/doc/cookbook/security/authorization/acl)
+- [How to Use advanced ACL Concepts](/doc/cookbook/security/authorization/acl_advanced)
+- [How to Force HTTPS or HTTP for different URLs](/doc/cookbook/security/authorization/force_https)
+- [How to Secure any Service or Method in your Application](/doc/cookbook/security/authorization/securing_services)
+- [How Does the Security access_control Work?](/doc/cookbook/security/authorization/access_control)
+

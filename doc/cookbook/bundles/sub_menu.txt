@@ -1,0 +1,11 @@
+# Recipes about Bundles
+
+- [How to Install 3rd Party Bundles](/doc/cookbook/bundles/installation)
+- [Best Practices for Reusable Bundles](/doc/cookbook/bundles/best_practices)
+- [How to Use Bundle Inheritance to Override Parts of a Bundle](/doc/cookbook/bundles/inheritance)
+- [How to Override any Part of a Bundle](/doc/cookbook/bundles/override)
+- [How to Remove the AcmeDemoBundle](/doc/cookbook/bundles/remove)
+- [How to Load Service Configuration inside a Bundle](/doc/cookbook/bundles/extension)
+- [How to Create Friendly Configuration for a Bundle](/doc/cookbook/bundles/configuration)
+- [How to Simplify Configuration of multiple Bundles](/doc/cookbook/bundles/prepend_extension)
+

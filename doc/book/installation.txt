@@ -85,7 +85,7 @@ Symfony バージョンの整合性をチェックしたい場合は、[この�
 
 ### Symfony バージョンの指定
 
-Symfony の特定のバージョンを使用する必要がある場合は、`new` コマンドの第二引数でバージョンを指定します。
+Symfony の特定のバージョンを使用したい場合は、`new` コマンドの第二引数でバージョンを指定します。
 
 <code bash>
 # 任意のバージョンで最新の物をインストール
@@ -107,14 +107,14 @@ $ symfony new my_project 2.7.0-RC1
 $ symfony new my_project_name lts
 </code>
 
-どの様なバージョンがあるか、どのバージョンを使うべきかを知る為に、[Symfony のリリースプロセス](https://symfony.com/doc/current/contributing/community/releases.html)を読んでください。
+どの様なバージョンがあるか、どのバージョンを使うべきかを知る為には、[Symfony のリリースプロセス](https://symfony.com/doc/current/contributing/community/releases.html)を参照してください。
 
 
 ## インストーラー以外でのアプリケーションの作成
 
-まだ、PHP 5.3を使っていたり、何らかの理由でインストーラーが使えない場合は、代わりに[Composer](https://getcomposer.org/)を使ってプロジェクトを作成することが出来ます。
+まだ、PHP 5.3を使っていたり、何らかの理由でインストーラーが使えない場合は、代わりに[Composer](https://getcomposer.org/) を使ってプロジェクトを作成することが出来ます。
 
-Composer はモダンな PHP アプリケーション開発で使用される、パッケージの依存管理ツールで、Symfony ベースの新規アプリケーションを作成するのにも使用できます。
+Composer はモダンな PHP アプリケーション開発で使用される、パッケージの依存管理ツールで、Symfony の新規アプリケーションを作成するのにも使用できます。
 
 
 ### グローバル環境への Composer のインストール
@@ -124,7 +124,7 @@ Composer はモダンな PHP アプリケーション開発で使用される、
 
 ### Composer での Symfony アプリケーションの作成
 
-コンピュータに Composer をインストールしたら、create-project コマンドを実行して、最新の安定バージョンで Symfony アプリケーションを作成します。
+コンピュータに Composer をインストールしたら、`create-project` コマンドを実行して、最新の安定バージョンで Symfony アプリケーションを作成します。
 
 <code bash>
 $ composer create-project symfony/framework-standard-edition my_project_name
@@ -139,7 +139,7 @@ $ composer create-project symfony/framework-standard-edition my_project_name "3.
 <well>
 <WRAP hint></WRAP>
 
-インターネット回線が遅い場合は、Composer が動いていないように感じるかもしれません。
+インターネット回線が遅い場合、Composer が動いていないように感じるかもしれません。
 そのような時には、-vvv オプションを指定することで、Composer が詳細な表示を行ってくれます。
 </well>
 

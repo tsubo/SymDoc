@@ -1,5 +1,3 @@
-~~NOTOC~~
-
 # Symfony Cookbook
 
 ## Assetic

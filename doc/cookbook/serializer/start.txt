@@ -1,4 +1,4 @@
 # Recipes about Serializer
 
 ^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
-| [How to Use the Serializer](/doc/cookbook/serializer/serializer) |  募集中  | | |
+| [How to Use the Serializer](/doc/cookbook/serializer) |  募集中  | | |

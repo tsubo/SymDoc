@@ -1,4 +1,0 @@
-# Recipes about PSR7
-
-- [The PSR-7 Bridge](/doc/cookbook/psr7/psr7)
-

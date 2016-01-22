@@ -1,4 +1,0 @@
-# Recipes about Front-end
-
-- [Using Bower with Symfony](/doc/cookbook/frontend/bower)
-

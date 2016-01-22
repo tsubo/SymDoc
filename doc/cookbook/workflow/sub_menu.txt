@@ -1,5 +1,0 @@
-# Recipes about Workflow
-
-- [How to Create and Store a Symfony Project in Git](/doc/cookbook/workflow/new_project_git)
-- [How to Create and Store a Symfony Project in Subversion](/doc/cookbook/workflow/new_project_svn)
-

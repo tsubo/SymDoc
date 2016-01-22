@@ -1,5 +1,0 @@
-# Recipes about Validation
-
-- [How to Create a custom Validation Constraint](/doc/cookbook/validation/custom_constraint)
-- [How to Handle Different Error Levels](/doc/cookbook/validation/severity)
-

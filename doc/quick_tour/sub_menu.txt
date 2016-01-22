@@ -1,6 +1,0 @@
-# クイックツアー
-
-- [Symfony の全体像](/doc/quick_tour/the_big_picture)
-- [ビュー](/doc/quick_tour/the_view)
-- [コントローラ](/doc/quick_tour/the_controller)
-- [アーキテクチャ](/doc/quick_tour/the_architecture)

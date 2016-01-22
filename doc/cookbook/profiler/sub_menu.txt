@@ -1,7 +1,0 @@
-# Recipes about Profiler
-
-- [How to Create a custom Data Collector](/doc/cookbook/profiler/data_collector)
-- [How to Use Matchers to Enable the Profiler Conditionally](/doc/cookbook/profiler/matchers)
-- [Switching the Profiler Storage](/doc/cookbook/profiler/storage)
-- [How to Access Profiling Data Programmatically](/doc/cookbook/profiler/profiling_data)
-

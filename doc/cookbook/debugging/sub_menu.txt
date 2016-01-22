@@ -1,4 +1,0 @@
-# Recipes about Debugging
-
-- [How to Optimize your Development Environment for Debugging](/doc/cookbook/debugging/debugging)
-

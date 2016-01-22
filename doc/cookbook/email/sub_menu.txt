@@ -1,9 +1,0 @@
-# Recipies about Email
-
-- [How to Send an Email](/doc/cookbook/email/email)
-- [How to Use Gmail to Send Emails](/doc/cookbook/email/gmail)
-- [How to Use the Cloud to Send Emails](/doc/cookbook/email/cloud)
-- [How to Work with Emails during Development](/doc/cookbook/email/dev_environment)
-- [How to Spool Emails](/doc/cookbook/email/spool)
-- [How to Test that an Email is Sent in a Functional Test](/doc/cookbook/email/testing)
-

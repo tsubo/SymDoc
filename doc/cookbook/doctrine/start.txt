@@ -13,4 +13,5 @@
 | [How to Implement a simple Registration Form](/doc/cookbook/doctrine/registration_form) |  募集中  | | |
 | [How to Use PdoSessionHandler to Store Sessions in the Database](/doc/cookbook/doctrine/pdo_session_storage) |  募集中  | | |
 | [How to Use MongoDbSessionHandler to Store Sessions in a MongoDB Database](/doc/cookbook/doctrine/mongodb_session_storage) |  募集中  | | |
-| [Console Commands](/doc/cookbook/doctrine/console) | | | |
+| [Console Commands](/doc/cookbook/doctrine/console) |  募集中  | | |
+

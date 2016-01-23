@@ -9,3 +9,5 @@
 | [How to Load Service Configuration inside a Bundle](/doc/cookbook/bundles/extension) |  募集中  | | |
 | [How to Create Friendly Configuration for a Bundle](/doc/cookbook/bundles/configuration) |  募集中  | | |
 | [How to Simplify Configuration of multiple Bundles](/doc/cookbook/bundles/prepend_extension) |  募集中  | | |
+
+

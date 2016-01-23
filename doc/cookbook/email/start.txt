@@ -7,3 +7,4 @@
 | [How to Work with Emails during Development](/doc/cookbook/email/dev_environment) |  募集中  | | |
 | [How to Spool Emails](/doc/cookbook/email/spool) |  募集中  | | |
 | [How to Test that an Email is Sent in a Functional Test](/doc/cookbook/email/testing) |  募集中  | | |
+

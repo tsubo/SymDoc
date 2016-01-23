@@ -1,5 +1,7 @@
 # Symfony クイックツアー
 
+[オリジナル Quick Tour](http://symfony.com/doc/current/quick_tour/)
+
 ^   タイトル                                          ^  状態  ^  翻訳更新日   ^  備考  ^
 | [Symfony の全体像](/doc/quick_tour/the_big_picture) |  v3.0   |  2016/01/18  | |
 | [ビュー](/doc/quick_tour/the_view)                  |  v3.0   |  2016/01/18  | |

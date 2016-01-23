@@ -19,7 +19,7 @@ Symfony のルーターでは、アプリケーション内の異なる領域に
 
 
 
-## アクションへのルーティング
+## 実例でみるルーティング
 
 ルートは URL パスからコントローラへのマップです。
 例えば、`/blog/my-post` や `/blog/all-about-symfony` のような URL にマッチして、
@@ -91,7 +91,7 @@ return $collection;
 `/blog/my-blog-post` という URL の場合、`slug` 変数は `my-blog-post` という値を取得し、コントローラで使用されます。`blog_show` はルートの名前で、ユニークに命名される必要があります。後ほど、URL を生成するために、使います。
 
 もし、アノテーションが好きでなかったり、SensioFrameworkExtraBundle に依存したくないといった理由で、アノテーションを使いたくない時には、Yaml や XML、PHP を使用することが出来ます。
-これらのフォーマットでは、`_controller` パラメータは特別なキーです。それは、URL がルートにマッチした時、どのコントローラを実行するかを Symfony に伝えます。`_controller` にセットしている文字列は[論理名](#コントローラネーミングパターン)と呼ばれています。それは、特定の PHP クラスやメソッドを指し示すパターンに従っています。この例の場合、`AppBundle:Blog:show` は `AppBundle\Controller\BlogController::showAction`を指し示しています。
+これらのフォーマットでは、`_controller` パラメータは特別なキーです。それは、URL がルートにマッチした時、どのコントローラを実行するかを Symfony に伝えます。`_controller` にセットしている文字列は[論理名](#コントローラネーミングパターン)と呼ばれています。それは、特定の PHP クラスやメソッドを指し示すパターンに従っています。この例の場合、`AppBundle:Blog:show` は `AppBundle\Controller\BlogController::showAction`を指しています。
 
 おめでとうございます！あなたは、初めてのルートを作成し、コントローラに接続しました。
 そして、`/blog/my-post` にアクセスした時には、`showAction` コントローラが実行され、`$slug` 変数には `my-post` が入ります。
@@ -174,7 +174,7 @@ $container->loadFromExtension('framework', array(
 <well>
 <WRAP hint></WRAP>
 
-全てのルートは１つのファイルから読み込まれるのですが、追加のルーティングリソースを含めるのが一般的です。
+全てのルートは１つのファイルから読み込まれますが、追加のルーティングリソースを含めるのが一般的です。
 そうするには、メインのルーティング設定ファイルの中で、インクルードすべき、外部のファイルを指示するだけです。
 詳細は[外部ルーティングリソースのインクルード](#外部ルーティングリソースのインクルード)を参照してください。
 </well>
@@ -183,7 +183,7 @@ $container->loadFromExtension('framework', array(
 ### ルート設定の基本
 
 ルートを定義するのは簡単です。そして、一般的なアプリケーションは多くのルートを持ちます。
-基本的なルートはマッチされる `path` と `defaults` 配列の２つのパートで構成されます。
+基本的なルートは `path` と `defaults` 配列の２つのパートで構成されます。
 
 <tabs>
   * [Annotations](#tab3-annotations)
@@ -244,46 +244,1326 @@ return $collection;
 
 </tabs>
 
-### プレイスホルダー
+このルートはホームページ（`/`）とマッチして、それを `AppBundle:Main:homepage` コントローラにマップします。
+`_controller` 文字列は Symfony によって、実際の PHP 関数に変換され、実行されます。
+このプロセスは[コントローラネーミングパターン](#コントローラネーミングパターン)のセクションで説明します。
+
+
+
+### プレイスホルダーを使ったルーティング
+
+もちろん、ルーティングシステムはもっと興味深いルートをサポートします。
+多くのルートはワイルドカードと呼ばれるプレースホルダーを１つ以上持ちます。
+
+<tabs>
+  * [Annotations](#tab4-annotations)
+  * [YAML](#tab4-yaml)
+  * [XML](#tab4-xml)
+  * [PHP](#tab4-php)
+
+<pane id="tab4-annotations"><code php>
+// src/AppBundle/Controller/BlogController.php
+
+// ...
+class BlogController extends Controller
+{
+    /**
+     * @Route("/blog/{slug}")
+     */
+    public function showAction($slug)
+    {
+        // ...
+    }
+}
+</code></pane>
+
+<pane id="tab4-yaml"><code yml>
+# app/config/routing.yml
+blog_show:
+    path:      /blog/{slug}
+    defaults:  { _controller: AppBundle:Blog:show }
+</code></pane>
+
+<pane id="tab4-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="blog_show" path="/blog/{slug}">
+        <default key="_controller">AppBundle:Blog:show</default>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab4-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('blog_show', new Route('/blog/{slug}', array(
+    '_controller' => 'AppBundle:Blog:show',
+)));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+このパスは `/blog/*` のような URL に全てマッチします。加えて、`{slag}` プレースホルダーにマッチした値はコントローラ内で使用できます。
+言い換えると、もし URL が `/blog/hello-world` の時、`$slug` 変数の値は `hello-world` になり、コントローラ内で使用できます。
+例えば、この文字列は、文字列の値に一致するブログの投稿を読み込むために使用できます。
+
+しかし、このパスは シンプルな `/blog` にはマッチしません。デフォルトでは全てのプレースホルダーが必須だからです。
+これは、プレースホルダーの値に `defaults` 配列を追加することで変更できます。
+
+ 
 
 ### プレイスホルダーの必須/任意設定
 
-### 要件の追加
+より面白くする為に、架空のブログアプリケーションで全てのブログエントリを一覧表示するルートを追加してみましょう。
+
+<tabs>
+  * [Annotations](#tab5-annotations)
+  * [YAML](#tab5-yaml)
+  * [XML](#tab5-xml)
+  * [PHP](#tab5-php)
+
+<pane id="tab5-annotations"><code php>
+// src/AppBundle/Controller/BlogController.php
+
+// ...
+class BlogController extends Controller
+{
+    /**
+     * @Route("/blog/{slug}")
+     */
+    public function showAction($slug)
+    {
+        // ...
+    }
+}
+</code></pane>
+
+<pane id="tab5-yaml"><code yml>
+# app/config/routing.yml
+blog_show:
+    path:      /blog/{slug}
+    defaults:  { _controller: AppBundle:Blog:show }
+</code></pane>
+
+<pane id="tab5-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="blog_show" path="/blog/{slug}">
+        <default key="_controller">AppBundle:Blog:show</default>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab5-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('blog_show', new Route('/blog/{slug}', array(
+    '_controller' => 'AppBundle:Blog:show',
+)));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+今のところ、ルートは可能な限りシンプルです。それは、プレースホルダーを持っておらず、`/blog` URL だけにマッチします。
+仮に、`/blog/2` で２つ目のページにブログエントリを表示するような、ページ制御をルートでサポートしたいとしましょう。
+新しい `{page}` プレースホルダーをルートに追加します。
+
+<tabs>
+  * [Annotations](#tab6-code-annotations)
+  * [YAML](#tab6-code-yaml)
+  * [XML](#tab6-code-xml)
+  * [PHP](#tab6-code-php)
+
+<pane id="tab6-code-annotations"><code php>
+// src/AppBundle/Controller/BlogController.php
+
+// ...
+
+/**
+ * @Route("/blog/{page}")
+ */
+public function indexAction($page)
+{
+    // ...
+}
+</code></pane>
+
+<pane id="tab6-code-yaml"><code yml>
+# app/config/routing.yml
+blog:
+    path:      /blog/{page}
+    defaults:  { _controller: AppBundle:Blog:index }
+</code></pane>
+
+<pane id="tab6-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="blog" path="/blog/{page}">
+        <default key="_controller">AppBundle:Blog:index</default>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab6-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('blog', new Route('/blog/{page}', array(
+    '_controller' => 'AppBundle:Blog:index',
+)));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+以前の `{slug}` プレイスホルダーの様に、`{page}` にマッチした値はコントローラ内で使用できます。
+その値は、どのブログエントリーを表示するかを決定する為に使用されます。
+
+ちょっと待って下さい。プレースホルダーはデフォルトでは必須なので、このルートはもはや、単なる `/blog` にマッチしません。
+代わりに、ブログの１ページめを見るために、`/blog/1` URL を使う必要があります。
+しかし、これはリッチなウェブアプリケーションではあり得ない方法なので、`{page}` パラメータがオプションになるようにルートを変更します。
+オプションにするには、`defaults` を追加します。
+
+<tabs>
+  * [Annotations](#tab7-code-annotations)
+  * [YAML](#tab7-code-yaml)
+  * [XML](#tab7-code-xml)
+  * [PHP](#tab7-code-php)
+
+<pane id="tab7-code-annotations"><code php>
+// src/AppBundle/Controller/BlogController.php
+
+// ...
+
+/**
+ * @Route("/blog/{page}", defaults={"page" = 1})
+ */
+public function indexAction($page)
+{
+    // ...
+}
+</code></pane>
+
+<pane id="tab7-code-yaml"><code yml>
+# app/config/routing.yml
+blog:
+    path:      /blog/{page}
+    defaults:  { _controller: AppBundle:Blog:index, page: 1 }
+</code></pane>
+
+<pane id="tab7-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="blog" path="/blog/{page}">
+        <default key="_controller">AppBundle:Blog:index</default>
+        <default key="page">1</default>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab7-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('blog', new Route('/blog/{page}', array(
+    '_controller' => 'AppBundle:Blog:index',
+    'page'        => 1,
+)));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+`page` に `defaults` キーを追加したことによって、`{page}` プレースホルダーはもはや必須ではありません。
+`/blog` URL はこのルートにマッチして、`page` パラメータの値は `1` にセットされます。
+`/blog/2` URL もまた、ルートにマッチして、`page` パラメータの値は `2` になります。完璧です。
+
+^ URL     ^ ルート ^ パラメータ ^
+| /blog   | blog   | {page} = 1 |
+| /blog/1 | blog   | {page} = 1 |
+| /blog/2 | blog   | {page} = 2 |
+
+<well>
+<WRAP caution></WRAP>
+
+もちろん、１つ以上のプレースホルダーを持つことも可能です（例、`/blog/{slug}/{page}`）。
+しかし、オプションプレースホルダーの後ろは、全てオプションプレースホルダーで無ければなりません。  
+例えば、`/{page}/blog` は有効なパスです。しかし、`page` は常に必須で無ければなりません。
+（即ち、`/blog` はこのルートにはマッチしません）
+</well>
+
+<well>
+<WRAP hint></WRAP>
+
+一番後ろにオプションのパラメータを持つルートは、URL の末尾にスラッシュ `/` を持つリクエストにはマッチしません。
+（例、`/blog/` マッチしません。`/blog` マッチします）
+</well>
+
+
+
+### Requirements の追加
+
+これまでに作成されたルートを簡単に見てみましょう。
+
+<tabs>
+  * [Annotations](#tab8-code-annotations)
+  * [YAML](#tab8-code-yaml)
+  * [XML](#tab8-code-xml)
+  * [PHP](#tab8-code-php)
+
+<pane id="tab8-code-annotations"><code php>
+// src/AppBundle/Controller/BlogController.php
+
+// ...
+class BlogController extends Controller
+{
+    /**
+     * @Route("/blog/{page}", defaults={"page" = 1})
+     */
+    public function indexAction($page)
+    {
+        // ...
+    }
+
+    /**
+     * @Route("/blog/{slug}")
+     */
+    public function showAction($slug)
+    {
+        // ...
+    }
+}
+</code></pane>
+
+<pane id="tab8-code-yaml"><code yml>
+# app/config/routing.yml
+blog:
+    path:      /blog/{page}
+    defaults:  { _controller: AppBundle:Blog:index, page: 1 }
+
+blog_show:
+    path:      /blog/{slug}
+    defaults:  { _controller: AppBundle:Blog:show }
+</code></pane>
+
+<pane id="tab8-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="blog" path="/blog/{page}">
+        <default key="_controller">AppBundle:Blog:index</default>
+        <default key="page">1</default>
+    </route>
+
+    <route id="blog_show" path="/blog/{slug}">
+        <default key="_controller">AppBundle:Blog:show</default>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab8-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('blog', new Route('/blog/{page}', array(
+    '_controller' => 'AppBundle:Blog:index',
+    'page'        => 1,
+)));
+
+$collection->add('blog_show', new Route('/blog/{show}', array(
+    '_controller' => 'AppBundle:Blog:show',
+)));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+問題点を発見することができますか？
+両方のルートが `/blog/*` のような URL にマッチするパターンを持っていることに注意してください。
+Symfony のルーターはいつも、最初にマッチしたルートを選択します。
+言い換えると、`blog_show` ルートは決してマッチしません。
+代わりに、`/blog/my-blog-post/` のような URL は最初のルート（`blog`ルート）にマッチして、`{page}` パラメータに、ページ番号では無い `my-blog-post` という値が返されてしまいます。
+
+^ URL                ^ ルート ^ パラメータ ^
+| /blog/2            | blog  | {page} = 2              |
+| /blog/my-blog-post | blog  | {page} = "my-blog-post" |
+
+この問題の解決方法はルートに、requirements か [condition](#Condition でのカスタマイズ) を追加することです。この例のルートでは、`/blog/{page}` の `{page}` 部分が整数にのみマッチすれば、完璧な動きになります。幸運にも、それは正規表現を使う `requiremets` を各パラメータに追加することで、簡単にできます。
+
+<tabs>
+  * [Annotations](#tab9-code-annotations)
+  * [YAML](#tab9-code-yaml)
+  * [XML](#tab9-code-xml)
+  * [PHP](#tab9-code-php)
+
+<pane id="tab9-code-annotations"><code php>
+// src/AppBundle/Controller/BlogController.php
+
+// ...
+
+/**
+ * @Route("/blog/{page}", defaults={"page": 1}, requirements={
+ *     "page": "\d+"
+ * })
+ */
+public function indexAction($page)
+{
+    // ...
+}
+</code></pane>
+
+<pane id="tab9-code-yaml"><code yml>
+# app/config/routing.yml
+blog:
+    path:      /blog/{page}
+    defaults:  { _controller: AppBundle:Blog:index, page: 1 }
+    requirements:
+        page:  \d+
+</code></pane>
+
+<pane id="tab9-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="blog" path="/blog/{page}">
+        <default key="_controller">AppBundle:Blog:index</default>
+        <default key="page">1</default>
+        <requirement key="page">\d+</requirement>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab9-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('blog', new Route('/blog/{page}', array(
+    '_controller' => 'AppBundle:Blog:index',
+    'page'        => 1,
+), array(
+    'page' => '\d+',
+)));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+`\d+` requirement は、`{page}` パラメータの値が数字で無ければならないことを定義する正規表現です。
+`blog` ルートはまだ、`/blog/2`のような URL にマッチしますが（`2` は数字なので）、`/blog/my-blog-post` のような URL には、もはやマッチしません（`my-blog-post` は数字ではないので）。
+
+結果として、`/blog/my-blog-post` のような URL は 正しく `blog_show` ルートにマッチするようになります。
+
+^ URL                  ^ ルート    ^ パラメータ ^
+| /blog/2              | blog      | {page} = 2              |
+| /blog/my-blog-post   | blog\_show | {slug} = "my-blog-post" |
+| /blog/2-my-blog-post | blog\_show | {slug} = "2-my-blog-post" |
+
+<well>
+<WRAP addon></WRAP>
+** 先にあるルートが常に勝つ **
+
+何を言っているかというと、ルートの順番はとても重要だということです。
+もし、`blog_show` ルートが `blog` ルートの上に記述されていた場合、`/blog/2` URL は `blog` の代わりに `blog_show` にマッチします。なぜなら、`blog_show` の `{slug}` パラメータは `requirements` を持っていないからです。
+適切な順番と賢い `requirements` を使うことで、ほとんどのことが出来るようになります。
+</well>
+
+requirements パラメータは正規表現なので、各 requirement の複雑さや柔軟性は完全にあなた次第です。
+アプリケーションのホームページを URL に基づいて、２つの言語で利用できるようにしようとすると次のようになります。
+
+<tabs>
+  * [Annotations](#tab10-code-annotations)
+  * [YAML](#tab10-code-yaml)
+  * [XML](#tab10-code-xml)
+  * [PHP](#tab10-code-php)
+
+<pane id="tab10-code-annotations"><code php>
+// src/AppBundle/Controller/MainController.php
+
+// ...
+class MainController extends Controller
+{
+    /**
+     * @Route("/{_locale}", defaults={"_locale": "en"}, requirements={
+     *     "_locale": "en|fr"
+     * })
+     */
+    public function homepageAction($_locale)
+    {
+    }
+}
+</code></pane>
+
+<pane id="tab10-code-yaml"><code yml>
+# app/config/routing.yml
+homepage:
+    path:      /{_locale}
+    defaults:  { _controller: AppBundle:Main:homepage, _locale: en }
+    requirements:
+        _locale:  en|fr
+</code></pane>
+
+<pane id="tab10-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="homepage" path="/{_locale}">
+        <default key="_controller">AppBundle:Main:homepage</default>
+        <default key="_locale">en</default>
+        <requirement key="_locale">en|fr</requirement>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab10-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('homepage', new Route('/{_locale}', array(
+    '_controller' => 'AppBundle:Main:homepage',
+    '_locale'     => 'en',
+), array(
+    '_locale' => 'en|fr',
+)));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+リクエストが来た時、URL の `{_locale}` 部分は、`(en|fr)` 正規表現と照合されます。
+
+^ パス ^ パラメータ ^
+| /   | {\_locale} = "en" |
+| /en | {\_locale} = "en" |
+| /fr | {\_locale} = "fr" |
+| /es | このルートにはマッチしません |
+
 
 ### HTTP メソッドの追加
 
+URL に加えて、リクエストの HTTP メソッド（GET, HEAD, POST, PUT, DELETE）をルートにマッチングをすることができます。
+２つのルートを持つ、ブログの API を作るとしましょう、１つは記事を表示する為の物（GET か HEAD リクエストで）、もう１つは記事を更新する為の物です（PUT リクエストで）。
+これは次のようなルート設定で可能になります。
+
+<tabs>
+  * [Annotations](#tab11-code-annotations)
+  * [YAML](#tab11-code-yaml)
+  * [XML](#tab11-code-xml)
+  * [PHP](#tab11-code-php)
+
+<pane id="tab11-code-annotations"><code php>
+// src/AppBundle/Controller/MainController.php
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+// ...
+
+class BlogApiController extends Controller
+{
+    /**
+     * @Route("/api/posts/{id}")
+     * @Method({"GET","HEAD"})
+     */
+    public function showAction($id)
+    {
+        // ... return a JSON response with the post
+    }
+
+    /**
+     * @Route("/api/posts/{id}")
+     * @Method("PUT")
+     */
+    public function editAction($id)
+    {
+        // ... edit a post
+    }
+}
+</code></pane>
+
+<pane id="tab11-code-yaml"><code yml>
+# app/config/routing.yml
+api_post_show:
+    path:     /api/posts/{id}
+    defaults: { _controller: AppBundle:BlogApi:show }
+    methods:  [GET, HEAD]
+
+api_post_edit:
+    path:     /api/posts/{id}
+    defaults: { _controller: AppBundle:BlogApi:edit }
+    methods:  [PUT]
+</code></pane>
+
+<pane id="tab11-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="api_post_show" path="/api/posts/{id}" methods="GET|HEAD">
+        <default key="_controller">AppBundle:BlogApi:show</default>
+    </route>
+
+    <route id="api_post_edit" path="/api/posts/{id}" methods="PUT">
+        <default key="_controller">AppBundle:BlogApi:edit</default>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab11-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('api_post_show', new Route('/api/posts/{id}', array(
+    '_controller' => 'AppBundle:BlogApi:show',
+), array(), array(), '', array(), array('GET', 'HEAD')));
+
+$collection->add('api_post_edit', new Route('/api/posts/{id}', array(
+    '_controller' => 'AppBundle:BlogApi:edit',
+), array(), array(), '', array(), array('PUT')));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+２つのルートは同じパス（`/api/posts/{id}`）を持っているにもかかわらず、最初のルートは GET か HEAD リクエストのみにマッチし、２つ目のルートは PUT リクエストにのみマッチします。
+これは、２つのアクションの異なるコントローラを使用している時に、同じ URL で記事の表示と編集ができることを意味しています。
+
+<well>
+<WRAP note></WRAP>
+
+もし、何のメソッドも指定されていない時は、ルートは全てのメソッドとマッチします。
+</well>
+
 ### ホストの追加
 
-### コンディションでのカスタマイズ
+リクエストの HTTP ホストをルートにマッチングすることも出来ます。詳細は[ホストに基づくルートのマッチング方法](/doc/components/routing/hostname_pattern)を参照してください。
+
+### Condition でのカスタマイズ
+
+今まで見てきたように、ルートを作成するには、正規表現を使ったワイルドカード、HTTP メソッド、ホストネームだけが使えます。しかし、ルーティングシステムは、`condition` を使うことで、ほとんど制限なく柔軟に拡張することができます。
+
+<tabs>
+  * [YAML](#tab12-code-yaml)
+  * [XML](#tab12-code-xml)
+  * [PHP](#tab12-code-php)
+
+<pane id="tab12-code-yaml"><code yml>
+contact:
+    path:     /contact
+    defaults: { _controller: AcmeDemoBundle:Main:contact }
+    condition: "context.getMethod() in ['GET', 'HEAD'] and request.headers.get('User-Agent') matches '/firefox/i'"
+</code></pane>
+
+<pane id="tab12-code-xml"><code xml>
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="contact" path="/contact">
+        <default key="_controller">AcmeDemoBundle:Main:contact</default>
+        <condition>context.getMethod() in ['GET', 'HEAD'] and request.headers.get('User-Agent') matches '/firefox/i'</condition>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab12-code-php"><code php>
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add('contact', new Route(
+    '/contact', array(
+        '_controller' => 'AcmeDemoBundle:Main:contact',
+    ),
+    array(),
+    array(),
+    '',
+    array(),
+    array(),
+    'context.getMethod() in ["GET", "HEAD"] and request.headers.get("User-Agent") matches "/firefox/i"'
+));
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+`condition` は Expression です。Expression 構文の詳細は [Expression 構文](/doc/components/expression_language/syntax)を参照してください。
+この例の場合、HTTP メソッドが GET か HEAD の何れかで、`User-Agent` ヘッダーが `firefox` に一致する時にマッチします。
+
+以下の Expression に渡される２つの変数を活用することで、Expression の中で、どんな複雑なロジックでも実行することができます。
+
+- `context`
+ - [RequestContext](http://api.symfony.com/3.0/Symfony/Component/Routing/RequestContext.html) のインスタンスで、マッチしたルートの基本情報を保持しています。
+- `request`
+ - Symfony の [Request](http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Request.html) オブジェクトです。詳細は[こちら](/doc/components/http_foundation/introduction#component-http-foundation-request)
+
+<well>
+
+<WRAP caution></WRAP>
+URL を生成する時には、condition は考慮されません。
+</well>
+
+<well>
+
+<WRAP addon></WRAP>
+**Expressions は PHP にコンパイルされます**
+
+裏では、Expressions は素の PHP にコンパイルされます。
+先ほどの例では、キャッシュディレクトリ内に次の PHP を生成します。
+
+<code php>
+if (rtrim($pathinfo, '/contact') === '' && (
+    in_array($context->getMethod(), array(0 => "GET", 1 => "HEAD"))
+    && preg_match("/firefox/i", $request->headers->get("User-Agent"))
+)) {
+    // ...
+}
+</code>
+
+このおかげで、`condition`（Expressions）を使っても余計なオーバーヘッドは発生しません。
+</well>
+
+
 
 ### 高度なルーティング例
 
-### 特別なルートパラメータ
+ここまでで、Symfony のパワフルなルーティング構造を作成する為に必要なことが全てわかりました。
+以下は、ルーティングシステムがいかに柔軟にできるかの例です。
+
+<tabs>
+  * [Annotations](#tab13-code-annotations)
+  * [YAML](#tab13-code-yaml)
+  * [XML](#tab13-code-xml)
+  * [PHP](#tab13-code-php)
+
+<pane id="tab13-code-annotations"><code php>
+// src/AppBundle/Controller/ArticleController.php
+
+// ...
+class ArticleController extends Controller
+{
+    /**
+     * @Route(
+     *     "/articles/{_locale}/{year}/{title}.{_format}",
+     *     defaults={"_format": "html"},
+     *     requirements={
+     *         "_locale": "en|fr",
+     *         "_format": "html|rss",
+     *         "year": "\d+"
+     *     }
+     * )
+     */
+    public function showAction($_locale, $year, $title)
+    {
+    }
+}
+</code></pane>
+
+<pane id="tab13-code-yaml"><code yml>
+# app/config/routing.yml
+article_show:
+  path:     /articles/{_locale}/{year}/{title}.{_format}
+  defaults: { _controller: AppBundle:Article:show, _format: html }
+  requirements:
+      _locale:  en|fr
+      _format:  html|rss
+      year:     \d+
+</code></pane>
+
+<pane id="tab13-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="article_show"
+        path="/articles/{_locale}/{year}/{title}.{_format}">
+
+        <default key="_controller">AppBundle:Article:show</default>
+        <default key="_format">html</default>
+        <requirement key="_locale">en|fr</requirement>
+        <requirement key="_format">html|rss</requirement>
+        <requirement key="year">\d+</requirement>
+
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab13-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add(
+    'article_show',
+    new Route('/articles/{_locale}/{year}/{title}.{_format}', array(
+        '_controller' => 'AppBundle:Article:show',
+        '_format'     => 'html',
+    ), array(
+        '_locale' => 'en|fr',
+        '_format' => 'html|rss',
+        'year'    => '\d+',
+    ))
+);
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+いままで見てきたように、このルートは URL の `{_locale}` 部分が `en` か　｀fr｀の何れかで、`{year}` が数字の時だけマッチします。このルートはまた、スラッシュの代わりにプレースホルダー間でドットを使う方法も示しています。
+この URL にマッチするルートは次の様になります。
+
+- `/articles/en/2010/my-post`
+- `/articles/fr/2010/my-post.rss`
+- `/articles/en/2013/my-latest-post.html`
+
+<well>
+<WRAP addon></WRAP>
+**特別な _format ルーティングパラーメータ**
+
+また、この例では特別な `_format` ルーティングパラメータの使い方を強調しています。
+このパラメータを使う時には、マッチした値は `Request` オブジェクトの `request format` になります。
+
+最終的に、`request format` はレスポンスの　`Content-Type` に設定されたりします。
+例えば、`json` は、`Content-Type` では `application/json` に変換されます。
+また、コントローラー内で、 `_format` の値に応じて、異なるテンプレートを出力するためにも使用されます。
+`_format` パラメータは、同一のコンテンツを異なるフォーマットで出力する、とても強力な方法です。
+
+Symfony のバージョン 3.0 より前の物ではクエリーパラメータ名に `_format` を追加することで、 `request format` を上書き出来ました（例、`/foo/bar?_format=json`）。
+しかし、この動作に依存することは、悪い習慣であるだけでなく、アプリケーションをバージョン 3 にアップグレードすることを複雑にします。
+</well>
+
+<well>
+<WRAP note></WRAP>
+時々、ルートの特定の部分をグローバルに設定できるようにしたいことがあります。
+Symfony はサービスコンテナパラメータを活用して、これを可能にする方法を提供します。
+詳細は[ルート内でサービスコンテナパラメータを使う方法](/doc/cookbook/routing/service_container_parameters)を参照してください。
+
+</well>
+
+### 特別なルーティングパラメータ
+
+いままで見てきたように、各ルーティングパラメータやデフォルト値は、最終的に、コントローラメソッドの引数として使用できるようになります。
+加えて、３つの特別なパラメータがあります。それらは、アプリケーションに、それぞれ個別の機能を追加します。
+
+- `_controller`
+ - ルートがマッチした時に、どのコントローラを実行するのかを判断する為に使われます。
+- `_format`
+ - `request format` をセットする為に使われます。
+- `_locale`
+ - リクエストの `locale` をセットする為に使われます。詳細は[こちら](/doc/book/translation#book-translation-locale-url)
 
 ## コントローラネーミングパターン
 
+全てのルートには、ルートがマッチした時に、どのコントローラを実行するかを指示する、`_controller` パラメーターを指定する必要があります。
+このパラメータは、_論理コントローラ名_というシンプルな文字列パターンを使っています。
+これは、Symfony が特定の PHP メソッドやクラスにマップする為に使用されます。
+このパターンはコロンで区切られた３つのパートを持っています。
+
+> bundle:controller:action
+
+例えば、`_contoller` の値が `AppBundle:Blog:show` の時は、次のような意味になります。
+
+^ Bundle    ^ Controller Class ^ Method Name ^
+| AppBundle | BlogController   | showAction  |
+
+コントローラーは次のようになります。
+
+<code php>
+// src/AppBundle/Controller/BlogController.php
+namespace AppBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class BlogController extends Controller
+{
+    public function showAction($slug)
+    {
+        // ...
+    }
+}
+</code>
+
+Symfony がクラス名に `Controller` を追加すること（`Blog` => `BlogController`）、メソッド名に `Action` を追加すること（`show` => `showAction`）に注意してください。 
+
+また、`AppBundle\Controller\BlogController::showAction` のような、完全なクラス名やメソッド名を使ってコントローラを参照することも可能です。
+しかし、いくつかのシンプルな規約に従えば、論理名はより簡素になり、より柔軟にすることができます。
+
+<well>
+<WRAP note></WRAP>
+
+論理名や完全なクラス名を使うことに加えて、Symfony はコントローラを参照する３つ目の方法をサポートします。
+この方法は１つのコロンだけを使って、コントローラをサービスとして参照します（例、`service_name:indexAction`）。
+詳細は、[サービスとしてのコントローラの定義方法](/doc/cookbook/controller/service)を参照してください。
+</well>
+
+
 ## ルートパラメータとコントローラの引数
+
+ルートパラメータ（例、`{slug}`）は、コントローラメソッドの引数として使用されるため、特に重要です。
+
+<code>
+public function showAction($slug)
+{
+    // ...
+}
+</code>
+
+実際には、パラメータの値は、ルートの `defaults` 設定の値とマージされて、１つの配列が生成されます。
+そして、この配列の各キーがコントローラの引数として使用されます。
+
+つまり、Symfony は、コントローラーメソッドの各引数に対して、その名前のパラメータをルートから探して、見つかった値をその引数に代入します。
+
+上記の、[高度なルーティング例](#高度なルーティング例)の場合、次の変数を、どんな組み合わせでも、どんな順番でも `showAction()` メソッドの引数として使用することができます。
+
+- $\_locale
+- $year
+- $title
+- $\_format
+- $\_controller
+- $\_route
+
+<well>
+<WRAP hint></WRAP>
+特別な `$_route` 変数は、マッチしたルートの名前がセットされます。
+</well>
+
+ルート定義に追加情報を追加して、コントローラからアクセスすることもできます。
+詳細は[ルートからコントローラへ追加情報を渡す方法](/doc/cookbook/routing/extra_information)を参照してください。
+
+
 
 ## 外部ルーティングリソースのインクルード
 
+全てのルートは１つの設定ファイルから読み込まれます。通常は `app/config/routing.yml` です（上記の[ルートの作成](#ルートの作成)を参照）。しかし、ルーティングアノテーションを使用する場合、コントローラがアノテーションを使用することをルータに伝える必要があります。これは、ルーティング設定にディレクトリをインポートすることで行うことができます。
+
+<tabs>
+  * [YAML](#tab14-code-yaml)
+  * [XML](#tab14-code-xml)
+  * [PHP](#tab14-code-php)
+
+<pane id="tab14-code-yaml"><code yml>
+# app/config/routing.yml
+app:
+    resource: '@AppBundle/Controller/'
+    type:     annotation # required to enable the Annotation reader for this resource
+</code></pane>
+
+<pane id="tab14-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <!-- the type is required to enable the annotation reader for this resource -->
+    <import resource="@AppBundle/Controller/" type="annotation"/>
+</routes>
+</code></pane>
+
+<pane id="tab14-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+
+$collection = new RouteCollection();
+$collection->addCollection(
+    // second argument is the type, which is required to enable
+    // the annotation reader for this resource
+    $loader->import("@AppBundle/Controller/", "annotation")
+);
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+<well>
+<WRAP note></WRAP>
+YAML からリソースをインポートする場合、キー（例、`app`）には特に意味がありません。
+ただ、他の行が上書きしないように、ユニークなキーになっていることを確認してください。
+</well>
+
+`resource` キーは与えられたルーティングリソースを読み込みます。
+この例の場合、リソースはディレクトリです。`@AppBundle` ショートカット書式は AppBundle のフルパスに変換されます。
+リソースがディレクトリを指す場合には、ディレクトリ内の全てのファイルが解析されて、ルーティングに追加されます。
+
+<well>
+<WRAP note></WRAP>
+また、別のルーティング設定ファイルを含めることもできます。これは、多くの場合、サードパーティのバンドルのルーティングをインポートする為に使用されます。
+
+<tabs>
+  * [YAML](#tab15-code-yaml)
+  * [XML](#tab15-code-xml)
+  * [PHP](#tab15-code-php)
+
+<pane id="tab15-code-yaml"><code yml>
+# app/config/routing.yml
+app:
+    resource: '@AcmeOtherBundle/Resources/config/routing.yml'
+</code></pane>
+
+<pane id="tab15-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <import resource="@AcmeOtherBundle/Resources/config/routing.xml" />
+</routes>
+</code></pane>
+
+<pane id="tab15-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+
+$collection = new RouteCollection();
+$collection->addCollection(
+    $loader->import("@AcmeOtherBundle/Resources/config/routing.php")
+);
+
+return $collection;
+</code></pane>
+
+</tabs>
+</well>
+
+
+
+
 ### インポートされたルートのプレフィックス
+
+インポートされたルートにプレフィックスを付けることもできます。
+例えば、AppBundle 内の全てのルートに `/site/` を付けたいとしましょう（例、`/blog/{slug}` の代わりに `/site/blog/{slug}`）。
+
+<tabs>
+  * [YAML](#tab16-code-yaml)
+  * [XML](#tab16-code-xml)
+  * [PHP](#tab16-code-php)
+
+<pane id="tab16-code-yaml"><code yml>
+# app/config/routing.yml
+app:
+    resource: '@AppBundle/Controller/'
+    type:     annotation
+    prefix:   /site
+</code></pane>
+
+<pane id="tab16-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <import
+        resource="@AppBundle/Controller/"
+        type="annotation"
+        prefix="/site" />
+</routes>
+</code></pane>
+
+<pane id="tab16-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+
+$app = $loader->import('@AppBundle/Controller/', 'annotation');
+$app->addPrefix('/site');
+
+$collection = new RouteCollection();
+$collection->addCollection($app);
+
+return $collection;
+</code></pane>
+
+</tabs>
+
+新しいルーティングリソースから読み込まれた各ルートのパスは、先頭に `/site` が追加されます。
+
+
 
 ### インポートされたルートへのホスト要件の追加
 
+インポートされたルートにホストの正規表現を設定することができます。
+詳細は[インポートされたルートにホストマッチングを使う](doc/components/routing/hostname_pattern#component-routing-host-imported)を参照してください。
+
 ## ルートの表示とデバッグ
+
+ルートを追加したり、カスタマイズしている時、ルートを表示して詳細な情報を取得できると便利です。
+アプリケーションの全てのルートを見る良い方法は、`debug:router` コンソールコマンを使うことです。
+プロジェクトのルートディレクトリで次のコマンドを実行します。
+
+<code bash>
+$ php bin/console debug:router
+</code>
+
+コマンドはアプリケーション内で設定された全てのルートの便利なリストを表示します。
+
+<code bash>
+homepage              ANY       /
+contact               GET       /contact
+contact_process       POST      /contact
+article_show          ANY       /articles/{_locale}/{year}/{title}.{_format}
+blog                  ANY       /blog/{page}
+blog_show             ANY       /blog/{slug}
+</code>
+
+また、コマンドの最後にルート名を付けることで、１つのルートの詳細な情報を表示することもできます。
+
+<code bash>
+$ php bin/console debug:router article_show
+</code>
+
+同様に、URL がルートにマッチするかどうかをテストしたい時には、`router:match`コンソールコマンドを使用することができます。
+
+<code bash>
+$ php bin/console router:match /blog/my-latest-post
+</code>
+
+このコマンドは URL にマッチしたルートを表示します。
+
+<code bash>
+Route "blog_show" matches
+</code>
+
+
+
 
 ## URL の生成
 
-### クエリー文字列
+ルーティングシステムは、URL を生成するためにも使用すべきです。
+実はルーティングは双方向システムです。URL をコントローラとパラメータにマッピングし、ルートとパラメータから URL を生成します。
+`match()` と `generate()` メソッドがこの双方向システムを形成します。
+[先ほどの](#実例でみるルーティング) `blog_show` の例を見てみましょう。
+
+<code php>
+$params = $this->get('router')->match('/blog/my-blog-post');
+// array(
+//     'slug'        => 'my-blog-post',
+//     '_controller' => 'AppBundle:Blog:show',
+// )
+
+$uri = $this->get('router')->generate('blog_show', array(
+    'slug' => 'my-blog-post'
+));
+// /blog/my-blog-post
+</code>
+
+URL を生成するには、ルート名（例、`blog_show`）と、ルートのパスで使われている全てのワイルドカード（例、`slug = my-blog-post`）を指定する必要があります。
+この情報を使用して、どんな URL でも簡単に生成することができます。
+
+<code php>
+class MainController extends Controller
+{
+    public function showAction($slug)
+    {
+        // ...
+
+        $url = $this->generateUrl(
+            'blog_show',
+            array('slug' => 'my-blog-post')
+        );
+    }
+}
+</code>
+
+<well>
+<WRAP note></WRAP>
+基本コントローラクラス内に定義されている `generateUrl()` メソッドは次のコードの単なるショートカットです。
+
+<code php>
+$url = $this->container->get('router')->generate(
+    'blog_show',
+    array('slug' => 'my-blog-post')
+);
+</code>
+</well>
+
+次のセクションで、テンプレート内で URL を生成する方法を学びます。
+
+<well>
+<WRAP note></WRAP>
+アプリケーションのフロントエンドで Ajax を使っている時には、JavaScript でルーティング設定に基づく URL を生成したいはずです。[FOSJsRoutingBundle](https://github.com/FriendsOfSymfony/FOSJsRoutingBundle) を使うことで、それを行うことができます。
+
+詳細はバンドルのドキュメントを参照してください。
+</well>
+
+
+### クエリー文字列を持つ URL の生成
+
+`generate` メソッドは URI を生成するのに、ワイルドカードの配列を取得します。
+ルートパラメーターに存在しないキーを渡すと、クエリーストリングとして URI に追加されます。
+
+<code php>
+$this->get('router')->generate('blog', array(
+    'page' => 2,
+    'category' => 'Symfony'
+));
+// /blog/2?category=Symfony
+</code>
+
 
 ### テンプレートでの URL 生成
 
+URL を生成する最も一般的な場所は、ページ間でリンクを行う、テンプレートの中です。これは前と同じように行いますが、テンプレートのヘルパー関数を使用します。
+
+<tabs>
+  * [Twig](#tab16-view-twig)
+  * [PHP](#tab16-view-php)
+
+<pane id="tab16-view-twig"><code twig>
+<a href="{{ path('blog_show', {'slug': 'my-blog-post'}) }}">
+  Read this blog post.
+</a>
+</code></pane>
+
+<pane id="tab16-view-php"><code php>
+<a href="<?php echo $view['router']->path('blog_show', array(
+    'slug' => 'my-blog-post',
+)) ?>">
+    Read this blog post.
+</a>
+</code></pane>
+
+</tabs>
+
+<well>
+<WRAP addon></WRAP>
+<btn type="info" size="xs">2.8</btn>
+`path()` PHP テンプレートヘルパー関数は、Symfony 2.8 で導入されました。
+2.8 より前のバージョンでは、`generate()` ヘルパーメソッドを使う必要があります。
+</well>
+
 ### 絶対 URL の生成
+
+デフォルトでは、ルーターは相対的な URL（例、`/blog`）を生成します。
+コントローラで、絶対 URL を生成するには、`generateUrl()` メソッドの第３引数に `true` を渡します。
+
+<code php>
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+$this->generateUrl('blog_show', array('slug' => 'my-blog-post'), UrlGeneratorInterface::ABSOLUTE_URL);
+// http://www.example.com/blog/my-blog-post
+</code>
+
+テンプレートでは、相対 URL を生成する `path()` 関数の代わりに、`url()` 関数を使います。
+
+<tabs>
+  * [Twig](#tab17-view-twig)
+  * [PHP](#tab17-view-php)
+
+<pane id="tab17-view-twig"><code twig>
+<a href="{{ url('blog_show', {'slug': 'my-blog-post'}) }}">
+  Read this blog post.
+</a>
+</code></pane>
+
+<pane id="tab17-view-php"><code php>
+<a href="<?php echo $view['router']->url('blog_show', array(
+    'slug' => 'my-blog-post',
+)) ?>">
+    Read this blog post.
+</a>
+</code></pane>
+
+</tabs>
+
+<well>
+<WRAP addon></WRAP>
+<btn type="info" size="xs">2.8</btn>
+`url()` PHP テンプレートヘルパー関数は、Symfony 2.8 で導入されました。
+2.8 より前のバージョンでは、`generate()` ヘルパーメソッドを使って、
+第３引数に `Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL` を渡す必要があります。
+</well>
+
+<well>
+<WRAP note></WRAP>
+絶対 URL を生成する時に使用されるホストは、現在のリクエストオブジェクトを使って、自動的に検出されます。
+コンソールコマンドで絶対 URL を生成する時には、これは動作しません。この問題の解決方法は[コンソールから URL を生成してメールする方法](/doc/cookbook/console/sending_emails)を参照してください。
+</well>
+
 
 ## まとめ
 
+ルーティングは、リクエストされた URL を、そのリクエストが処理されるべきコントローラの関数にマッピングするシステムです。
+それは、美しい URL を指定することや、URL から 疎結合にしたアプリケーションの機能性を維持することの両方を可能にします。
+ルーティングシステムは双方向のメカニズムで、URL を生成する為にも使用されます。
+
+
 ## クックブックの参照先
 
+[常にルートで HTTPS または HTTPを使用する方法](/doc/cookbook/routing/scheme)
 
 
 

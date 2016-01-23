@@ -9,3 +9,10 @@
 <code bash>
 $ find . -mindepth 2 -name start.txt | awk '{line = $0; sub("start.txt", "sub_menu.txt", line); cmd = sprintf("start2menu.awk %s > %s", $0, line); system(cmd)}'
 </code>
+
+### Cookbook の進捗集計
+
+<code bash>
+$ cd data/pages/doc/cookbook
+$ find . -name start.txt | xargs awk -F"|" 'NF == 6 {cnt[$3] += 1} END {for (key in cnt) {printf("%s = %d\n", key, cnt[key])} }'
+</code>

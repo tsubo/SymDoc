@@ -78,6 +78,12 @@
 - 箇条書き１
 - 箇条書き２
  - 箇条書き２１
+
+---
+
+ 1. 箇条書き１
+ 2. 箇条書き２
+ 3. 箇条書き３
 ```
 
 以下のように表示されます
@@ -85,6 +91,13 @@
 - 箇条書き１
 - 箇条書き２
  - 箇条書き２１
+
+---
+
+ 1. 箇条書き１
+ 2. 箇条書き２
+ 3. 箇条書き３
+
 
 
 ### ブロック
@@ -148,23 +161,28 @@
 
 ---
 
+
 ### 強調
 
 以下のように書くと
 
 ```
-ここが**重要**です
+ここが**太字**です。
 
-ここが*斜体*です
+ここが*斜体*です。ここも_斜体_です。
+
+これは__下線__です。
 ```
 
 以下のように表示されます
 
 - - -
 
-ここが**重要**です
+ここが**太字**です。
 
-ここが*斜体*です
+ここが*斜体*です。ここも_斜体_です。
+
+これは__下線__です。
 
 - - -
 
@@ -261,6 +279,7 @@ class LuckyController
 <well><WRAP note></WRAP>注釈</well>
 <well><WRAP hint></WRAP>ヒント</well>
 <well><WRAP ref></WRAP>関連</well>
+<well><WRAP caution></WRAP>注意</well>
 <well><WRAP addon></WRAP>補足</well>
 ```
 
@@ -269,6 +288,7 @@ class LuckyController
 <well><WRAP note></WRAP>注釈</well>
 <well><WRAP hint></WRAP>ヒント</well>
 <well><WRAP ref></WRAP>関連</well>
+<well><WRAP caution></WRAP>注意</well>
 <well><WRAP addon></WRAP>補足</well>
 
 
@@ -376,6 +396,7 @@ DokuwikiのMarkdownプラグインでは画像のリンクが出来ないので�
 ## その他
 
 - [スニペットページ](/help/snippets) - ちょっと複雑な書式をコピペして使えます
+- [トラブルシューティング](/help/troubleshooting)
 - [スタイルガイド](/help/style)
 
 

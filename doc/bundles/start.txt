@@ -1,15 +1,24 @@
 # Symfony Bundles
 
+[オリジナル Bundles](http://symfony.com/doc/bundles/)
+
 ^  タイトル                                                                       ^  状態    ^  翻訳更新日  ^ 備考 ^
+| **Symfony Standard Edition 内のバンドル**                                        ||||
 | [SensioFrameworkExtraBundle](/doc/bundles/SensioFrameworkExtraBundle/index)     |  募集中  |              | |
 | [SensioGeneratorBundle](/doc/bundles/SensioGeneratorBundle/index)               |  募集中  |              | |
+| **Doctrine プロジェクト関連のバンドル**                                           ||||
 | [DoctrineBundle](/doc/bundles/DoctrineBundle/index)                             |  募集中  |              | |
 | [DoctrineFixturesBundle](/doc/bundles/DoctrineFixturesBundle/index)             |  募集中  |              | |
 | [DoctrineMongoDBBundle](/doc/bundles/DoctrineMongoDBBundle/index)               |  募集中  |              | |
 | [DoctrineMigrationsBundle](/doc/bundles/DoctrineMigrationsBundle/index)         |  募集中  |              | |
+| **ポピュラーなバンドル**                                                          ||||
 | [FOSUserBundle](/doc/bundles/FOSUserBundle/index)                               |  募集中  |              | |
 | [FOSRestBundle](/doc/bundles/FOSRestBundle/index)                               |  募集中  |              | |
 | [KnpMenuBundle](/doc/bundles/KnpMenuBundle/index)                               |  募集中  |              | |
 | [StofDoctrineExtensionsBundle](/doc/bundles/StofDoctrineExtensionsBundle/index) |  募集中  |              | |
 | [LiipImagineBundle](/doc/bundles/LiipImagineBundle/index)                       |  募集中  |              | |
 
+// 進捗： 0 / 11 件完了
+<progress> 
+<bar value="0" type="success" showvalue="true"></bar>
+</progress>

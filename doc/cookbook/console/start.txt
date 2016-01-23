@@ -8,3 +8,4 @@
 | [How to Generate URLs and Send Emails from the Console](/doc/cookbook/console/sending_emails) |  募集中  | | |
 | [How to Enable Logging in Console Commands](/doc/cookbook/console/logging) |  募集中  | | |
 | [How to Define Commands as Services](/doc/cookbook/console/commands_as_services) |  募集中  | | |
+

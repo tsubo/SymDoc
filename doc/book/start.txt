@@ -1,13 +1,15 @@
 # Symfony Book
 
+[オリジナル Book](https://symfony.com/doc/current/book/index.html)
+
 ^  タイトル                                                    ^  状態                ^  翻訳更新日   ^ 備考 ^
 | [Symfony and HTTP Fundamentals](/doc/book/http_fundamentals)  |  募集中              |              | |
 | [Symfony versus Flat PHP](/doc/book/from_flat_php_to_symfony) |  募集中              |              | |
 | [Symfony のインストールと設定](/doc/book/installation)        |  v3.0                |  2016/01/19  | |
 | [Symfony での最初のページ作成](/doc/book/page_creation)       |  v3.0                |  2016-01/18  | |
 | [コントローラ](/doc/book/controller)                          |  v3.0                |  2016/01/18  | |
-| [ルーティング](/doc/book/routing)                             |  翻訳中              |              | tsubo |
-| [Creating and Using Templates](/doc/book/templating)          |  募集中              |              | |
+| [ルーティング](/doc/book/routing)                             |  v3.0                |  2016/01/24  | |
+| [テンプレートの作成と使い方](/doc/book/templating)             |  翻訳中              |              | tsubo |
 | [Symfony の設定と環境](/doc/book/configuration)               |  v3.0                |  2016/01/20  | |
 | [バンドルシステム](/doc/book/bundles)                         |  v3.0                |  2016/01/20  | |
 | [Databases and Doctrine](/doc/book/doctrine)                  |  募集中              |              | |
@@ -20,3 +22,10 @@
 | [Translations](/doc/book/translation)                         |  募集中              |              | |
 | [Service Container](/doc/book/service_container)              |  募集中              |              | |
 | [Performance](/doc/book/performance)                          |  募集中              |              | |
+
+// 進捗： 6 / 19 件完了
+/* 今はまだ、ホームページの円グラフの方を更新すること
+<progress> 
+<bar value="32" type="success" showvalue="true"></bar>
+</progress>
+*/

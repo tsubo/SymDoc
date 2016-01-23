@@ -6,6 +6,6 @@
 - [スニペット](/help/snippets)
 - [ディレクトリ構成](/help/directory_structure)
 - [スタイルガイド](/help/style)
-- [バナー表示キャンペーン](/help/banner)
+- [トラブルシューティング](/help/troubleshooting)
 
 

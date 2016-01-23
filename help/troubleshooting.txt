@@ -1,0 +1,199 @@
+# トラブルシューティング
+
+## 箇条書きが正しく表示されない
+
+<well>
+<WRAP caution></WRAP>
+- リスト１
+- リスト２
+- リスト３
+</well>
+
+<well>
+<WRAP hint></WRAP>
+前後に改行（空の行）を入れると、正しく表示されます。
+
+- リスト１
+- リスト２
+- リスト３
+
+</well>
+
+
+## ２つ目以降のタブのパネル部分が表示されない
+
+<well>
+<WRAP caution></WRAP>
+<tabs>
+  * [Twig](#tab-twig)
+  * [PHP](#tab-php)
+
+<pane id="tab-twig"><code twig>
+// Twig
+</code></pane>
+
+<pane id="tab-php"><code php>
+// PHP
+</code></pane>
+</tabs>
+
+<tabs>
+  * [Twig](#tab-twig)
+  * [PHP](#tab-php)
+
+<pane id="tab-twig"><code twig>
+// Twig
+</code></pane>
+
+<pane id="tab-php"><code php>
+// PHP
+</code></pane>
+</tabs>
+</well>
+
+
+<well>
+<WRAP hint></WRAP>
+ID をユニークに設定すると直ります。
+
+^ タブ        ^ tabs のリンク部分 ^ pane のID ^
+|最初のタブ   | #tab1-twig\\ #tab1-php | id="tab1-twig"\\ id="tab1-php" |
+|２つ目のタブ | #tab2-twig\\ #tab2-php | id="tab2-twig"\\ id="tab2-php" |
+
+```
+<tabs>
+  * [Twig](#tab1-twig)
+  * [PHP](#tab1-php)
+
+<pane id="tab1-twig"><code twig>
+// Twig
+</code></pane>
+
+<pane id="tab1-php"><code php>
+// PHP
+</code></pane>
+</tabs>
+
+<tabs>
+  * [Twig](#tab2-twig)
+  * [PHP](#tab2-php)
+
+<pane id="tab2-twig"><code twig>
+// Twig
+</code></pane>
+
+<pane id="tab2-php"><code php>
+// PHP
+</code></pane>
+</tabs>
+```
+
+<tabs>
+  * [Twig](#tab1-twig)
+  * [PHP](#tab1-php)
+
+<pane id="tab1-twig"><code twig>
+// Twig
+</code></pane>
+
+<pane id="tab1-php"><code php>
+// PHP
+</code></pane>
+</tabs>
+
+<tabs>
+  * [Twig](#tab2-twig)
+  * [PHP](#tab2-php)
+
+<pane id="tab2-twig"><code twig>
+// Twig
+</code></pane>
+
+<pane id="tab2-php"><code php>
+// PHP
+</code></pane>
+</tabs>
+</well>
+
+
+## 箇条書きにアンダーバーがあると、正しく表示されない
+
+<well>
+<WRAP caution></WRAP>
+
+```
+- $_locale
+- $year
+- $title
+- $_format
+- $_controller
+- $_route
+```
+
+- $_locale
+- $year
+- $title
+- $_format
+- $_controller
+- $_route
+
+</well>
+
+<well>
+<WRAP hint></WRAP>
+アンダーバーを `\` でエスケープすると直ります。
+
+```
+- $\_locale
+- $year
+- $title
+- $\_format
+- $\_controller
+- $\_route
+```
+
+- $\_locale
+- $year
+- $title
+- $\_format
+- $\_controller
+- $\_route
+
+</well>
+
+## 表の中にアンダーバーがあると表示が崩れる
+
+<well>
+<WRAP caution></WRAP>
+```
+^ パス ^ パラメータ ^
+| /   | {_locale} = "en" |
+| /en | {_locale} = "en" |
+| /fr | {_locale} = "fr" |
+| /es | このルートにはマッチしません |
+```
+
+| /   | {_locale} = "en" |
+| /en | {_locale} = "en" |
+| /fr | {_locale} = "fr" |
+| /es | このルートにはマッチしません |
+</well>
+
+<well>
+<WRAP hint></WRAP>
+`\` を使ってアンダーバーをエスケープすると直ります。
+
+```
+^ パス ^ パラメータ ^
+| /   | {\_locale} = "en" |
+| /en | {\_locale} = "en" |
+| /fr | {\_locale} = "fr" |
+| /es | このルートにはマッチしません |
+```
+
+^ パス ^ パラメータ ^
+| /   | {\_locale} = "en" |
+| /en | {\_locale} = "en" |
+| /fr | {\_locale} = "fr" |
+| /es | このルートにはマッチしません |
+</well>

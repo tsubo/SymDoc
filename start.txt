@@ -26,9 +26,9 @@
 
 <col md="6">
 <gchart 350x120 pie3d #008000 #ffffff left "進捗率">
-完了 = 6
+完了 = 7
 翻訳中 = 1
-募集中 = 11
+募集中 = 10
 </gchart>
 </col>
 

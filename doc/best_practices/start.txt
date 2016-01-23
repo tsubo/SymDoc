@@ -1,5 +1,7 @@
 # Symfony Best Practices
 
+[オリジナル Best Practices](http://symfony.com/doc/current/best_practices/index.html)
+
 ^  タイトル                                                                 ^  状態    ^  翻訳更新日      ^ 備考 ^
 | [The Symfony Framework Best Practices](/doc/best_practices/introduction)  |  募集中  |              | |
 | [Creating the Project](/doc/best_practices/creating-the-project)          |  募集中  |              | |
@@ -12,4 +14,10 @@
 | [Security](/doc/best_practices/security)                                  |  募集中  |              | |
 | [Web Assets](/doc/best_practices/web-assets)                              |  募集中  |              | |
 | [Tests](/doc/best_practices/tests)                                        |  募集中  |              | |
+
+
+// 進捗： 0 / 11 件完了
+<progress> 
+<bar value="0" type="success" showvalue="true"></bar>
+</progress>
 

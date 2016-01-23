@@ -10,6 +10,7 @@
   * [ヒント](#tab-tip)
   * [関連](#tab-seealso)
   * [補足](#tab-sidebar)
+  * [注意](#tab-caution)
 
 <pane id="tab-note">
 <well>
@@ -75,20 +76,36 @@
 ```
 </pane>
 
+<pane id="tab-caution">
+<well>
+<WRAP caution></WRAP>
+
+ここに文章を書きます。
+</well>
+
+```
+<well>
+<WRAP caution></WRAP>
+
+ここに文章を書きます。
+</well>
+```
+</pane>
+
 </tabs>
 
 
 ## タブパネル
 
 <tabs>
-  * [Twig](#tab-twig)
-  * [PHP](#tab-php)
+  * [Twig](#tab-view-twig)
+  * [PHP](#tab-view-php)
 
-<pane id="tab-twig"><code twig>
+<pane id="tab-view-twig"><code twig>
 // Twig
 </code></pane>
 
-<pane id="tab-php"><code php>
+<pane id="tab-view-php"><code php>
 // PHP
 </code></pane>
 
@@ -96,14 +113,14 @@
 
 ```
 <tabs>
-  * [Twig](#tab-twig)
-  * [PHP](#tab-php)
+  * [Twig](#tab-view-twig)
+  * [PHP](#tab-view-php)
 
-<pane id="tab-twig"><code twig>
+<pane id="tab-view-twig"><code twig>
 // Twig
 </code></pane>
 
-<pane id="tab-php"><code php>
+<pane id="tab-view-php"><code php>
 // PHP
 </code></pane>
 
@@ -117,50 +134,49 @@
 ---
 
 <tabs>
-  * [Annotations](#tab-annotations)
-  * [YAML](#tab-yaml)
-  * [XML](#tab-xml)
-  * [PHP](#tab-php)
+  * [Annotations](#tab-code-annotations)
+  * [YAML](#tab-code-yaml)
+  * [XML](#tab-code-xml)
+  * [PHP](#tab-code-php)
 
-<pane id="tab-annotations"><code php>
+<pane id="tab-code-annotations"><code php>
 // Annotations
 </code></pane>
 
-<pane id="tab-yaml"><code yml>
+<pane id="tab-code-yaml"><code yml>
 // YAML
 </code></pane>
 
-<pane id="tab-xml"><code xml>
+<pane id="tab-code-xml"><code xml>
 // XML
 </code></pane>
 
-<pane id="tab-php"><code php>
+<pane id="tab-code-php"><code php>
 // PHP
 </code></pane>
 
 </tabs>
 
 ```
-
 <tabs>
-  * [Annotations](#tab-annotations)
-  * [YAML](#tab-yaml)
-  * [XML](#tab-xml)
-  * [PHP](#tab-php)
+  * [Annotations](#tab-code-annotations)
+  * [YAML](#tab-code-yaml)
+  * [XML](#tab-code-xml)
+  * [PHP](#tab-code-php)
 
-<pane id="tab-annotations"><code php>
+<pane id="tab-code-annotations"><code php>
 // Annotations
 </code></pane>
 
-<pane id="tab-yaml"><code yml>
+<pane id="tab-code-yaml"><code yml>
 // YAML
 </code></pane>
 
-<pane id="tab-xml"><code xml>
+<pane id="tab-code-xml"><code xml>
 // XML
 </code></pane>
 
-<pane id="tab-php"><code php>
+<pane id="tab-code-php"><code php>
 // PHP
 </code></pane>
 

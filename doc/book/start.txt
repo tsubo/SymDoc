@@ -6,13 +6,13 @@
 | [Symfony and HTTP Fundamentals](/doc/book/http_fundamentals)  |  募集中              |              | |
 | [Symfony versus Flat PHP](/doc/book/from_flat_php_to_symfony) |  募集中              |              | |
 | [Symfony のインストールと設定](/doc/book/installation)        |  v3.0                |  2016/01/19  | |
-| [Symfony での最初のページ作成](/doc/book/page_creation)       |  v3.0                |  2016-01/18  | |
+| [Symfony での最初のページ作成](/doc/book/page_creation)       |  v3.0                |  2016/01/18  | |
 | [コントローラ](/doc/book/controller)                          |  v3.0                |  2016/01/18  | |
 | [ルーティング](/doc/book/routing)                             |  v3.0                |  2016/01/24  | |
-| [テンプレートの作成と使い方](/doc/book/templating)             |  翻訳中              |              | tsubo |
+| [テンプレートの作成と使い方](/doc/book/templating)             |  v3.0                |  2016/01/27  | |
 | [Symfony の設定と環境](/doc/book/configuration)               |  v3.0                |  2016/01/20  | |
 | [バンドルシステム](/doc/book/bundles)                         |  v3.0                |  2016/01/20  | |
-| [Databases and Doctrine](/doc/book/doctrine)                  |  募集中              |              | |
+| [データベースと Doctrine](/doc/book/doctrine)                  |  **翻訳中**              |              | |
 | [データベースと Propel](/doc/book/propel)                     |  v3.0                |  2016/01/20  | |
 | [Testing](/doc/book/testing)                                  |  募集中              |              | |
 | [Validation](/doc/book/validation)                            |  募集中              |              | |

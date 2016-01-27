@@ -93,8 +93,7 @@ URL にホスト名（例: http://example.com）を追加する必要はあり�
 ユーザーがアプリケーションの `/` パスをブラウズした時に、Default コントローラの index アクションを実行します。
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 PHP アノテーションに加えて、ルートは YAML や、PHP ファイルで設定することもできます。
 詳細は [Symfony book のルーティングの章](/doc/book/routing)を参照してください。
 この柔軟性は Symfony の特徴の一つです。フレームワークは特定の設定フォーマットをユーザーに強いることはありません。

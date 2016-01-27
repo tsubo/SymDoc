@@ -1,7 +1,5 @@
 # テンプレートの作成と使い方
 
-## テンプレート
-
 ご存知のように、コントローラは、Symfony アプリケーションに入ってくる各リクエストを処理する責任があります。
 実は、コントローラは重たい仕事のほとんどを、コードをテストする為や再利用の為に、他の場所に委譲しています。
 コントローラが HTML や CSS、その他のコンテンツを生成する必要がある時は、テンプレートエンジンに仕事を任せます。
@@ -9,61 +7,1640 @@
 テンプレートを拡張する賢い方法やテンプレートのコードを再利用する方法も学びます。
 
 <well>
-<WRAP note></WRAP>
+<wrap note></wrap>
 テンプレートを表示する方法は[コントローラ](/doc/book/controller#テンプレートの表示)のページにも掲載されています。
+</well>
+
+
+## テンプレート
+
+
+テンプレートは、どんなテキストベースのフォーマット(HTML、XML、CSV、LaTeX ...)でも生成できる、シンプルなテキストファイルです。
+最も身近なテンプレートのタイプは、PHP のテンプレートです。
+PHP によって解析されるテキストファイルは、テキストと PHP のコートが混在しています。
+
+<code php>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Welcome to Symfony!</title>
+    </head>
+    <body>
+        <h1><?php echo $page_title ?></h1>
+
+        <ul id="navigation">
+            <?php foreach ($navigation as $item): ?>
+                <li>
+                    <a href="<?php echo $item->getHref() ?>">
+                        <?php echo $item->getCaption() ?>
+                    </a>
+                </li>
+            <?php endforeach ?>
+        </ul>
+    </body>
+</html>
+</code>
+
+しかし、Symfony は `Twig` というより強力なテンプレート言語を持っています。
+Twig は簡素で読みやすいテンプレートを書くことを可能にします。
+それは、よりウェブデザイナーにもフレンドリーで、いくつかの方法で、 PHP のテンプレートよりも、より強力です。
+
+<code twig>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Welcome to Symfony!</title>
+    </head>
+    <body>
+        <h1>{{ page_title }}</h1>
+
+        <ul id="navigation">
+            {% for item in navigation %}
+                <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
+</code>
+
+Twig は３つの特別な書式を定義しています。
+
+- `{{ ... }}`
+ - "表示"：変数や式の結果をテンプレートに表示します。
+
+- `{% ... %}`
+ - "実行"：テンプレートのロジックを制御するタグです。`for`ループのような文を実行するのに使用されます。
+
+- `{# ... #}`
+ - "コメント"：PHP の `/* コメント */` 書式と同様の物です。これは、１行もしくは、複数行のコメントを追加する為に使用されます。コメントの内容はレンダリングされたページには表示されません。
+
+また、Twig はフィルターを持っています。それは、レンダリングされる前に、コンテンツの内容を変更します。
+次の例は、レンダリングされる前に、`title` 変数の文字を全て大文字に変更します。
+
+<code twig>
+{{ title|upper }}
+</code>
+
+Twig はデフォルトで利用できる多くの[タグ](http://twig.sensiolabs.org/doc/tags/index.html)と[フィルター](http://twig.sensiolabs.org/doc/filters/index.html)を持っています。
+必要に応じて、Twig に 自分で[エクステンションを追加する](http://twig.sensiolabs.org/doc/advanced.html#creating-an-extension)ことも可能です。
+
+<well>
+<wrap hint></wrap>
+Twig エクステンションを登録することは、新しいサービスを作るのと同じくらい簡単です。
+その方法は、サービスに twig.extension というタグを設定することです。[詳細はこちら](https://symfony.com/doc/current/reference/dic_tags.html#reference-dic-tags-twig-extension)
+</well>
+
+ドキュメント全体を見渡すとわかりますが、Twig は関数をサポートしています。また、新しい関数も簡単に追加することができます。
+次の例では、スタンダードな `for` タグと `cycle` 関数を使って、10 個の div タグと共に `odd`, `even` クラスを交互に表示しています。
+
+<code twig>
+{% for i in 0..10 %}
+    <div class="{{ cycle(['odd', 'even'], i) }}">
+      <!-- some HTML here -->
+    </div>
+{% endfor %}
+</code>
+
+この章全体で、テンプレートの例は Twig と PHP の両方を表示していきます。
+
+<well>
+<wrap hint></wrap>
+もし、Twig を使用せず無効にしてる場合は、`kernel.exception` イベントを使って、例外ハンドラーを自作する必要があります。
+</well>
+
+<well>
+<wrap addon></wrap>
+なぜ Twig か？
+
+Twig テンプレートはシンプルに記述することが目的で、テンプレート中で PHP タグを処理することはありません。
+Twig はプログラムロジックではなく、プレゼンテーションを表現することを目的に設計されています。
+Twig を使い込んでいくと、より、この設計思想の違いによる恩恵を受けるでしょう。
+そして、もちろん、あなたは至る所でウェブデザイナーに愛されます。
+
+
+また、PHP テンプレートにはない機能もあります。例えば、空白文字の制御やサンドボックス、自動 HTML エスケーピング、コンテキストエスケーピング、カスタム関数、フィルタといった物があります。
+Twig はテンプレートを簡単に書け、より簡素にする為の機能を持っています。
+次の例を見てください。これは、`if` 文とループを組み合わせています。
+
+<code twig>
+<ul>
+    {% for user in users if user.active %}
+        <li>{{ user.username }}</li>
+    {% else %}
+        <li>No users found</li>
+    {% endfor %}
+</ul>
+</code>
+
 </well>
 
 ### Twig テンプレートのキャッシュ
 
+Twig は高速です。各テンプレートはネイティブな PHP クラスにコンパイルされ、実行時にレンダリングされます。
+コンパイルされたクラスは、`var/cache/{environment}/twig` ディレクトリに保存されます（`{environment}` は `dev` や `prod` のような環境）。
+そして、デバッグに役立つ場合もあります。環境についての詳細は、[環境](/doc/book/configuration#環境)を参照してください。
+
+`debug` モードが有効になっている場合（一般的には `dev` 環境の場合）、Twig テンプレートは、変更された時に、自動的に再コンパイルされます。
+開発中に、キャッシュをクリアする必要なく、変更を即座に見ることができます。
+
+`debug` モードが無効の場合（一般的には `prod` 環境の場合）、Twig テンプレートを再生成するには、Twig のキャッシュディレクトリをクリアする必要があります。
+アプリケーションをデプロイするときは、キャッシュをクリアすることを忘れないで下さい。
+
+
+
 ## テンプレートの継承とレイアウト
+
+多くの場合、プロジェクト内のテンプレートは、ヘッダーやフッター、サイドバーといった共通する要素をシェアします。
+Symfony では、テンプレートを他のテンプレートで装飾することができます。これは、ちょうど PHP のクラス継承と同じように動きます。
+テンプレートの継承はベースレイアウトを作成することを可能にします。
+ベースレイアウトは、ブロック（`block`）として定義するサイトの共通要素を全て持ちます。
+子テンプレートはベースレイアウトを継承することができ、そのブロックを上書きすることができます。
+
+最初に、ベースレイアウトファイルを作成します。
+
+<tabs>
+  * [Twig](#tab1-view-twig)
+  * [PHP](#tab1-view-php)
+
+<WRAP tab-content>
+<pane id="tab1-view-twig"><code twig>
+{# app/Resources/views/base.html.twig #}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Test Application{% endblock %}</title>
+    </head>
+    <body>
+        <div id="sidebar">
+            {% block sidebar %}
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                </ul>
+            {% endblock %}
+        </div>
+
+        <div id="content">
+            {% block body %}{% endblock %}
+        </div>
+    </body>
+</html>
+</code></pane>
+
+<pane id="tab1-view-php"><code php>
+<!-- app/Resources/views/base.html.php -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title><?php $view['slots']->output('title', 'Test Application') ?></title>
+    </head>
+    <body>
+        <div id="sidebar">
+            <?php if ($view['slots']->has('sidebar')): ?>
+                <?php $view['slots']->output('sidebar') ?>
+            <?php else: ?>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                </ul>
+            <?php endif ?>
+        </div>
+
+        <div id="content">
+            <?php $view['slots']->output('body') ?>
+        </div>
+    </body>
+</html>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap note></wrap>
+テンプレートの継承に関する説明では Twig の用語を使用しますが、考え方は Twig も PHP テンプレートも同じです。
+</well>
+
+このテンプレートは、シンプルな２カラムの HTML スケルトンを定義します。
+この例では、３つの `{% block %}` 領域が定義されています（`title`, `sidebar`, `body`）。
+各ブロックは子テンプレートによって上書きされるか、デフォルトの定義のまま残ります。
+また、このテンプレートは直接表示することも可能です。その場合、`title` や `sidebar`, `body` ブロックは、単にテンプレートに記述されているデフォルトの値が残ります。
+
+子テンプレートは次のようになります。
+
+<tabs>
+  * [Twig](#tab2-view-twig)
+  * [PHP](#tab2-view-php)
+
+<WRAP tab-content>
+<pane id="tab2-view-twig"><code twig>
+{# app/Resources/views/blog/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}My cool blog posts{% endblock %}
+
+{% block body %}
+    {% for entry in blog_entries %}
+        <h2>{{ entry.title }}</h2>
+        <p>{{ entry.body }}</p>
+    {% endfor %}
+{% endblock %}
+</code></pane>
+
+<pane id="tab2-view-php"><code php>
+<!-- app/Resources/views/blog/index.html.php -->
+<?php $view->extend('base.html.php') ?>
+
+<?php $view['slots']->set('title', 'My cool blog posts') ?>
+
+<?php $view['slots']->start('body') ?>
+    <?php foreach ($blog_entries as $entry): ?>
+        <h2><?php echo $entry->getTitle() ?></h2>
+        <p><?php echo $entry->getBody() ?></p>
+    <?php endforeach ?>
+<?php $view['slots']->stop() ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap note></wrap>
+親テンプレートは特別な文字列書式 `base.html.twig` で識別されます。
+このパスは、プロジェクトの `app/Resources/views` ディレクトリからの相対パスです。
+また、`::base.html.twig` 論理名も同じように使えます。この命名規則の詳細は[テンプレート名と場所](#テンプレート名と場所)を参照してください。
+</well>
+
+テンプレート継承の鍵は `{% extends %}` タグです。
+これは、レイアウトやブロックが記述されているベーステンプレートを最初に評価するよう、テンプレートエンジンに指示します。
+子テンプレートは表示される時に、親テンプレートの `title` や `block` は、子テンプレートの物に置き換えられます。
+
+`blog_entries` の値にもよりますが、出力は次のようになります。
+
+<code>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>My cool blog posts</title>
+    </head>
+    <body>
+        <div id="sidebar">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog">Blog</a></li>
+            </ul>
+        </div>
+
+        <div id="content">
+            <h2>My first post</h2>
+            <p>The body of the first post.</p>
+
+            <h2>Another post</h2>
+            <p>The body of the second post.</p>
+        </div>
+    </body>
+</html>
+</code>
+
+子テンプレートでは `sidebar` ブロックを定義していないので、代わりに親テンプレートの値が使われていることに注意してください。
+親テンプレートの `{% block %}` タグ内のコンテンツが、常にデフォルトとして使用されます。
+
+継承は何段階でも行うことができます。次のセクションでは、一般的な３階層の継承モデルと、どの様にプロジェクト内でテンプレートが構成されるかを、説明します。
+
+テンプレートの継承を使う時に、意識しておく事がいくつかあります。
+
+- `{% extends %}` を使う時は、テンプレートの最初のタグである必要があります。
+
+- ベーステンプレート内では、なるべく多くの `{% block %}` を使う方が良いです。子テンプレートは親ブロックの全てを定義しなくても良いことを、思い出してください。ベーステンプレートに好きなだけブロックを作り、それぞれに適切なデフォルト値を設定してください。ベーステンプレートにブロックが多いほど、よりレイアウトが柔軟になります。
+
+- いくつかのテンプレートで内容の重複を発見した場合、おそらく、その内容を親テンプレートの `{% block %}` に移すべきです。いくつかのケースでは、新しいテンプレートに内容を移動して、それを `include` する方が良い場合もあります（[テンプレートのインクルード](#テンプレートのインクルード)を参照）。
+
+親テンプレートからブロックの内容を取得したい場合は、`{{ parent() }}` 関数を使うことができます。親ブロックを完全に上書きする代わりに、内容を追加したい場合に便利です。
+
+<code twig>
+{% block sidebar %}
+    <h3>Table of Contents</h3>
+
+    {# ... #}
+
+    {{ parent() }}
+{% endblock %}
+</code>
 
 ## テンプレート名と場所
 
+デフォルトでは、テンプレートは２つの場所に格納することができます。
+
+- `app/Resources/views/`
+ -  アプリケーションの `views` ディレクトリには、アプリケーション全体に関するベーステンプレート（アプリケーションのレイアウトやアプリケーションバンドルのテンプレート）はもちろん、サードパーティの[バンドルテンプレートをオーバーライド](#バンドルテンプレートのオーバーライド)するテンプレートを置くことができます。
+
+- `path/to/bundle/Resources/views/`
+ - サードパーティの各バンドルは、自身の `Resources/views/` ディレクトリ（及びサブディレクトリ）内にテンプレートを格納します。あなたの作成したバンドルをシェアすることを計画している場合、`app/` ディレクトリの代わりに、バンドル内にテンプレートを置く必要があります。
+
+ほとんどのテンプレートは `app/Resources/views` ディレクトリに格納されます。
+あなたが使用するパスは、このディレクトリからの相対パスになります。
+例えば、`app/Resources/views/base.html.twig` を、コントローラで `render()` したり、テンプレートで `extend` する為には、`base.html.twig` パスを使用します。また、`app/Resources/views/blog/index.html.twig` を `render/extend` するには、`blog/index.html.twig` パスを使用します。
+
+
+
 ### バンドル内のテンプレートの参照
+
+Symfony はバンドル内のテンプレートの為に、`バンドル:ディレクトリ:ファイル名` という文字列書式を使います
+
+- `AcmeBlogBundle:Blog:index.html.twig`\\
+この書式は特定のページのテンプレートを指定する為に使用されます。文字列にはコロン `:` で区切られた３つのパートがあり、次のような意味を持ちます。\\
+\\
+ - `AcmeBlogBundle`：（バンドル）テンプレートは AcmeBlogBundleの中に格納されています（例、`src/Acme/BlogBundle`）。\\
+\\
+ - `Blog`：（ディレクトリ）テンプレートは `Resources/views` 内の `Blog` サブディレクトリに格納されています。\\
+\\
+ - `index.html.twig`：（ファイル名）実際のファイル名前です。\\
+\\
+AcmeBundle が、`src/Acme/BlogBundle` に格納されているとすると、最終的なテンプレートのパスは `src/Acme/BlogBundle/Resources/views/Blog/index.html.twig` になります。\\
+\\
+
+- `AcmeBlogBundle::layout.html.twig`\\
+この書式は AcmeBlogBundle 固有のベーステンプレートを参照します。
+真ん中のディレクトリ部分が無いので、このテンプレートは AcmeBlogBundle 内の、`Resources/views/layout.html.twig` を指します。コントローラに対応するサブディレクトリがない時には、書式の真ん中が２つのコロンになります。
+
+[バンドルテンプレートのオーバーライド](#バンドルテンプレートのオーバーライド)セクションで、AcmeBlogBundle のテンプレートを `app/Resources/AcmeBlogBundle/views/` ディレクトリに同じ名前のテンプレートを置くことで、オーバライドする方法を、見ることになります。これは、どんなベンダーのバンドルからでも、テンプレートをオーバーライドすることを可能にします。
+
+<well>
+<wrap hint></wrap>
+おそらく、テンプレートのネーミング書式には見覚えがあるでしょう。それは、[コントローラのネーミングパターン](/doc/book/routing#コントローラのネーミングパターン)と同じ命名規則です。
+</well>
+
 
 ### テンプレート接尾語（Suffix）
 
+全てのテンプレート名は、フォーマットとテンプレートエンジンを指定する２つの拡張子を持っています。
+
+^ ファイル名 ^ フォーマット ^ エンジン ^
+| blog/index.html.twig | HTML | Twig |
+| blog/index.html.php  | HTML | PHP  |
+| blog/index.css.twig  | CSS  | Twig |
+
+デフォルトでは、Twig か PHP のどちらかでテンプレートを書くことができます。
+拡張子の最後の部分（`.twig`, `.php`）は、どちらのテンプレートエンジンを使うのかを指定します。
+拡張子の最初の部分は（`.html`, `.css`）は、最終的にテンプレートが生成するフォーマットです。
+フォーマットは、同じリソースを HTML（`index.html.twig`）や XML（`index.xml.twig`）、その他のフォーマットでレンダリングする必要がある場合に、テンプレートを区別するのに使われます。詳細は[テンプレートフォーマット](#テンプレートフォーマット)を参照してください。
+
+<well>
+<wrap note></wrap>
+利用するテンプレートエンジンを設定することができます。そして、新しいエンジンを追加することもできます。
+詳細は[テンプレートの設定](#templating サービスの設定と使用)を参照してください。
+</well>
+
+
 ## タグとヘルパー
+
+テンプレートの命名方法や継承等、テンプレートの基本は理解できたかと思います。
+難しい部分はこれからです。このセクションでは、テンプレートのインクルードやページのリンク、画像のインクルードなど、よくあるタスクを実行する為のツールについて学びます。
+
+Symfony は、テンプレートデザイナーの仕事を楽にする、いくつかの専門的な Twig タグや関数を持っています。
+PHP では、テンプレートシステムは、テンプレートの文脈内で便利な機能を提供する、拡張可能なヘルパーシステムを提供します。
+
+すでに、いくつかの組み込み Twig タグ（`{% block %}`, `{% extends %}`）や PHP ヘルパー（`$view['slots']`）の例を見てきました。ここでは、より多くを学びます。
+
 
 ### テンプレートのインクルード
 
+いつくかのページに、同じテンプレートやコードの断片をインクルードしたくなることがよくあります。
+たとえば、「ニュース記事」があるようなアプリケーションの場合、記事を表示するテンプレートコードは、記事詳細ページや、一番人気の記事を表示するページ、最新記事リストのページでも使用されると思います。
+
+PHP のコードブロックを再利用したい場合、一般的には PHP クラスや関数にコードを移動します。テンプレートの場合も同様です。
+独自のテンプレートに再利用したいテンプレートコードを移動することにより、それを他のテンプレートからインクルード可能にできます。
+
+最初に、再利用可能なテンプレートを作成してみます。
+
+<tabs>
+  * [Twig](#tab3-view-twig)
+  * [PHP](#tab3-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab3-view-twig"><code twig>
+{# app/Resources/views/article/article_details.html.twig #}
+<h2>{{ article.title }}</h2>
+<h3 class="byline">by {{ article.authorName }}</h3>
+
+<p>
+    {{ article.body }}
+</p>
+</code></pane>
+
+<pane id="tab3-view-php"><code php>
+<!-- app/Resources/views/article/article_details.html.php -->
+<h2><?php echo $article->getTitle() ?></h2>
+<h3 class="byline">by <?php echo $article->getAuthorName() ?></h3>
+
+<p>
+    <?php echo $article->getBody() ?>
+</p>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+他のテンプレートからこのテンプレートをインクルードすることは簡単です。
+
+<tabs>
+  * [Twig](#tab4-view-twig)
+  * [PHP](#tab4-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab4-view-twig"><code twig>
+{# app/Resources/views/article/list.html.twig #}
+{% extends 'layout.html.twig' %}
+
+{% block body %}
+    <h1>Recent Articles<h1>
+
+    {% for article in articles %}
+        {{ include('article/article_details.html.twig', { 'article': article }) }}
+    {% endfor %}
+{% endblock %}
+</code></pane>
+
+<pane id="tab4-view-php"><code php>
+<!-- app/Resources/article/list.html.php -->
+<?php $view->extend('layout.html.php') ?>
+
+<?php $view['slots']->start('body') ?>
+    <h1>Recent Articles</h1>
+
+    <?php foreach ($articles as $article): ?>
+        <?php echo $view->render(
+            'Article/article_details.html.php',
+            array('article' => $article)
+        ) ?>
+    <?php endforeach ?>
+<?php $view['slots']->stop() ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+テンプレートは `{% include() %}` 関数を使ってインクルードされます。
+テンプレート名はいままでと同様の規則に従うことに注意してください。
+`articleDetails.html.twig` テンプレートでは、引数で渡された `article` 変数を使います。
+しかし、このように変数を渡さなくても、`list.html.twig` で使える全ての変数は `articleDetails.html.twig` でも利用可能です（[with_context](http://twig.sensiolabs.org/doc/functions/include.html) に `false` を設定しない限り）。
+
+<well>
+<wrap hint></wrap>
+この `{'article': article}` という構文は、ハッシュマップ（名前のキーを持つ配列）の為の Twig の標準構文です。
+複数の要素を渡す必要がある時は、`{'foo': foo, 'bar': bar}` のようになります。
+</well>
+
+<alert type="info">
+<btn type="info" size="xs">2.3</btn>
+[include()](http://twig.sensiolabs.org/doc/functions/include.html) 関数は Symfony 2.3 から使えます。それ以前は [{% include %}](http://twig.sensiolabs.org/doc/tags/include.html) タグが使われていました。
+</alert>
+
 ### コントローラの埋め込み
+
+単に、テンプレートをインクルードする以上のことをしたい場合もあります。
+たとえば、レイアウトに３件の新着記事を持つサイドバーがあるとしましょう。
+３件の記事を取得することは、テンプレート内では出来ない、データベースへの問い合わせや他のロジックの実行が必要になります。
+
+この問題の解決方法は、シンプルにテンプレートにコントローラの実行結果を埋め込むことです。
+最初に、何件かの新着記事をレンダリングするコントローラを作成します。
+
+<code php>
+// src/AppBundle/Controller/ArticleController.php
+namespace AppBundle\Controller;
+
+// ...
+
+class ArticleController extends Controller
+{
+    public function recentArticlesAction($max = 3)
+    {
+        // make a database call or other logic
+        // to get the "$max" most recent articles
+        $articles = ...;
+
+        return $this->render(
+            'article/recent_list.html.twig',
+            array('articles' => $articles)
+        );
+    }
+}
+</code>
+
+`recent_list` テンプレートは非常に簡単です。
+
+<tabs>
+  * [Twig](#tab5-view-twig)
+  * [PHP](#tab5-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab5-view-twig"><code twig>
+{# app/Resources/views/article/recent_list.html.twig #}
+{% for article in articles %}
+    <a href="/article/{{ article.slug }}">
+        {{ article.title }}
+    </a>
+{% endfor %}
+</code></pane>
+
+<pane id="tab5-view-php"><code php>
+<!-- app/Resources/views/article/recent_list.html.php -->
+<?php foreach ($articles as $article): ?>
+    <a href="/article/<?php echo $article->getSlug() ?>">
+        <?php echo $article->getTitle() ?>
+    </a>
+<?php endforeach ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap note></wrap>
+この例では、URL をハードコーディングしていることに注意してください（`/article/*slug*`）。
+これは良くないやり方です。次のセクションで、正しいやり方を学びます。
+</well>
+
+コントローラをインクルードする為には、コントローラの論理名を使って参照する必要があります（例、`bundle:controller:action`）。
+
+<tabs>
+  * [Twig](#tab6-view-twig)
+  * [PHP](#tab6-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab6-view-twig"><code twig>
+{# app/Resources/views/base.html.twig #}
+
+{# ... #}
+<div id="sidebar">
+    {{ render(controller(
+        'AppBundle:Article:recentArticles',
+        { 'max': 3 }
+    )) }}
+</div>
+</code></pane>
+
+<pane id="tab6-view-php"><code php>
+<?php echo $view['actions']->render(
+    new ControllerReference('...'),
+    array('renderer' => 'hinclude')
+) ?>
+
+<!-- The url() method was introduced in Symfony 2.8. Prior to 2.8, you
+     had to use generate() with UrlGeneratorInterface::ABSOLUTE_URL
+     passed as the third argument. -->
+<?php echo $view['actions']->render(
+    $view['router']->url('...'),
+    array('renderer' => 'hinclude')
+) ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+テンプレートからではアクセスできない変数や情報が必要になるたびに、コントローラをレンダリングすることを検討してください。
+コントローラはすみやかに実行され、再利用とより良いコード編成を促進します。
+もちろん全てのコントローラと同じように、これらのコントローラも理想的に小さく保つべきです。
+それは、可能な限り多くのコードを再利用可能な[サービス](/doc/book/service_container)の中に記述することを意味しています。
 
 ### hinclude.js を使った非同期コンテンツ
 
+[hinclude.js](http://mnot.github.io/hinclude/) JavaScript ライブラリを使って、コントローラを非同期に埋め込むことができます。
+他のページやコントローラからコンテンツを埋め込んだのと同じように、
+Symfony は、HTML に `hinclude` タグを出力する為に、標準の `render` 関数を使用します。
+（次の PHP のコードを見てください。Twig では `{{render_hinclude}}` と記述しますが、最終的に PHP の `render` 関数にコンパイルされてキャッシュされます。）
+
+<tabs>
+  * [Twig](#tab7-view-twig)
+  * [PHP](#tab7-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab7-view-twig"><code twig>
+{{ render_hinclude(controller('...')) }}
+{{ render_hinclude(url('...')) }}
+</code></pane>
+
+<pane id="tab7-view-php"><code php>
+<?php echo $view['actions']->render(
+    new ControllerReference('...'),
+    array('renderer' => 'hinclude')
+) ?>
+
+<!-- The url() method was introduced in Symfony 2.8. Prior to 2.8, you
+     had to use generate() with UrlGeneratorInterface::ABSOLUTE_URL
+     passed as the third argument. -->
+<?php echo $view['actions']->render(
+    $view['router']->url('...'),
+    array('renderer' => 'hinclude')
+) ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap note></wrap>
+[hinclude.js](http://mnot.github.io/hinclude/) をページ内でインクルードする必要があります。
+</well>
+
+<well>
+<wrap note></wrap>
+`url` の代わりに `controller` を使う時には、Symfony の `fragment` 設定を有効にする必要があります。
+
+<tabs>
+  * [YAML](#tab8-code-yaml)
+  * [XML](#tab8-code-xml)
+  * [PHP](#tab8-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab8-code-yaml"><code yml>
+# app/config/config.yml
+framework:
+    # ...
+    fragments: { path: /_fragment }
+</code></pane>
+
+<pane id="tab8-code-xml"><code xml>
+<!-- app/config/config.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+        http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
+
+    <!-- ... -->
+    <framework:config>
+        <framework:fragments path="/_fragment" />
+    </framework:config>
+</container>
+</code></pane>
+
+<pane id="tab8-code-php"><code php>
+// app/config/config.php
+$container->loadFromExtension('framework', array(
+    // ...
+    'fragments' => array('path' => '/_fragment'),
+));
+</code></pane>
+
+</WRAP>
+</tabs>
+</well>
+
+ロード中や JavaScript が無効になっている場合の、デフォルトコンテンツをアプリケーション設定でグローバルに設定することができます。
+
+<tabs>
+  * [YAML](#tab9-code-yaml)
+  * [XML](#tab9-code-xml)
+  * [PHP](#tab9-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab9-code-yaml"><code yml>
+# app/config/config.yml
+framework:
+    # ...
+    templating:
+        hinclude_default_template: hinclude.html.twig
+</code></pane>
+
+<pane id="tab9-code-xml"><code xml>
+<!-- app/config/config.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+        http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
+
+    <!-- ... -->
+    <framework:config>
+        <framework:templating hinclude-default-template="hinclude.html.twig" />
+    </framework:config>
+</container>
+</code></pane>
+
+<pane id="tab9-code-php"><code php>
+// app/config/config.php
+$container->loadFromExtension('framework', array(
+    // ...
+    'templating' => array(
+        'hinclude_default_template' => array(
+            'hinclude.html.twig',
+        ),
+    ),
+));
+</code></pane>
+
+</WRAP>
+</tabs>
+
+デフォルトコンテンツを `render` 関数ごとに指定することもできます（グローバルなデフォルトコンテンツ設定を上書きします）。
+
+<tabs>
+  * [Twig](#tab10-view-twig)
+  * [PHP](#tab10-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab10-view-twig"><code twig>
+{{ render_hinclude(controller('...'),  {
+    'default': 'default/content.html.twig'
+}) }}
+</code></pane>
+
+<pane id="tab10-view-php"><code php>
+<?php echo $view['actions']->render(
+    new ControllerReference('...'),
+    array(
+        'renderer' => 'hinclude',
+        'default'  => 'default/content.html.twig',
+    )
+) ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+また、デフォルトコンテンツとして文字列を指定することもできます。
+
+<tabs>
+  * [Twig](#tab11-view-twig)
+  * [PHP](#tab11-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab11-view-twig"><code twig>
+{{ render_hinclude(controller('...'), {'default': 'Loading...'}) }}
+</code></pane>
+
+<pane id="tab11-view-php"><code php>
+<?php echo $view['actions']->render(
+    new ControllerReference('...'),
+    array(
+        'renderer' => 'hinclude',
+        'default'  => 'Loading...',
+    )
+) ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
 ### ページヘのリンク
+
+アプリケーションで他のページヘのリンクを作成することは、テンプレートでの最も一般的な仕事の１つです。
+テンプレート内で URL をハードコーディングする代わりに、ルート設定に基づく URL を生成する Twig の `path` 関数（もしくは PHPの `router` ヘルパー）を使ってください。
+後で、特定のページの URL を変更したくなった時に、ルーティング設定を変更するだけで済むようになります。
+テンプレートでは新しい URL が自動的に生成されます。
+
+最初に、`_welcome` ページにリンクしてみましょう。このページは、次のようなルーティング設定でアクセスできるようになっています。
+
+<tabs>
+  * [Annotations](#tab12-code-annotations)
+  * [YAML](#tab12-code-yaml)
+  * [XML](#tab12-code-xml)
+  * [PHP](#tab12-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab12-code-annotations"><code php>
+// src/AppBundle/Controller/WelcomeController.php
+
+// ...
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+
+class WelcomeController extends Controller
+{
+    /**
+     * @Route("/", name="_welcome")
+     */
+    public function indexAction()
+    {
+        // ...
+    }
+}
+</code></pane>
+
+<pane id="tab12-code-yaml"><code yml>
+# app/config/routing.yml
+_welcome:
+    path:     /
+    defaults: { _controller: AppBundle:Welcome:index }
+</code></pane>
+
+<pane id="tab12-code-xml"><code xml>
+<!-- app/config/routing.yml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="_welcome" path="/">
+        <default key="_controller">AppBundle:Welcome:index</default>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab12-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
+
+$collection = new RouteCollection();
+$collection->add('_welcome', new Route('/', array(
+    '_controller' => 'AppBundle:Welcome:index',
+)));
+
+return $collection;
+</code></pane>
+
+</WRAP>
+</tabs>
+
+このページにリンクするには、`path` Twig 関数を使って、ルートを参照するだけです。
+
+<tabs>
+  * [Twig](#tab13-view-twig)
+  * [PHP](#tab13-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab13-view-twig"><code twig>
+<a href="{{ path('_welcome') }}">Home</a>
+</code></pane>
+
+<pane id="tab13-view-php"><code php>
+<!-- The path() method was introduced in Symfony 2.8. Prior to 2.8, you
+     had to use generate(). -->
+<a href="<?php echo $view['router']->path('_welcome') ?>">Home</a>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+予想した通り、`/` URL が生成されます。では、もっと複雑なルートではどうなるでしょうか。
+
+<tabs>
+  * [Annotations](#tab14-code-annotations)
+  * [YAML](#tab14-code-yaml)
+  * [XML](#tab14-code-xml)
+  * [PHP](#tab14-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab14-code-annotations"><code php>
+// src/AppBundle/Controller/ArticleController.php
+
+// ...
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+
+class ArticleController extends Controller
+{
+    /**
+     * @Route("/article/{slug}", name="article_show")
+     */
+    public function showAction($slug)
+    {
+        // ...
+    }
+}
+</code></pane>
+
+<pane id="tab14-code-yaml"><code yml>
+# app/config/routing.yml
+article_show:
+    path:     /article/{slug}
+    defaults: { _controller: AppBundle:Article:show }
+</code></pane>
+
+<pane id="tab14-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="article_show" path="/article/{slug}">
+        <default key="_controller">AppBundle:Article:show</default>
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab14-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
+
+$collection = new RouteCollection();
+$collection->add('article_show', new Route('/article/{slug}', array(
+    '_controller' => 'AppBundle:Article:show',
+)));
+
+return $collection;
+</code></pane>
+
+</WRAP>
+</tabs>
+
+この場合、ルート名（`article_show`）と `{slug}` パラメータの値の両方を指定する必要があります。
+このルートを使って、[前のセクション](#コントローラの埋め込み)でやった `recent_list` テンプレートの記事へのリンクを修正してみます。
+
+<tabs>
+  * [Twig](#tab15-view-twig)
+  * [PHP](#tab15-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab15-view-twig"><code twig>
+{# app/Resources/views/article/recent_list.html.twig #}
+{% for article in articles %}
+    <a href="{{ path('article_show', {'slug': article.slug}) }}">
+        {{ article.title }}
+    </a>
+{% endfor %}
+</code></pane>
+
+<pane id="tab15-view-php"><code php>
+<!-- app/Resources/views/Article/recent_list.html.php -->
+<?php foreach ($articles in $article): ?>
+    <!-- The path() method was introduced in Symfony 2.8. Prior to 2.8,
+         you had to use generate(). -->
+    <a href="<?php echo $view['router']->path('article_show', array(
+        'slug' => $article->getSlug(),
+    )) ?>">
+        <?php echo $article->getTitle() ?>
+    </a>
+<?php endforeach ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap hint></wrap>
+また、`url` 関数を使うことで、絶対 URL を生成することもできます。
+
+<tabs>
+  * [Twig](#tab16-view-twig)
+  * [PHP](#tab16-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab16-view-twig"><code twig>
+<a href="{{ url('_welcome') }}">Home</a>
+</code></pane>
+
+<pane id="tab16-view-php"><code php>
+<a href="<?php echo $view['router']->url(
+    '_welcome',
+    array()
+) ?>">Home</a>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<alert type="info">
+<btn type="info" size="xs">2.8</btn>
+この、`url()` PHP テンプレートヘルパーは Symfony 2.8 で導入されました。
+それより前のバージョンでは、`generate()` ヘルパーの第３引数に `Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL` を渡して使う必要があります。 
+</alert>
+
+</well>
+
 
 ### アセットへのリンク
 
+また、テンプレートは一般的に、画像や JavaScript、スタイルシート、その他のアセットを参照します。
+もちろん、これらのアセットへのパスをハードコーディングすることもできます（例、`/images/logo.png`）。
+しかし、Symfony は `asset` Twig 関数を使った、よりダイナミックな選択肢を提供します。
+
+<tabs>
+  * [Twig](#tab17-view-twig)
+  * [PHP](#tab17-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab17-view-twig"><code twig>
+<img src="{{ asset('images/logo.png') }}" alt="Symfony!" />
+
+<link href="{{ asset('css/blog.css') }}" rel="stylesheet" />
+</code></pane>
+
+<pane id="tab17-view-php"><code php>
+<img src="<?php echo $view['assets']->getUrl('images/logo.png') ?>" alt="Symfony!" />
+
+<link href="<?php echo $view['assets']->getUrl('css/blog.css') ?>" rel="stylesheet" />
+</code></pane>
+
+</WRAP>
+</tabs>
+
+`asset` 関数を使う一番の目的は、アプリケーションをより移植しやすくすることです。
+アプリケーションが、ホストのルート（`http://example.com`）に格納されている場合、レンダリングされるパスは、`/images/logo.png` でなければいけません。
+しかし、アプリケーションがサブディレクトリ（`http://example.com/my_app`）に格納された場合、各アセットパスは、サブディレクトリ付きで、レンダリングされなければいけません（`/my_app/images/logo.png`）。
+`asset` 関数は、アプリケーションがどのように使われているかをみて、これらの面倒を見ます。そして、それに応じて適切なパスを生成します。
+
+加えて、`asset` 関数を使うと Symfony は自動的にアセットにクエリー文字列を追加することができます。これは、アセットのデプロイ時に、ブラウザのキャッシュを更新する為に追加されます。
+例えば、`/images/logo.png` は `/images/logo.png?v2` のようになります。詳細は、[assets_version](https://symfony.com/doc/current/reference/configuration/framework.html#ref-framework-assets-version) 設定オプションを参照してください。
+
+もし、特定のアセットにバージョンをセットする必要がある時は、`version` 引数をセットすることができます（Twig の場合。PHP の場合は、第４引数で指定します）。
+
+<tabs>
+  * [Twig](#tab18-view-twig)
+  * [PHP](#tab18-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab18-view-twig"><code twig>
+<img src="{{ asset('images/logo.png', version='3.0') }}" alt="Symfony!" />
+</code></pane>
+
+<pane id="tab18-view-php"><code php>
+<img src="<?php echo $view['assets']->getUrl(
+    'images/logo.png',
+    null,
+    false,
+    '3.0'
+) ?>" alt="Symfony!" />
+</code></pane>
+
+</WRAP>
+</tabs>
+
+`version` を与えなかったり、`null` を渡した時は、デフォルトバージョン（[assets_version](https://symfony.com/doc/current/reference/configuration/framework.html#ref-framework-assets-version) 設定から）が使用されます。
+
+アセットに絶対 URL が使用したい時は、`absolute_url` 関数を使用します（Twig の場合。PHP の場合は、第３引数に `true` を指定します）。
+
+<tabs>
+  * [Twig](#tab19-view-twig)
+  * [PHP](#tab19-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab19-view-twig"><code twig>
+<img src="{{ absolute_url(asset('images/logo.png')) }}" alt="Symfony!" />
+</code></pane>
+
+<pane id="tab19-view-php"><code php>
+<img src="<?php echo $view['assets']->getUrl(
+    'images/logo.png',
+    null,
+    true
+) ?>" alt="Symfony!" />
+</code></pane>
+
+</WRAP>
+</tabs>
+
 ## スタイルシートと JavaScript のインクルード
+
+JavaScript や CSS をインクルードすること無く完結しているサイトはないでしょう。
+Symfony は、これらアセットのインクルードを、テンプレート継承の利点を使って、エレガントに処理します。
+
+<well>
+<wrap hint></wrap>
+このセクションでは、Symfony で、スタイルシートや JavaScirpt 等のアセットをインクルードすることの背景にある哲学を学びます。
+また、Symfony は Assetic と呼ばれる別のライブラリと互換性が有ります。
+それは、この哲学に従っていますが、アセットと共により面白いことができるようにしてくれます。
+Assetic の詳細な使用法は[アセット管理の為の Assetic の使用方法](/doc/cookbook/assetic/asset_management)を参照してください。
+</well>
+
+アセットを持つベーステンプレートに、２つのブロックを追加することから始めます。
+１つは、`head` タグの中にある、`stylesheets` です。もう１つは `body` 閉じタグのすぐ上にある、`javascripts` です。
+これらのブロックは、サイト全体で必要な、全てのスタイルシートや JavaScript を含めることになります。
+
+<tabs>
+  * [Twig](#tab20-view-twig)
+  * [PHP](#tab20-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab20-view-twig"><code twig>
+{# app/Resources/views/base.html.twig #}
+<html>
+    <head>
+        {# ... #}
+
+        {% block stylesheets %}
+            <link href="{{ asset('css/main.css') }}" rel="stylesheet" />
+        {% endblock %}
+    </head>
+    <body>
+        {# ... #}
+
+        {% block javascripts %}
+            <script src="{{ asset('js/main.js') }}"></script>
+        {% endblock %}
+    </body>
+</html>
+</code></pane>
+
+<pane id="tab20-view-php"><code php>
+// app/Resources/views/base.html.php
+<html>
+    <head>
+        <?php ... ?>
+
+        <?php $view['slots']->start('stylesheets') ?>
+            <link href="<?php echo $view['assets']->getUrl('css/main.css') ?>" rel="stylesheet" />
+        <?php $view['slots']->stop() ?>
+    </head>
+    <body>
+        <?php ... ?>
+
+        <?php $view['slots']->start('javascripts') ?>
+            <script src="<?php echo $view['assets']->getUrl('js/main.js') ?>"></script>
+        <?php $view['slots']->stop() ?>
+    </body>
+</html>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+とても簡単ですね！しかし、子テンプレートで追加のスタイルシートや JavaScript をインクルードしたいとしたらどうでしょう？
+例えば、お問い合わせページを持っていて、そのページでだけで `contact.css` をインクルードしたいとしましょう。
+お問い合わせページの中で次のように行います。
+
+<tabs>
+  * [Twig](#tab21-view-twig)
+  * [PHP](#tab21-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab21-view-twig"><code twig>
+{# app/Resources/views/contact/contact.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link href="{{ asset('css/contact.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{# ... #}
+</code></pane>
+
+<pane id="tab21-view-php"><code php>
+// app/Resources/views/contact/contact.html.twig
+<?php $view->extend('base.html.php') ?>
+
+<?php $view['slots']->start('stylesheets') ?>
+    <link href="<?php echo $view['assets']->getUrl('css/contact.css') ?>" rel="stylesheet" />
+<?php $view['slots']->stop() ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+子テンプレートでは、シンプルに `stylesheets` ブロックをオーバーライドし、そのブロックの中に新しいスタイルシートタグを置きます。
+もちろん、親ブロックの内容も追加したいので（そして、置き換えたくないので）、ベーステンプレートの `stylesheets` から全てをインクルードする為に、`parent()` Twig 関数を使います。
+
+また、バンドルの `Resources/public` フォルダに格納されたアセットをインクルードすることもできます。
+この場合、`php app/console assets:install target [--symlink]` コマンドを実行する必要があります。
+それは、アセットファイルを正しい場所に（デフォルトでは "web" ディレクトリ）へコピー（またはシンボリックリンク）します。
+
+<code bash>
+<link href="{{ asset('bundles/acmedemo/css/contact.css') }}" rel="stylesheet" />
+</code>
+
+最終的に、`main.css` と `contact.css` の両方をインクルードしたページになります。
+
+
+
 
 ## グローバルテンプレート変数
 
-## templating サービスの設定と使い方
+リクエストの間、Symfony は Twig と PHP テンプレートエンジンの両方で、グローバルなテンプレート変数 `app` をセットします。
+`app` 変数は `GlobalVariables` クラスのインスタンです。これは、自動的にいくつかのアプリケーション固有の変数にアクセスを可能にします。
+
+- `app.security` (v2.6 から非推奨)
+ - セキュリティコンテキスト
+- `app.user`
+ - 現在のユーザーオブジェクト
+- `app.request`
+ - リクエストオブジェクト
+- `app.session`
+ - セッションオブジェクト
+- `app.environment`
+ - 現在の環境(dev, prod, etc).
+- `app.debug`
+ - デバッグモードであれば true、それ以外なら false
+
+<tabs>
+  * [Twig](#tab22-view-twig)
+  * [PHP](#tab22-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab22-view-twig"><code twig>
+<p>Username: {{ app.user.username }}</p>
+{% if app.debug %}
+    <p>Request method: {{ app.request.method }}</p>
+    <p>Application Environment: {{ app.environment }}</p>
+{% endif %}
+</code></pane>
+
+<pane id="tab22-view-php"><code php>
+<p>Username: <?php echo $app->getUser()->getUsername() ?></p>
+<?php if ($app->getDebug()): ?>
+    <p>Request method: <?php echo $app->getRequest()->getMethod() ?></p>
+    <p>Application Environment: <?php echo $app->getEnvironment() ?></p>
+<?php endif ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap hint></wrap>
+独自のグローバルテンプレート変数を追加することもできます。
+クックブックの[グローバル変数](/doc/cookbook/templating/global_variables)の例を参照してください。
+</well>
+
+
+## templating サービスの設定と使用
+
+Symfony のテンプレートシステムの心臓部は、テンプレートエンジンです。
+この特別なオブジェクトは、テンプレートのレンダリングを行い、その内容を返します。
+コントローラー内でテンプレートをレンダリングする時、実際にテンプレートエンジンサービスを使用しています。
+
+例えば
+
+<code php>
+return $this->render('article/index.html.twig');
+</code>
+
+上記は次の物と同じです。
+
+<code php>
+use Symfony\Component\HttpFoundation\Response;
+
+$engine = $this->container->get('templating');
+$content = $engine->render('article/index.html.twig');
+
+return $response = new Response($content);
+</code>
+
+テンプレートエンジン（もしくはサービス）は、Symfony 内部で自動的に動作するよう、あらかじめ設定されています。
+もちろん、アプリケーションの設定ファイルで、設定することが可能です。
+
+<well>
+<wrap note></wrap>
+`twig` エンジンは、webprofilerを使うために必須です（及び、多くのサードパーティバンドルも）。
+</well>
 
 ## バンドルテンプレートのオーバーライド
 
+Symfony コミュニティは、様々な機能の多くの高品質なバンドルを作成し、維持していることに誇りを持っています（[KnpBundle.com](http://knpbundles.com/) を参照）。
+サードパーティのバンドルを使用すると、おそらくバンドルのテンプレートをオーバライドしたりカスタマイズする必要があるはずです。
+
+あなたのプロジェクトにオープンソースの AcmeBlogBundle をインストールしたとしましょう。
+そして、全てに満足している一方で、アプリケーションに特化したカスタマイズするためにブログ一覧をオーバーライドしたいとします。
+AcmeBlogBundle 内の Blog コントローラを調べていくと、次のようなコードを発見しました。
+
+<code php>
+public function indexAction()
+{
+    // some logic to retrieve the blogs
+    $blogs = ...;
+
+    $this->render(
+        'AcmeBlogBundle:Blog:index.html.twig',
+        array('blogs' => $blogs)
+    );
+}
+</code>
+
+`AcmeBlogBundle:Blog:index.html.twig` がレンダリングされる時、Symfony は、次の２つの場所からテンプレートを探します。
+
+ 1. `app/Resources/AcmeBlogBundle/views/Blog/index.html.twig`
+ 2. `src/Acme/BlogBundle/Resources/views/Blog/index.html.twig`
+
+バンドル内のテンプレートをオーバーライドするには、`index.html.twig` をバンドルから `app/Resources/AcmeBlogBundle/views/Blog/index.html.twig` へコピーするだけです(`app/Resources/AcmeBlogBundle` ディレクトリは存在しないので、作成する必要があります)。
+そして、自由にテンプレートをカスタマイズできます。
+
+<well>
+<wrap caution></wrap>
+新しい場所にテンプレートを追加したら、デバッグモードの時でも、キャッシュクリアする必要があるかも知れません（`php app/console cache:clear`）。
+</well>
+
+また、このロジックはバンドルのベーステンプレートにも当てはまります。
+AcmeBlogBundle 内の各テンプレートが、`AcmeBlogBundle::layout.html.twig` ベーステンプレートを継承しているとしましょう。
+先程と同じ様に、Symfony は次の２つの場所からテンプレートを探します。
+
+ 1. `app/Resources/AcmeBlogBundle/views/layout.html.twig`
+ 2. `src/Acme/BlogBundle/Resources/views/layout.html.twig`
+
+もう一度、テンプレートをオーバーライドする為に、それをバンドルから `app/Resources/AcmeBlogBundle/views/layout.html.twig` へコピーします。
+そして、自由にコピーしたテンプレートをカスタマイズできます。
+
+一歩離れて見ると、Symfony はいつも `app/Resources/{BUNDLE_NAME}/views/` からテンプレートを探し始めるのがわかります。
+そこにテンプレートがなければ、バンドルの `Resources/views` ディレクトリ内をチェックします。
+これは、全てのバンドルテンプレートは `app/Resources` サブディレクトリに正しくそれらを置くことで、オーバーライドできることを意味します。
+
+<well>
+<wrap note></wrap>
+また、バンドルの継承を使って、継承されたバンドル内のテンプレートをオーバーライドすることもできます。
+詳細は[バンドルをオーバーライドする為のバンドルの継承方法](/doc/cookbook/bundles/inheritance)を参照してください。
+</well>
+
 ### コアテンプレートのオーバーライド
+
+Symfony フレームワーク自体もバンドルですので、コアテンプレートも同様にオーバーライドできます。
+例えば、TwigBundle は、いくつかの異なる "exception" や "error" のテンプレートを持っています。
+これらも、TwigBundle の `Resources/views/Exception` ディレクトリから `app/Resources/TwigBundle/views/Exception` ディレクトリへコピーすることで、オーバーライドすることができます。
 
 ## ３階層の継承
 
+継承を使用する一般的な方法の１つは、３段階のアプローチを使用することです。
+この方法は、今まで見てきた３つのタイプのテンプレートと共に完璧に動作します。
+
+- アプリケーションのメインレイアウトを含む、`app/Resources/views/base.html.twig` ファイルを作成します。内部的には `base.html.twig` と指定されます。
+
+- サイトの各セクション用のテンプレートを作成します。例えば、ブログ機能はブログセクションに特化した要素だけを持つ `blog/layout.html.twig` を持ちます。\\
+
+<code twig>
+{# app/Resources/views/blog/layout.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Blog Application</h1>
+
+    {% block content %}{% endblock %}
+{% endblock %}
+</code>
+
+- 各ページ用の独立したテンプレートを作成します。そして、適切なセクションのテンプレートを継承します。例えば、"index" ページは `blog/index.html.twig` のような感じにして、実際のブログ投稿を一覧表示します。\\
+
+<code twig>
+{# app/Resources/views/blog/index.html.twig #}
+{% extends 'blog/layout.html.twig' %}
+
+{% block content %}
+    {% for entry in blog_entries %}
+        <h2>{{ entry.title }}</h2>
+        <p>{{ entry.body }}</p>
+    {% endfor %}
+{% endblock %}
+</code>
+
+このテンプレートはセクションテンプレート（`blog/layout.html.twig`）を継承していることに注意してください。
+そして、セクションテンプレートはベースアプリケーションレイアウト（`base.html.twig`）を継承しています。
+これが、一般的な３階層継承モデルです。
+
+アプリケーションを作るときは、この方法を使うか、シンプルに各ページテンプレートがベースアプリケーションテンプレートを直接継承する（例、`{% extends 'base.html.twig' %}`）かを選択できます。
+３階層モデルは、ベンダーバンドルによって使用されるベストプラクティスです。
+正しくアプリケーションのベースレイアウトを拡張する為に、バンドルのベーステンプレートを簡単にオーバーライドできるようにします。
+
+
+
 ## 出力のエスケープ
+
+テンプレートから HTML を生成する時には、テンプレートの変数が意図していない HTML や、危険なクライアントサイドコードを出力してしまうリスクが常にあります。
+その結果、動的なコンテンツがページの HTML を壊したり、悪意のあるユーザーに[クロスサイトスクリプティング](https://ja.wikipedia.org/wiki/クロスサイトスクリプティング)（XSS）攻撃を許したりする可能性があります。
+この典型的な例を見てみましょう。
+
+<tabs>
+  * [Twig](#tab23-view-twig)
+  * [PHP](#tab23-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab23-view-twig"><code twig>
+Hello {{ name }}
+</code></pane>
+
+<pane id="tab23-view-php"><code php>
+Hello <?php echo $name ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+ユーザーが自分の名前に、次のコードを入力することをイメージしてみてください。
+
+<code html>
+<script>alert('hello!')</script>
+</code>
+
+何の出力エスケープも無ければ、テンプレートの表示結果で JavaScript のアラートボックスがポップアップされてしまいます。
+
+<code html>
+Hello <script>alert('hello!')</script>
+</code>
+
+これは無害に見えますが、ここまで出来てしまうユーザーは、何も知らない正当なユーザーの安全領域で、悪意のある動作をする JavaScript を書けてしまいます。
+
+この問題への答えは、出力をエスケープすることです。
+出力エスケープが有効になっている場合、テンプレートは、無害にレンダリングされ、画面に `script` タグを文字通りに表示します。
+
+<code html>
+Hello &lt;script&gt;alert(&#39;hello!&#39;)&lt;/script&gt;
+</code>
+
+Twig と PHP テンプレートシステムは、この問題に対して異なる方法でアプローチします。
+Twig を使用する場合、アウトプットエスケープはデフォルトで on なっていて、守られています。
+PHP では、出力エスケープは自動化されておらず、必要な場合で手動でエスケープする必要があります。
+
+
+
+
+
+
 
 ### Twig での出力のエスケープ
 
+Twig テンプレートを使っている場合は、出力エスケープはデフォルトで有効になっています。
+これは、ユーザーが送信したコードによる意図しない結果から、すでに守られていることを意味します。
+デフォルトでは、出力エスケープはコンテンツを HTML 用にエスケープするように想定されています。
+
+信用できる変数や、エスケープすべきでは無いマークアップが含まれている変数をレンダリングする時、出力エスケープを無効にしたい場合もあるでしょう。
+管理者が HTML コードを含む記事を書けるとした場合、デフォルトでは Twig は記事の本文をエスケープします。
+
+それを、普通にレンダリングするには、`raw` フィルターを追加します。
+
+<code twig>
+{{ article.body|raw }}
+</code>
+
+また、`{% block %}` 領域内やテンプレート全体で出力エスケープを無効にすることも出来ます。
+詳細は Twig ドキュメントの[出力エスケープ](http://twig.sensiolabs.org/doc/api.html#escaper-extension)を参照してください。
+
+
 ### PHP での出力のエスケープ
+
+PHP テンプレートを使用している場合は、自動的なアウトプットエスケープは行われません。
+これは、明示的に変数をエスケープしない限り、保護されていないことを意味します。
+エスケープを行うには、view の `escape()` メソッドを使います。
+
+<code php>
+Hello <?php echo $view->escape($name) ?>
+</code>
+
+デフォルトでは、`escape()` メソッドは、変数を HTML コンテキスト用にレンダリングすることを想定しています(したがって、変数は HTML にとって安全になるようにエスケープされます)。
+２つ目の引数でコンテキストを変更できます。例えば、JavaScript 内で何か出力する為には、`js` コンテキストを指定します。
+
+<code php>
+var myMsg = 'Hello <?php echo $view->escape($name, 'js') ?>';
+</code>
 
 ## デバッグ
 
+PHP を使っている時、変数の値を素早く身たい時には、VarDumper コンポーネントの [dump()](/doc/components/var_dumper/introduction#components-var-dumper-dump) 関数を使います。
+これは大変便利です。例えば、コントローラの中では次のようになります。
+
+<code php>
+// src/AppBundle/Controller/ArticleController.php
+namespace AppBundle\Controller;
+
+// ...
+
+class ArticleController extends Controller
+{
+    public function recentListAction()
+    {
+        $articles = ...;
+        dump($articles);
+
+        // ...
+    }
+}
+</code>
+
+<well>
+<wrap note></wrap>
+`dump()` 関数の出力はウェブデベロッパーツールの中に表示されます。
+</well>
+
+同じように、`dump` Twig 関数をテンプレートの中で使うことができます。
+
+<code twig>
+{{ dump(articles) }}
+
+{% for article in articles %}
+    <a href="/article/{{ article.slug }}">
+        {{ article.title }}
+    </a>
+{% endfor %}
+</code>
+
+Twig の `debug` 設定（`config.yml` 内）が `true` の時だけ、変数はダンプされます。
+デフォルトでは `dev` 環境では変数はダンプされ、`prod` 環境ではダンプされません。
+
+
 ## 構文チェック
+
+コンソールコマンドの `twig:lint` を使って、Twig テンプレートの構文エラーをチェックすることができます。
+
+<code bash>
+# You can check by filename:
+$ php bin/console lint:twig app/Resources/views/article/recent_list.html.twig
+
+# or by directory:
+$ php bin/console lint:twig app/Resources/views
+</code>
 
 ## テンプレートフォーマット
 
+テンプレートは、あらゆるフォーマットでコンテンツをレンダリングするための汎用的な方法です。
+そして、ほとんどのケースで HTML コンテンツをレンダリングする為にテンプレートを使用しますが、JavaScript や CSS、XML、その他のフォーマットでも簡単に生成することができます。
+
+たとえば、同一の「リソース」でも、いくつかのフォーマットにレンダリングされることはよくあります。
+index ページを XML でレンダリングするには、単にテンプレート名にフォーマットを含めます。
+
+- XML テンプレート名：`article/index.xml.twig`
+- XML テンプレートファイル名：`index.xml.twig`
+
+実は、これは命名規則以外の何者でもありません。そして、実際にはテンプレートはテンプレート名のフォーマットに基づいてレンダリングされてはいるわけではありません。
+
+多くの場合、１つのコントローラで、リクエストフォーマットに応じて複数の異なるフォーマットにレンダリングされることが望まれます。次のようにするのが一般的です。
+
+<code php>
+public function indexAction(Request $request)
+{
+    $format = $request->getRequestFormat();
+
+    return $this->render('article/index.'.$format.'.twig');
+}
+</code>
+
+Request オブジェクトの `getRequestFormat()` メソッドは、デフォルトでは `html` を返しますが、ユーザーによってリクエストされてフォーマットに応じて、別のフォーマットを返すこともできます。
+リクエストフォーマットは、ほとんどの場合、ルーティングによって扱われます。
+たとえば、`/contact` であれば `html`を、`contact.xml` であれば `xml` をリクエストフォーマットにセットするように、設定できます。詳細は、[ルーティング](/doc/book/routing#高度なルーティング例)を参照してください。
+
+フォーマットをリンクに入れたい場合は、パラメータに `_format` キーで指定してください。
+
+<tabs>
+  * [Twig](#tab24-view-twig)
+  * [PHP](#tab24-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab24-view-twig"><code twig>
+<a href="{{ path('article_show', {'id': 123, '_format': 'pdf'}) }}">
+    PDF Version
+</a>
+</code></pane>
+
+<pane id="tab24-view-php"><code php>
+<!-- The path() method was introduced in Symfony 2.8. Prior to 2.8, you
+     had to use generate(). -->
+<a href="<?php echo $view['router']->path('article_show', array(
+    'id' => 123,
+    '_format' => 'pdf',
+)) ?>">
+    PDF Version
+</a>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+
+
 ## まとめ
+
+Symfony のテンプレートエンジンは強力なツールで、HTML や、XML その他のフォーマットで表示されるコンテンツを生成したい時に使うツールです。
+テンプレートは、コントローラー内でコンテンツを生成する一般的な方法ですが、必須というわけではありません。
+テンプレートを使わなくても、コントローラによって返される `Response` オブジェクトを作成することはできます。
+
+<code php>
+// creates a Response object whose content is the rendered template
+$response = $this->render('article/index.html.twig');
+
+// creates a Response object whose content is simple text
+$response = new Response('response content');
+</code>
+
+Symfony のテンプレートエンジンはとても柔軟で、デフォルトでは２種類のレンダリングが利用可能です。
+PHP テンプレートと、洗練されパワフルな Twig テンプレートです。
+両者とも、階層的なテンプレートをサポートしており、一般的なタスクのほとんどをこなすことのできる豊富なヘルパー関数を持っています。
+
+全体として、テンプレートは、自由に使える強力なツールと考えるべきです。
+いくつかのケースでは、テンプレートをレンダリングする必要はないかも知れません。
+そのような場合でも、Symfony は問題ありません。
+
 
 ## クックブックの参照先
 
-
+- [Twig テンプレートの代わりに PHP を使う方法](/doc/cookbook/templating/PHP)
+- [エラーページのカスタマイズ方法](/doc/cookbook/controller/error_pages)
+- [Twig エクステンションの作成方法](/doc/cookbook/templating/twig_extension)
 
 
 

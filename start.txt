@@ -12,24 +12,29 @@
 <grid>
 
 <col md="6">
+1人1ページで**19人の有志**が必要です。  
+ぜひ、ご協力ください。\\
+\\
 
 - Symfony コミュニティへの貢献として
 - 自分の理解を深めるため
 - 新人研修の課題として
 - IT翻訳の腕試してして
 
-1人1ページで**19人の有志**が必要です。  
-ぜひ、ご協力ください。
-
-**[バナー表示キャンペーン](/help/banner)**実施中！  
 </col>
 
 <col md="6">
-<gchart 350x120 pie3d #008000 #ffffff left "進捗率">
-完了 = 7
+<gchart 350x120 pie3d #008000 #ffffff center "進捗率">
+完了 = 8
 翻訳中 = 1
 募集中 = 10
 </gchart>
+
+<WRAP clear></WRAP>
+<WRAP centeralign>
+\\
+**[バナー表示キャンペーン実施中！](/help/banner)**  
+</WRAP>
 </col>
 
 </grid>

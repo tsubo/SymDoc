@@ -10,6 +10,7 @@
   * [XML](#tab1-xml)
   * [PHP](#tab1-php)
 
+<WRAP tab-content>
 <pane id="tab1-yaml"><code yml>
 # app/config/config.yml
 imports:
@@ -81,11 +82,12 @@ $container->loadFromExtension('twig', array(
 
 // ...
 </code></pane>
+
+</WRAP>
 </tabs>
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 次の[環境](#環境)節で、各ファイルフォーマットの読み込み方法の詳細を学びます。
 </well>
 
@@ -98,8 +100,7 @@ $container->loadFromExtension('twig', array(
 Symfony の各セクションを調べて、読んでいけば、各機能の具体的な設定オプションを知ることができます。
 
 <well>
-<WRAP addon></WRAP>
-
+<wrap addon></wrap>
 **設定フォーマット**
 
 章全体を通して、全ての設定例は３つのフォーマット（YAML, XML, PHP）で表示されます。それぞれに、メリット、デメリットがあります。どれを使うかは、あなた次第です。
@@ -128,8 +129,7 @@ $ php bin/console config:dump-reference framework
 </code>
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 自分のバンドルの設定を追加する方法は、クックブックの[バンドル内のサービス設定をロードする方法](/doc/cookbook/bundles/extension)を参照してください。
 </well>
 
@@ -163,8 +163,7 @@ $ php bin/console cache:clear --env=prod --no-debug
 </code>
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 `web/app.php` ファイルを開くと、`prod` 環境を使用することが明示的に設定されているのを見ることができます。
 
 <code php>
@@ -175,8 +174,7 @@ $kernel = new AppKernel('prod', false);
 </well>
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 自動テストを動かす時には、`test` 環境が使用されます。そして、それはブラウザからは直接アクセスされません。
 詳細は、[テストの章](/doc/book/testing)を参照してください。
 </well>
@@ -207,6 +205,7 @@ public function registerContainerConfiguration(LoaderInterface $loader)
   * [XML](#tab2-xml)
   * [PHP](#tab2-php)
 
+<WRAP tab-content>
 <pane id="tab2-yaml"><code yml>
 # app/config/config_dev.yml
 imports:
@@ -256,6 +255,8 @@ $container->loadFromExtension('framework', array(
 
 // ...
 </code></pane>
+
+</WRAP>
 </tabs>
 
 `imports` キーは PHP の `include` 文と同様で、最初にメイン設定ファイル（`config.yml`）がロードされるのを保証します。

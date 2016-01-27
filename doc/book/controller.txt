@@ -41,8 +41,7 @@ Symfony プロジェクトが取り扱う全てのリクエストは、同じシ
 ページを作成することは、コントローラの作成(#3)や、コントローラへ URL をマップする為のルートを作成すること(#2)と同じくらい簡単です。
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 名前が似ていますが、「フロントコントローラ」はこの章で説明している「コントローラ」とは別の物です。
 フロントコントローラは "web/" ディレクトリに置いてある、短い PHP ファイルです。そして、そのファイルを通して全てのリクエストは処理されます。
 一般的なアプリケーションは本番環境用のフロントコントローラ（app.php）と開発環境用のフロントコントローラ（app_dev.php）を持っています。
@@ -70,8 +69,7 @@ class HelloController
 </code>
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 上の例の場合、コントローラは、コントローラクラス（HelloController）内にある indexAction メソッドであることに注意してください。
 ネーミングで混乱しないでください。コントローラクラスは複数のコントローラ/アクションを一緒にグルーピングする為のシンプルで便利な方法です。
 一般的に、コントローラクラスは複数のコントローラ/アクションを収容します。（例、updateAction, deleteAction 等々）
@@ -119,6 +117,7 @@ class HelloController
   * [XML](#tab1-xml)
   * [PHP](#tab1-php)
 
+<WRAP tab-content>
 <pane id="tab1-annotations">
 <code php>
 // src/AppBundle/Controller/HelloController.php
@@ -183,6 +182,7 @@ return $collection;
 </code>
 </pane>
 
+</WRAP>
 </tabs>
 
 これで、`/hello/ryan`（例、[ビルトインサーバーの場合](/doc/cookbook/web_server/built_in) http://localhost:8000/hello/ryan） にアクセスすることができます。
@@ -192,16 +192,14 @@ return $collection;
 シンプルでしょ？
 
 <well>
-<WRAP addon></WRAP>
-
+<wrap addon></wrap>
 **# AppBundle:Hello:index コントローラ書式**
 
-もし、YAML か XML フォーマットを使っていたら、コントローラを参照するのに、特別なショートカット書式である `AppBundle:Hello:index` を使ってください。コントローラ書式の詳細は[コントローラネーミングパターン](/doc/book/routing#controller-string-syntax)を参照してください。
+もし、YAML か XML フォーマットを使っていたら、コントローラを参照するのに、特別なショートカット書式である `AppBundle:Hello:index` を使ってください。コントローラ書式の詳細は[コントローラのネーミングパターン](/doc/book/routing#コントローラのネーミングパターン)を参照してください。
 </well>
 
 <well>
-<WRAP ref></WRAP>
-
+<wrap ref></wrap>
 ルーティングシステムの詳細は[ルーティング](/doc/book/routing)の章で詳しく学べます。
 </well>
 
@@ -240,6 +238,7 @@ public function indexAction($name)
   * [XML](#tab2-xml)
   * [PHP](#tab2-php)
 
+<WRAP tab-content>
 <pane id="tab2-annotations">
 <code php>
 // src/AppBundle/Controller/HelloController.php
@@ -300,6 +299,7 @@ return $collection;
 </code>
 </pane>
 
+</WRAP>
 </tabs>
 
 ここでは、コントローラは２つの引数を持つことができます。
@@ -358,8 +358,7 @@ public function indexAction($firstName)
 </code>
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 全てのルートはまた、特別な `_route` パラメータを持っています。このパラメータにはマッチしたルートの名前と一致します。（先の例では `hello`）
 あまり使いませんが、これもコントローラの引数に使うことができます。また、ルートからコントローラの引数に引き渡せる他の変数もあります。
 詳細は[ルートからコントローラへ追加情報を渡す方法](/doc/cookbook/routing/extra_information)を参照してください。
@@ -387,8 +386,7 @@ public function indexAction($firstName, $lastName, Request $request)
 </code>
 
 <well>
-<WRAP ref></WRAP>
-
+<wrap ref></wrap>
 詳細は[リクエスト情報へのアクセス](/doc/components/http_foundation/introduction#component-http-foundation-request)を参照してください。
 </well>
 
@@ -420,8 +418,7 @@ class HelloController extends Controller
 実際のコア機能を知るための良い方法は、[Controller クラス](https://github.com/symfony/symfony/blob/master/src/Symfony/Bundle/FrameworkBundle/Controller/Controller.php)のソースを見てみることです。
 
 <well>
-<WRAP ref></WRAP>
-
+<wrap ref></wrap>
 もし、コントローラが基本コントローラクラスを継承しないで、Symfony のコア機能を使う方法に興味があるなら、[サービスとしてのコントローラ](/doc/cookbook/controller/service)を参照してください。
 これは必須ではありませんが、コントローラに注入するオブジェクトと依存関係をより厳密に制御することが出来るようになります。
 </well>
@@ -461,8 +458,7 @@ public function indexAction()
 </code>
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 redirectToRoute() メソッドはユーザーをリダイレクトすることに特化したレスポンスを作成する、ただのショートカットです。
 それは、以下のコードと同等です。
 
@@ -499,8 +495,7 @@ return $this->render('hello/greetings/index.html.twig', array(
 Symfony テンプレートエンジンは、[テンプレートの章](/doc/book/templating)で非常に詳しく説明されています。
 
 <well>
-<WRAP addon></WRAP>
-
+<wrap addon></wrap>
 **# バンドル内部にあるテンプレートの参照**
 
 あなたはまた、バンドルの内の `Resources/views` ディレクトリ内にテンプレートを置くこともできます。
@@ -637,6 +632,7 @@ public function updateAction(Request $request)
   * [Twig](#tab3-twig)
   * [PHP](#tab3-php)
 
+<WRAP tab-content>
 <pane id="tab3-twig">
 <code twig>
 {% for flash_message in app.session.flashbag.get('notice') %}
@@ -657,18 +653,17 @@ public function updateAction(Request $request)
 </code>
 </pane>
 
+</WRAP>
 </tabs>
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 フラッシュメッセージの異なるタイプのキーとして、`notice`, `warning`, `error` を使うのが一般的ですが、
 ニーズに合わせて、好きなキーを使用することができます。
 </well>
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 セッションにメッセージをキープしながらメッセージを取得するために、`get()` の代わりに [peek()](http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Session/Flash/FlashBagInterface.html#method_peek) を使用することもできます。
 </well>
 
@@ -701,8 +696,7 @@ $response->headers->set('Content-Type', 'application/json');
 |ストリーミングレスポンス|[StreamedResponse](http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/StreamedResponse.html)|[ストリーミングレスポンス](/doc/components/http_foundation/introduction#streaming-response)|
 
 <well>
-<WRAP ref></WRAP>
-
+<wrap ref></wrap>
 心配しないでください！コンポーネントドキュメントに、レスポンスオブジェクトに関するより多くの情報があります。
 詳細は[レスポンス](/doc/components/http_foundation/introduction#component-http-foundation-response)を参照してください。
 </well>
@@ -731,8 +725,7 @@ public function indexAction(Request $request)
 `Response` オブジェクトと同じように、リクエストヘッダーは　`HeaderBag` オブジェクトに格納されて、簡単にアクセスできます。
 
 <well>
-<WRAP ref></WRAP>
-
+<wrap ref></wrap>
 心配しないでください！コンポーネントドキュメントにリクエストオブジェクトに関するより多くの情報があります。
 詳細は[リクエスト](/doc/components/http_foundation/introduction#component-http-foundation-request)を参照してください。
 </well>
@@ -763,7 +756,7 @@ public function indexAction($name)
 }
 </code>
 
-`forward()`メソッドがコントローラを表す特別な文字列を使用していることに注意してください（[コントローラネーミングパターン](/doc/book/routing#controller-string-syntax)を参照）。
+`forward()`メソッドがコントローラを表す特別な文字列を使用していることに注意してください（[コントローラのネーミングパターン](/doc/book/routing#コントローラのネーミングパターン)を参照）。
 このケースでは、ターゲットとなるコントローラの関数は AppBundle 内の `SomethingController::fancyAction()` になります。
 メソッドに渡される配列は、名前解決されたコントローラ（`SomethingController::fancyAction()`）の引数になります。
 これと同じアイデアがテンプレート内にコントローラを埋め込む時に使われています（[コントローラの埋め込み](/doc/book/templating#templating-embedding-controller)を参照）。

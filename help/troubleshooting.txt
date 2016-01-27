@@ -28,6 +28,7 @@
   * [Twig](#tab-twig)
   * [PHP](#tab-php)
 
+<WRAP tab-content>
 <pane id="tab-twig"><code twig>
 // Twig
 </code></pane>
@@ -35,12 +36,15 @@
 <pane id="tab-php"><code php>
 // PHP
 </code></pane>
+
+</WRAP>
 </tabs>
 
 <tabs>
   * [Twig](#tab-twig)
   * [PHP](#tab-php)
 
+<WRAP tab-content>
 <pane id="tab-twig"><code twig>
 // Twig
 </code></pane>
@@ -48,6 +52,8 @@
 <pane id="tab-php"><code php>
 // PHP
 </code></pane>
+
+</WRAP>
 </tabs>
 </well>
 
@@ -65,6 +71,7 @@ ID をユニークに設定すると直ります。
   * [Twig](#tab1-twig)
   * [PHP](#tab1-php)
 
+<WRAP tab-content>
 <pane id="tab1-twig"><code twig>
 // Twig
 </code></pane>
@@ -72,12 +79,15 @@ ID をユニークに設定すると直ります。
 <pane id="tab1-php"><code php>
 // PHP
 </code></pane>
+
+</WRAP>
 </tabs>
 
 <tabs>
   * [Twig](#tab2-twig)
   * [PHP](#tab2-php)
 
+<WRAP tab-content>
 <pane id="tab2-twig"><code twig>
 // Twig
 </code></pane>
@@ -85,6 +95,8 @@ ID をユニークに設定すると直ります。
 <pane id="tab2-php"><code php>
 // PHP
 </code></pane>
+
+</WRAP>
 </tabs>
 ```
 
@@ -92,6 +104,7 @@ ID をユニークに設定すると直ります。
   * [Twig](#tab1-twig)
   * [PHP](#tab1-php)
 
+<WRAP tab-content>
 <pane id="tab1-twig"><code twig>
 // Twig
 </code></pane>
@@ -99,12 +112,15 @@ ID をユニークに設定すると直ります。
 <pane id="tab1-php"><code php>
 // PHP
 </code></pane>
+
+</WRAP>
 </tabs>
 
 <tabs>
   * [Twig](#tab2-twig)
   * [PHP](#tab2-php)
 
+<WRAP tab-content>
 <pane id="tab2-twig"><code twig>
 // Twig
 </code></pane>
@@ -112,6 +128,8 @@ ID をユニークに設定すると直ります。
 <pane id="tab2-php"><code php>
 // PHP
 </code></pane>
+
+</WRAP>
 </tabs>
 </well>
 

@@ -4,12 +4,12 @@
 
 ---
 
-- [クイックツアー](/doc/quick_tour/start)
-- [Book](/doc/book/start)
-- [Best Practices](/doc/best_practices/start)
-- [Cookbook](/doc/cookbook/start)
-- [Bundles](/doc/bundles/start)
+- {{fa>battery-4}} [クイックツアー](/doc/quick_tour/start)
+- {{fa>battery-2}} [Book](/doc/book/start)
 
+- [Best Practices](https://symfony.com/doc/current/best_practices/index.html)
+- [Cookbook](https://symfony.com/doc/current/cookbook/index.html)
+- [Bundles](https://symfony.com/doc/bundles/)
 - [Components](https://symfony.com/doc/current/components/index.html)
 - [Reference](https://symfony.com/doc/current/reference/index.html)
 

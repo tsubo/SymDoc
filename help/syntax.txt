@@ -253,14 +253,14 @@ class LuckyController
 }
 </code>
 
+
 ### 注意書き
 
 以下のように書くと
 
 ```
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 ここに文章を書きます。[リンク](http://google.com)も効きます。
 </well>
 ```
@@ -268,28 +268,27 @@ class LuckyController
 以下のように表示されます
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 ここに文章を書きます。[リンク](http://google.com)も効きます。
 </well>
 
 以下のように書くと
 
 ```
-<well><WRAP note></WRAP>注釈</well>
-<well><WRAP hint></WRAP>ヒント</well>
-<well><WRAP ref></WRAP>関連</well>
-<well><WRAP caution></WRAP>注意</well>
-<well><WRAP addon></WRAP>補足</well>
+<well><wrap note></wrap>注釈</well>
+<well><wrap hint></wrap>ヒント</well>
+<well><wrap ref></wrap>関連</well>
+<well><wrap caution></wrap>注意</well>
+<well><wrap addon></wrap>補足</well>
 ```
 
 以下のように表示されます
 
-<well><WRAP note></WRAP>注釈</well>
-<well><WRAP hint></WRAP>ヒント</well>
-<well><WRAP ref></WRAP>関連</well>
-<well><WRAP caution></WRAP>注意</well>
-<well><WRAP addon></WRAP>補足</well>
+<well><wrap note></wrap>注釈</well>
+<well><wrap hint></wrap>ヒント</well>
+<well><wrap ref></wrap>関連</well>
+<well><wrap caution></wrap>注意</well>
+<well><wrap addon></wrap>補足</well>
 
 
 ### タブパネル
@@ -300,6 +299,8 @@ class LuckyController
 <tabs>
   * [Twig](#tab-twig)
   * [PHP](#tab-php)
+
+<WRAP tab-content>
 
 <pane id="tab-twig"><code twig>
 {# app/Resources/views/lucky/number.html.twig #}
@@ -319,6 +320,7 @@ class LuckyController
 <?php $view['slots']->stop() ?>
 </code></pane>
 
+</WRAP>
 </tabs>
 ```
 
@@ -332,6 +334,8 @@ class LuckyController
   * [Twig](#tab-twig)
   * [PHP](#tab-php)
 
+<WRAP tab-content>
+
 <pane id="tab-twig"><code twig>
 {# app/Resources/views/lucky/number.html.twig #}
 {% extends 'base.html.twig' %}
@@ -350,6 +354,7 @@ class LuckyController
 <?php $view['slots']->stop() ?>
 </code></pane>
 
+</WRAP>
 </tabs>
 
 
@@ -377,6 +382,59 @@ DokuwikiのMarkdownプラグインでは表を表示してくれないので、W
 - 項目はデフォルトで左寄せです
 - 項目を右寄せにしたい場合は値の左にスペースを２つ入れます
 - 項目をセンタリングしたい場合は値の左右にスペースを２つ入れます
+
+
+### アラート
+
+以下のように書くと
+
+```
+<alert type="success">成功メッセージ</alert>
+<alert type="info">情報メッセージ</alert>
+<alert type="warning">警告メッセージ</alert>
+<alert type="danger">危険/エラーメッセージ</alert>
+```
+
+以下のように表示されます。
+
+<alert type="success">成功メッセージ</alert>
+<alert type="info">情報メッセージ</alert>
+<alert type="warning">警告メッセージ</alert>
+<alert type="danger">危険/エラーメッセージ</alert>
+
+
+### ボタン
+
+以下のように書くと
+
+```
+<btn>Default</btn>
+<btn type="primary">Primary</btn>
+<btn type="success">Success</btn>
+<btn type="info">Info</btn>
+<btn type="warning">Warinig</btn>
+<btn type="danger">Danger</btn>
+
+<btn size="lg">Large</btn>
+<btn>Default</btn>
+<btn size="sm">Small</btn>
+<btn size="xs">Extra small</btn>
+```
+
+以下のように表示されます
+
+<btn>Default</btn>
+<btn type="primary">Primary</btn>
+<btn type="success">Success</btn>
+<btn type="info">Info</btn>
+<btn type="warning">Warinig</btn>
+<btn type="danger">Danger</btn>
+
+<btn size="lg">Large</btn>
+<btn>Default</btn>
+<btn size="sm">Small</btn>
+<btn size="xs">Extra small</btn>
+
 
 ### 画像のリンク
 

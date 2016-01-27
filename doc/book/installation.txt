@@ -4,7 +4,7 @@
 実際に、あなたは、わずか数分で Symfony アプリケーションを起動して動かすことができるでしょう。
 
 <well>
-<WRAP ref></WRAP>
+<wrap ref></wrap>
 ビデオチュートリあるがお好みでしたら、KnpUniversity のスクリーンキャストシリーズ「[Symfony で楽しい開発](http://knpuniversity.com/screencast/symfony)」をチェックしてください。
 </well>
 
@@ -16,8 +16,7 @@ Symfony には簡単に新規のアプリケーションを作成する為に、
 新規のアプリケーションを作成するには、インストーラーを使用することが推奨されています。このインストーラーは、PHP のアプリケーションで、あなたのシステムに１度だけインストールする必要があります。そして、Symfony アプリケーションを何度でも作成することができます。
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 インストーラーを使うには PHP 5.4 以上が必要です。まだ、PHP 5.3 を使っている場合は、Symfony インストーラを使うことはできません。
 その場合は、[インストーラー以外でのアプリケーションの作成](#インストーラー以外でのアプリケーションの作成)を参照してください。
 </well>
@@ -70,15 +69,13 @@ c:\projects\> php symfony new my_project_name
 要件を満たしていない場合は、要件を満たすために必要な変更リストを表示します。
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 セキュリティ上の理由で、全ての Symfony バージョンは配布される前にデジタル署名されています。
 Symfony バージョンの整合性をチェックしたい場合は、[この記事の説明](http://fabien.potencier.org/signing-project-releases.html)に従ってください。
 </well>
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 もし、インストーラが何も表示しない場合は、あなたのコンピュータに [Phar 拡張モジュール](http://php.net/manual/ja/intro.phar.php)がインストールされていて、有効になっているかを確認してください。
 </well>
 
@@ -137,8 +134,7 @@ $ composer create-project symfony/framework-standard-edition my_project_name "3.
 </code>
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 インターネット回線が遅い場合、Composer が動いていないように感じるかもしれません。
 そのような時には、-vvv オプションを指定することで、Composer が詳細な表示を行ってくれます。
 </well>
@@ -160,8 +156,7 @@ $ php bin/console server:run
 `Welcome Page` の代わりに、空白のページやエラーページが表示されるかもしれません。それはディレクトリのパーミッションの設定ミスが原因で発生します。オペレーティングシステムに応じていくつかの解決策があります。それらは、[パーミッションの設定](#パーミッションの設定)を参照してください。
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 PHP のビルトインサーバーは PHP 5.4 以上のバージョンで使用できます。
 PHP 5.3 を使っている場合は、ご利用のウェブサーバーで virtual host の設定が必要になります。
 </well>
@@ -185,8 +180,7 @@ http://localhost:8000/config.php
 もし何か問題があれば、先に進む前にそれらを修正してください。
 
 <well>
-<WRAP addon></WRAP>
-
+<wrap addon></wrap>
 ** パーミッションの設定**
 
 Symfony のインストールでよくある問題の１つが `var/cache` や `var/logs` のパーミッションです。
@@ -270,8 +264,7 @@ $ composer update
 プロジェクトの複雑さに応じて、この更新プロセスは数分かかることがあります。
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 Symfonyはプロジェクトが依存しているライブラリにセキュリティ脆弱性が含まれていないかをチェックするコマンドを提供しています。
 
 <code bash>

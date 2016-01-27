@@ -5,8 +5,7 @@
 バンドルは Symfony において、第一級市民です。これは、あなたが[サードパーティー](http://knpbundles.com/)によってパッケージされた機能を使用したり、自身の バンドルを配布したりする柔軟性を提供します。アプリケーションで有効にする機能を選択したり、あなたが望む方法でそれらを最適化することを簡単に出来るようにしてくれます。
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 ここで基本を学びますが、詳細は[再利用可能なバンドルのベストプラクティス](/doc/cookbook/bundles/best_practices)を参照してください。
 </well>
 
@@ -44,8 +43,7 @@ public function registerBundles()
 `registerBundles()` メソッドを使用すると、アプリケーションで使用されているバンドルを完全にコントロールできます（コア Symfony バンドルを含む）。
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 バンドルはオートロード（`app/autoload.php` で設定されたオートローダー経由で）できるのであれば、何処に格納することも可能です。
 </well>
 
@@ -58,8 +56,7 @@ Symfony スタンダードエディションには、フル機能のバンドル
 バンドルシステムがどれだけシンプルかを見せる為に、新たに `AcmeTestBundle` を作成し、それを有効にします。
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 `Acme` 部分は単なるダミーの名前です。その部分は、あなたやあなたの組織を表す、ベンダー名で置き換えるべきです。（例、ABC社の場合は、ABCTestBundle）
 </well>
 
@@ -77,8 +74,7 @@ class AcmeTestBundle extends Bundle
 </code>
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 AcmeTestBundle の名前は、標準的な[バンドル命名規則](/doc/cookbook/bundles/best_practices#bundles-naming-conventions)に従っています。
 </well>
 
@@ -115,8 +111,7 @@ $ php bin/console generate:bundle --namespace=Acme/TestBundle
 後で Symfony のコマンドラインツールについて詳しく説明します。
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 新しいバンドルを作成したり、サードパーティのバンドルを使用するたびに、バンドルが `registerBundles()`で有効になっているか確認してください。
 `generate:bundle` コマンドを使用した時は、この有効化は自動的に行われます。
 </well>

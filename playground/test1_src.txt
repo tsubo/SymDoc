@@ -1,0 +1,7 @@
+# セクションへのリンクが正常な位置に表示されない調査（リンク元）
+
+- [高度なルーティング例](/playground/test1_dest#高度なルーティング例)
+- [特別なルーティングパラメータ](/playground/test1_dest#特別なルーティングパラメータ)
+- [コントローラのネーミングパターン](/playground/test1_dest#コントローラのネーミングパターン)
+
+Bootsrapwrapper plugin のバグの模様。

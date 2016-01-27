@@ -12,8 +12,7 @@
 あなたの仕事は純粋でシンプルです。そのリクエストを理解してレスポンスを返すことです。
 
 <well>
-<WRAP ref></WRAP>
-
+<wrap ref></wrap>
 ビデオチュートリあるがお好みでしたら、KnpUniversity のスクリーンキャストシリーズ「[Symfony で楽しい開発](http://knpuniversity.com/screencast/symfony)」をチェックしてください。
 </well>
 
@@ -22,8 +21,7 @@
 ## ページの作成：ルートとコントローラ
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 先に進む前に、[インストール](/doc/book/installation)の章を読んだか確認してください。
 そして、ブラウザで新しい Symfony のアプリケーションにアクセス出来ることを確認してください。
 </well>
@@ -59,8 +57,7 @@ class LuckyController
 http://localhost:8000/app_dev.php/lucky/number
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 もし、[Apache や Nginx](/doc/cookbook/configuration/web_server_configuration) のヴァーチャルホストが適切に設定されているなら、
 `http://localhost:8000` をホスト名に置き換えてください。
 例、`http://symfony.dev/app_dev.php/lucky/number`
@@ -73,8 +70,7 @@ http://localhost:8000/app_dev.php/lucky/number
 アノテーションの下の `numberAction` メソッドはコントローラと呼ばれ、あなたがページを構築する場所になります。コントローラの唯一のルールは Symfony のレスポンスオブジェクトを返さなければならないことです。（そして、最終的にこのルールを曲げる方法も学ぶでしょう）
 
 <well>
-<WRAP addon></WRAP>
-
+<wrap addon></wrap>
 ** URL 内の `app_dev.php` とは何でしょう？ **
 
 良い質問です。URL 内に `app_dev.php` を含むことによって、あなたは `web/app_dev.php` ファイルを通して Symfony を実行しています。
@@ -163,6 +159,7 @@ class LuckyController
   * [XML](#tab1-xml)
   * [PHP](#tab1-php)
 
+<WRAP tab-content> 
 <pane id="tab1-annotations">
 <code php>
 // src/AppBundle/Controller/LuckyController.php
@@ -223,6 +220,7 @@ return $collection;
 </code>
 </pane>
 
+</WRAP>
 </tabs>
 
 `{count}` プレースホルダーによって、ページヘの URL が変わっています。
@@ -363,8 +361,7 @@ public function numberAction($count)
 これらのショートカットメソッドをもっと知るには[コントローラ](/doc/book/controller)の章を参照してください。
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 より高度なユーザーの為に、[サービスとしてコントローラを登録する方法](/doc/cookbook/controller/service)もあります
 </well>
 
@@ -382,6 +379,7 @@ public function numberAction($count)
   * [Twig](#tab-twig)
   * [PHP](#tab-php)
 
+<WRAP tab-content> 
 <pane id="tab-twig">
 <code twig>
 {# app/Resources/views/lucky/number.html.twig #}
@@ -404,6 +402,7 @@ public function numberAction($count)
 </code>
 </pane>
 
+</WRAP>
 </tabs>
 
 ようこそ、Twig へ！ このサンプルファイルは既に基本を提示しています。`{{ 変数名 }}`書式は何かを表示する為に使用されます。
@@ -459,8 +458,7 @@ http://localhost:8000/app_dev.php/lucky/number/9
  - サードパーティ製のライブラリやパッケージ、バンドルが [Composer](https://getcomposer.org/) によってここにダウンロードされます。このディレクトリ内の物は変更してはいけません。
 
 <well>
-<WRAP ref></WRAP>
-
+<wrap ref></wrap>
 Symfony は柔軟です。必要であれば、デフォルトのディレクトリ構造を簡単に上書きすることができます。詳細は [Symfony のデフォルトディレクトリ構造を上書きする方法](/doc/cookbook/configuration/override_dir_structure)を参照してください。
 </well>
  
@@ -478,6 +476,7 @@ Symfony にはいくつかの組み込みバンドルが付属しています。
   * [XML](#tab3-xml)
   * [PHP](#tab3-php)
 
+<WRAP tab-content> 
 <pane id="tab3-yaml">
 <code yml>
 # app/config/config.yml
@@ -550,6 +549,7 @@ $container->loadFromExtension('twig', array(
 </code>
 </pane>
 
+</WRAP>
 </tabs>
 
 `framework` キーは FrameworkBundle を設定し、`twig` キーは TwigBundle を設定します。

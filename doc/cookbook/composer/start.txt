@@ -1,6 +1,6 @@
 # Recipes about Composer
 
 ^  タイトル  ^  状態  ^  翻訳更新日  ^ 備考 ^
-| [Installing Composer](/doc/cookbook/composer) |  v3.0  |  2016/01/16  | |
+| [Composerのインストール](/doc/cookbook/composer) |  v3.0  |  2016/01/16  | |
 
 

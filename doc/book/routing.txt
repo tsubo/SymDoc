@@ -15,10 +15,6 @@ Symfony のルーターでは、アプリケーション内の異なる領域に
 - ルートのデバッグ
 
 
-
-
-
-
 ## 実例でみるルーティング
 
 ルートは URL パスからコントローラへのマップです。
@@ -32,6 +28,7 @@ Symfony のルーターでは、アプリケーション内の異なる領域に
   * [XML](#tab1-xml)
   * [PHP](#tab1-php)
 
+<WRAP tab-content>
 <pane id="tab1-annotations"><code php>
 // src/AppBundle/Controller/BlogController.php
 namespace AppBundle\Controller;
@@ -85,20 +82,20 @@ $collection->add('blog_show', new Route('/blog/{slug}', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 `blog_show` ルートに定義されたパスは `/blog/*` の様に動きます。ワイルドカード部分には `slug` という名前が与えられています。
 `/blog/my-blog-post` という URL の場合、`slug` 変数は `my-blog-post` という値を取得し、コントローラで使用されます。`blog_show` はルートの名前で、ユニークに命名される必要があります。後ほど、URL を生成するために、使います。
 
 もし、アノテーションが好きでなかったり、SensioFrameworkExtraBundle に依存したくないといった理由で、アノテーションを使いたくない時には、Yaml や XML、PHP を使用することが出来ます。
-これらのフォーマットでは、`_controller` パラメータは特別なキーです。それは、URL がルートにマッチした時、どのコントローラを実行するかを Symfony に伝えます。`_controller` にセットしている文字列は[論理名](#コントローラネーミングパターン)と呼ばれています。それは、特定の PHP クラスやメソッドを指し示すパターンに従っています。この例の場合、`AppBundle:Blog:show` は `AppBundle\Controller\BlogController::showAction`を指しています。
+これらのフォーマットでは、`_controller` パラメータは特別なキーです。それは、URL がルートにマッチした時、どのコントローラを実行するかを Symfony に伝えます。`_controller` にセットしている文字列は[論理名](#コントローラのネーミングパターン)と呼ばれています。それは、特定の PHP クラスやメソッドを指し示すパターンに従っています。この例の場合、`AppBundle:Blog:show` は `AppBundle\Controller\BlogController::showAction`を指しています。
 
 おめでとうございます！あなたは、初めてのルートを作成し、コントローラに接続しました。
 そして、`/blog/my-post` にアクセスした時には、`showAction` コントローラが実行され、`$slug` 変数には `my-post` が入ります。
 
 Symfony ルーターの目的は、リクエストの URL をコントローラにマップすることです。
 進んでいくと、あなたは、もっと複雑な URL でも、簡単にマッピングを行う、あらゆる種類のトリックを学びます。
-
 
 
 ## ルーティングの裏側
@@ -134,6 +131,7 @@ Symfony は １つのルーティング設定ファイルからアプリケー�
   * [XML](#tab2-xml)
   * [PHP](#tab2-php)
 
+<WRAP tab-content>
 <pane id="tab2-yaml"><code yml>
 # app/config/config.yml
 framework:
@@ -169,11 +167,11 @@ $container->loadFromExtension('framework', array(
 ));
 </code></pane>
 
+</WRAP>
 </tabs>
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 全てのルートは１つのファイルから読み込まれますが、追加のルーティングリソースを含めるのが一般的です。
 そうするには、メインのルーティング設定ファイルの中で、インクルードすべき、外部のファイルを指示するだけです。
 詳細は[外部ルーティングリソースのインクルード](#外部ルーティングリソースのインクルード)を参照してください。
@@ -191,6 +189,7 @@ $container->loadFromExtension('framework', array(
   * [XML](#tab3-xml)
   * [PHP](#tab3-php)
 
+<WRAP tab-content>
 <pane id="tab3-annotations"><code php>
 // src/AppBundle/Controller/MainController.php
 
@@ -242,11 +241,12 @@ $collection->add('_welcome', new Route('/', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 このルートはホームページ（`/`）とマッチして、それを `AppBundle:Main:homepage` コントローラにマップします。
 `_controller` 文字列は Symfony によって、実際の PHP 関数に変換され、実行されます。
-このプロセスは[コントローラネーミングパターン](#コントローラネーミングパターン)のセクションで説明します。
+このプロセスは[コントローラのネーミングパターン](#コントローラのネーミングパターン)のセクションで説明します。
 
 
 
@@ -261,6 +261,7 @@ return $collection;
   * [XML](#tab4-xml)
   * [PHP](#tab4-php)
 
+<WRAP tab-content>
 <pane id="tab4-annotations"><code php>
 // src/AppBundle/Controller/BlogController.php
 
@@ -311,6 +312,7 @@ $collection->add('blog_show', new Route('/blog/{slug}', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 このパスは `/blog/*` のような URL に全てマッチします。加えて、`{slag}` プレースホルダーにマッチした値はコントローラ内で使用できます。
@@ -320,7 +322,6 @@ return $collection;
 しかし、このパスは シンプルな `/blog` にはマッチしません。デフォルトでは全てのプレースホルダーが必須だからです。
 これは、プレースホルダーの値に `defaults` 配列を追加することで変更できます。
 
- 
 
 ### プレイスホルダーの必須/任意設定
 
@@ -332,6 +333,7 @@ return $collection;
   * [XML](#tab5-xml)
   * [PHP](#tab5-php)
 
+<WRAP tab-content>
 <pane id="tab5-annotations"><code php>
 // src/AppBundle/Controller/BlogController.php
 
@@ -382,6 +384,7 @@ $collection->add('blog_show', new Route('/blog/{slug}', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 今のところ、ルートは可能な限りシンプルです。それは、プレースホルダーを持っておらず、`/blog` URL だけにマッチします。
@@ -394,6 +397,7 @@ return $collection;
   * [XML](#tab6-code-xml)
   * [PHP](#tab6-code-php)
 
+<WRAP tab-content>
 <pane id="tab6-code-annotations"><code php>
 // src/AppBundle/Controller/BlogController.php
 
@@ -442,6 +446,7 @@ $collection->add('blog', new Route('/blog/{page}', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 以前の `{slug}` プレイスホルダーの様に、`{page}` にマッチした値はコントローラ内で使用できます。
@@ -458,6 +463,7 @@ return $collection;
   * [XML](#tab7-code-xml)
   * [PHP](#tab7-code-php)
 
+<WRAP tab-content>
 <pane id="tab7-code-annotations"><code php>
 // src/AppBundle/Controller/BlogController.php
 
@@ -508,6 +514,7 @@ $collection->add('blog', new Route('/blog/{page}', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 `page` に `defaults` キーを追加したことによって、`{page}` プレースホルダーはもはや必須ではありません。
@@ -520,8 +527,7 @@ return $collection;
 | /blog/2 | blog   | {page} = 2 |
 
 <well>
-<WRAP caution></WRAP>
-
+<wrap caution></wrap>
 もちろん、１つ以上のプレースホルダーを持つことも可能です（例、`/blog/{slug}/{page}`）。
 しかし、オプションプレースホルダーの後ろは、全てオプションプレースホルダーで無ければなりません。  
 例えば、`/{page}/blog` は有効なパスです。しかし、`page` は常に必須で無ければなりません。
@@ -529,12 +535,10 @@ return $collection;
 </well>
 
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 一番後ろにオプションのパラメータを持つルートは、URL の末尾にスラッシュ `/` を持つリクエストにはマッチしません。
 （例、`/blog/` マッチしません。`/blog` マッチします）
 </well>
-
 
 
 ### Requirements の追加
@@ -547,6 +551,7 @@ return $collection;
   * [XML](#tab8-code-xml)
   * [PHP](#tab8-code-php)
 
+<WRAP tab-content>
 <pane id="tab8-code-annotations"><code php>
 // src/AppBundle/Controller/BlogController.php
 
@@ -619,6 +624,7 @@ $collection->add('blog_show', new Route('/blog/{show}', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 問題点を発見することができますか？
@@ -639,6 +645,7 @@ Symfony のルーターはいつも、最初にマッチしたルートを選択
   * [XML](#tab9-code-xml)
   * [PHP](#tab9-code-php)
 
+<WRAP tab-content>
 <pane id="tab9-code-annotations"><code php>
 // src/AppBundle/Controller/BlogController.php
 
@@ -696,6 +703,7 @@ $collection->add('blog', new Route('/blog/{page}', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 `\d+` requirement は、`{page}` パラメータの値が数字で無ければならないことを定義する正規表現です。
@@ -709,7 +717,7 @@ return $collection;
 | /blog/2-my-blog-post | blog\_show | {slug} = "2-my-blog-post" |
 
 <well>
-<WRAP addon></WRAP>
+<wrap addon></wrap>
 ** 先にあるルートが常に勝つ **
 
 何を言っているかというと、ルートの順番はとても重要だということです。
@@ -726,6 +734,7 @@ requirements パラメータは正規表現なので、各 requirement の複雑
   * [XML](#tab10-code-xml)
   * [PHP](#tab10-code-php)
 
+<WRAP tab-content>
 <pane id="tab10-code-annotations"><code php>
 // src/AppBundle/Controller/MainController.php
 
@@ -784,6 +793,7 @@ $collection->add('homepage', new Route('/{_locale}', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 リクエストが来た時、URL の `{_locale}` 部分は、`(en|fr)` 正規表現と照合されます。
@@ -807,6 +817,7 @@ URL に加えて、リクエストの HTTP メソッド（GET, HEAD, POST, PUT, 
   * [XML](#tab11-code-xml)
   * [PHP](#tab11-code-php)
 
+<WRAP tab-content>
 <pane id="tab11-code-annotations"><code php>
 // src/AppBundle/Controller/MainController.php
 namespace AppBundle\Controller;
@@ -884,14 +895,14 @@ $collection->add('api_post_edit', new Route('/api/posts/{id}', array(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 ２つのルートは同じパス（`/api/posts/{id}`）を持っているにもかかわらず、最初のルートは GET か HEAD リクエストのみにマッチし、２つ目のルートは PUT リクエストにのみマッチします。
 これは、２つのアクションの異なるコントローラを使用している時に、同じ URL で記事の表示と編集ができることを意味しています。
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 もし、何のメソッドも指定されていない時は、ルートは全てのメソッドとマッチします。
 </well>
 
@@ -908,6 +919,7 @@ return $collection;
   * [XML](#tab12-code-xml)
   * [PHP](#tab12-code-php)
 
+<WRAP tab-content>
 <pane id="tab12-code-yaml"><code yml>
 contact:
     path:     /contact
@@ -949,6 +961,7 @@ $collection->add('contact', new Route(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 `condition` は Expression です。Expression 構文の詳細は [Expression 構文](/doc/components/expression_language/syntax)を参照してください。
@@ -962,14 +975,12 @@ return $collection;
  - Symfony の [Request](http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Request.html) オブジェクトです。詳細は[こちら](/doc/components/http_foundation/introduction#component-http-foundation-request)
 
 <well>
-
-<WRAP caution></WRAP>
+<wrap caution></wrap>
 URL を生成する時には、condition は考慮されません。
 </well>
 
 <well>
-
-<WRAP addon></WRAP>
+<wrap addon></wrap>
 **Expressions は PHP にコンパイルされます**
 
 裏では、Expressions は素の PHP にコンパイルされます。
@@ -1000,6 +1011,7 @@ if (rtrim($pathinfo, '/contact') === '' && (
   * [XML](#tab13-code-xml)
   * [PHP](#tab13-code-php)
 
+<WRAP tab-content>
 <pane id="tab13-code-annotations"><code php>
 // src/AppBundle/Controller/ArticleController.php
 
@@ -1076,6 +1088,7 @@ $collection->add(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 いままで見てきたように、このルートは URL の `{_locale}` 部分が `en` か　｀fr｀の何れかで、`{year}` が数字の時だけマッチします。このルートはまた、スラッシュの代わりにプレースホルダー間でドットを使う方法も示しています。
@@ -1086,7 +1099,7 @@ return $collection;
 - `/articles/en/2013/my-latest-post.html`
 
 <well>
-<WRAP addon></WRAP>
+<wrap addon></wrap>
 **特別な _format ルーティングパラーメータ**
 
 また、この例では特別な `_format` ルーティングパラメータの使い方を強調しています。
@@ -1102,12 +1115,13 @@ Symfony のバージョン 3.0 より前の物ではクエリーパラメータ�
 </well>
 
 <well>
-<WRAP note></WRAP>
+<wrap note></wrap>
 時々、ルートの特定の部分をグローバルに設定できるようにしたいことがあります。
 Symfony はサービスコンテナパラメータを活用して、これを可能にする方法を提供します。
 詳細は[ルート内でサービスコンテナパラメータを使う方法](/doc/cookbook/routing/service_container_parameters)を参照してください。
 
 </well>
+
 
 ### 特別なルーティングパラメータ
 
@@ -1121,7 +1135,9 @@ Symfony はサービスコンテナパラメータを活用して、これを可
 - `_locale`
  - リクエストの `locale` をセットする為に使われます。詳細は[こちら](/doc/book/translation#book-translation-locale-url)
 
-## コントローラネーミングパターン
+
+
+## コントローラのネーミングパターン
 
 全てのルートには、ルートがマッチした時に、どのコントローラを実行するかを指示する、`_controller` パラメーターを指定する必要があります。
 このパラメータは、_論理コントローラ名_というシンプルな文字列パターンを使っています。
@@ -1135,7 +1151,7 @@ Symfony はサービスコンテナパラメータを活用して、これを可
 ^ Bundle    ^ Controller Class ^ Method Name ^
 | AppBundle | BlogController   | showAction  |
 
-コントローラーは次のようになります。
+コントローラは次のようになります。
 
 <code php>
 // src/AppBundle/Controller/BlogController.php
@@ -1158,8 +1174,7 @@ Symfony がクラス名に `Controller` を追加すること（`Blog` => `BlogC
 しかし、いくつかのシンプルな規約に従えば、論理名はより簡素になり、より柔軟にすることができます。
 
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 論理名や完全なクラス名を使うことに加えて、Symfony はコントローラを参照する３つ目の方法をサポートします。
 この方法は１つのコロンだけを使って、コントローラをサービスとして参照します（例、`service_name:indexAction`）。
 詳細は、[サービスとしてのコントローラの定義方法](/doc/cookbook/controller/service)を参照してください。
@@ -1192,7 +1207,7 @@ public function showAction($slug)
 - $\_route
 
 <well>
-<WRAP hint></WRAP>
+<wrap hint></wrap>
 特別な `$_route` 変数は、マッチしたルートの名前がセットされます。
 </well>
 
@@ -1210,6 +1225,7 @@ public function showAction($slug)
   * [XML](#tab14-code-xml)
   * [PHP](#tab14-code-php)
 
+<WRAP tab-content>
 <pane id="tab14-code-yaml"><code yml>
 # app/config/routing.yml
 app:
@@ -1244,10 +1260,11 @@ $collection->addCollection(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 <well>
-<WRAP note></WRAP>
+<wrap note></wrap>
 YAML からリソースをインポートする場合、キー（例、`app`）には特に意味がありません。
 ただ、他の行が上書きしないように、ユニークなキーになっていることを確認してください。
 </well>
@@ -1257,7 +1274,7 @@ YAML からリソースをインポートする場合、キー（例、`app`）�
 リソースがディレクトリを指す場合には、ディレクトリ内の全てのファイルが解析されて、ルーティングに追加されます。
 
 <well>
-<WRAP note></WRAP>
+<wrap note></wrap>
 また、別のルーティング設定ファイルを含めることもできます。これは、多くの場合、サードパーティのバンドルのルーティングをインポートする為に使用されます。
 
 <tabs>
@@ -1265,6 +1282,7 @@ YAML からリソースをインポートする場合、キー（例、`app`）�
   * [XML](#tab15-code-xml)
   * [PHP](#tab15-code-php)
 
+<WRAP tab-content>
 <pane id="tab15-code-yaml"><code yml>
 # app/config/routing.yml
 app:
@@ -1295,6 +1313,7 @@ $collection->addCollection(
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 </well>
 
@@ -1311,6 +1330,7 @@ return $collection;
   * [XML](#tab16-code-xml)
   * [PHP](#tab16-code-php)
 
+<WRAP tab-content>
 <pane id="tab16-code-yaml"><code yml>
 # app/config/routing.yml
 app:
@@ -1347,6 +1367,7 @@ $collection->addCollection($app);
 return $collection;
 </code></pane>
 
+</WRAP>
 </tabs>
 
 新しいルーティングリソースから読み込まれた各ルートのパスは、先頭に `/site` が追加されます。
@@ -1439,7 +1460,7 @@ class MainController extends Controller
 </code>
 
 <well>
-<WRAP note></WRAP>
+<wrap note></wrap>
 基本コントローラクラス内に定義されている `generateUrl()` メソッドは次のコードの単なるショートカットです。
 
 <code php>
@@ -1453,7 +1474,7 @@ $url = $this->container->get('router')->generate(
 次のセクションで、テンプレート内で URL を生成する方法を学びます。
 
 <well>
-<WRAP note></WRAP>
+<wrap note></wrap>
 アプリケーションのフロントエンドで Ajax を使っている時には、JavaScript でルーティング設定に基づく URL を生成したいはずです。[FOSJsRoutingBundle](https://github.com/FriendsOfSymfony/FOSJsRoutingBundle) を使うことで、それを行うことができます。
 
 詳細はバンドルのドキュメントを参照してください。
@@ -1479,16 +1500,17 @@ $this->get('router')->generate('blog', array(
 URL を生成する最も一般的な場所は、ページ間でリンクを行う、テンプレートの中です。これは前と同じように行いますが、テンプレートのヘルパー関数を使用します。
 
 <tabs>
-  * [Twig](#tab16-view-twig)
-  * [PHP](#tab16-view-php)
+  * [Twig](#tab17-view-twig)
+  * [PHP](#tab17-view-php)
 
-<pane id="tab16-view-twig"><code twig>
+<WRAP tab-content>
+<pane id="tab17-view-twig"><code twig>
 <a href="{{ path('blog_show', {'slug': 'my-blog-post'}) }}">
   Read this blog post.
 </a>
 </code></pane>
 
-<pane id="tab16-view-php"><code php>
+<pane id="tab17-view-php"><code php>
 <a href="<?php echo $view['router']->path('blog_show', array(
     'slug' => 'my-blog-post',
 )) ?>">
@@ -1496,14 +1518,15 @@ URL を生成する最も一般的な場所は、ページ間でリンクを行�
 </a>
 </code></pane>
 
+</WRAP>
 </tabs>
 
-<well>
-<WRAP addon></WRAP>
+<alert type="info">
 <btn type="info" size="xs">2.8</btn>
 `path()` PHP テンプレートヘルパー関数は、Symfony 2.8 で導入されました。
 2.8 より前のバージョンでは、`generate()` ヘルパーメソッドを使う必要があります。
-</well>
+</alert>
+
 
 ### 絶対 URL の生成
 
@@ -1520,16 +1543,17 @@ $this->generateUrl('blog_show', array('slug' => 'my-blog-post'), UrlGeneratorInt
 テンプレートでは、相対 URL を生成する `path()` 関数の代わりに、`url()` 関数を使います。
 
 <tabs>
-  * [Twig](#tab17-view-twig)
-  * [PHP](#tab17-view-php)
+  * [Twig](#tab18-view-twig)
+  * [PHP](#tab18-view-php)
 
-<pane id="tab17-view-twig"><code twig>
+<WRAP tab-content>
+<pane id="tab18-view-twig"><code twig>
 <a href="{{ url('blog_show', {'slug': 'my-blog-post'}) }}">
   Read this blog post.
 </a>
 </code></pane>
 
-<pane id="tab17-view-php"><code php>
+<pane id="tab18-view-php"><code php>
 <a href="<?php echo $view['router']->url('blog_show', array(
     'slug' => 'my-blog-post',
 )) ?>">
@@ -1537,10 +1561,11 @@ $this->generateUrl('blog_show', array('slug' => 'my-blog-post'), UrlGeneratorInt
 </a>
 </code></pane>
 
+</WRAP>
 </tabs>
 
 <well>
-<WRAP addon></WRAP>
+<wrap addon></wrap>
 <btn type="info" size="xs">2.8</btn>
 `url()` PHP テンプレートヘルパー関数は、Symfony 2.8 で導入されました。
 2.8 より前のバージョンでは、`generate()` ヘルパーメソッドを使って、
@@ -1548,7 +1573,7 @@ $this->generateUrl('blog_show', array('slug' => 'my-blog-post'), UrlGeneratorInt
 </well>
 
 <well>
-<WRAP note></WRAP>
+<wrap note></wrap>
 絶対 URL を生成する時に使用されるホストは、現在のリクエストオブジェクトを使って、自動的に検出されます。
 コンソールコマンドで絶対 URL を生成する時には、これは動作しません。この問題の解決方法は[コンソールから URL を生成してメールする方法](/doc/cookbook/console/sending_emails)を参照してください。
 </well>
@@ -1564,9 +1589,5 @@ $this->generateUrl('blog_show', array('slug' => 'my-blog-post'), UrlGeneratorInt
 ## クックブックの参照先
 
 [常にルートで HTTPS または HTTPを使用する方法](/doc/cookbook/routing/scheme)
-
-
-
-
 
 

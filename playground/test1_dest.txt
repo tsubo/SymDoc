@@ -1,0 +1,186 @@
+~~NOCACHE~~
+
+# セクションへのリンクが正常な位置に表示されない調査（リンク先）
+
+### 高度なルーティング例
+
+ここまでで、Symfony のパワフルなルーティング構造を作成する為に必要なことが全てわかりました。
+以下は、ルーティングシステムがいかに柔軟にできるかの例です。
+
+<tabs>
+  * [Annotations](#tab13-code-annotations)
+  * [YAML](#tab13-code-yaml)
+  * [XML](#tab13-code-xml)
+  * [PHP](#tab13-code-php)
+
+
+<WRAP tab-content>
+<pane id="tab13-code-annotations"><code php>
+// src/AppBundle/Controller/ArticleController.php
+
+// ...
+class ArticleController extends Controller
+{
+    /**
+     * @Route(
+     *     "/articles/{_locale}/{year}/{title}.{_format}",
+     *     defaults={"_format": "html"},
+     *     requirements={
+     *         "_locale": "en|fr",
+     *         "_format": "html|rss",
+     *         "year": "\d+"
+     *     }
+     * )
+     */
+    public function showAction($_locale, $year, $title)
+    {
+    }
+}
+</code></pane>
+
+<pane id="tab13-code-yaml"><code yml>
+# app/config/routing.yml
+article_show:
+  path:     /articles/{_locale}/{year}/{title}.{_format}
+  defaults: { _controller: AppBundle:Article:show, _format: html }
+  requirements:
+      _locale:  en|fr
+      _format:  html|rss
+      year:     \d+
+</code></pane>
+
+<pane id="tab13-code-xml"><code xml>
+<!-- app/config/routing.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="article_show"
+        path="/articles/{_locale}/{year}/{title}.{_format}">
+
+        <default key="_controller">AppBundle:Article:show</default>
+        <default key="_format">html</default>
+        <requirement key="_locale">en|fr</requirement>
+        <requirement key="_format">html|rss</requirement>
+        <requirement key="year">\d+</requirement>
+
+    </route>
+</routes>
+</code></pane>
+
+<pane id="tab13-code-php"><code php>
+// app/config/routing.php
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
+$collection = new RouteCollection();
+$collection->add(
+    'article_show',
+    new Route('/articles/{_locale}/{year}/{title}.{_format}', array(
+        '_controller' => 'AppBundle:Article:show',
+        '_format'     => 'html',
+    ), array(
+        '_locale' => 'en|fr',
+        '_format' => 'html|rss',
+        'year'    => '\d+',
+    ))
+);
+
+return $collection;
+</code></pane>
+
+</WRAP>
+</tabs>
+
+いままで見てきたように、このルートは URL の `{_locale}` 部分が `en` か　｀fr｀の何れかで、`{year}` が数字の時だけマッチします。このルートはまた、スラッシュの代わりにプレースホルダー間でドットを使う方法も示しています。
+この URL にマッチするルートは次の様になります。
+
+- `/articles/en/2010/my-post`
+- `/articles/fr/2010/my-post.rss`
+- `/articles/en/2013/my-latest-post.html`
+
+<well>
+<wrap addon></wrap>
+**特別な _format ルーティングパラーメータ**
+
+また、この例では特別な `_format` ルーティングパラメータの使い方を強調しています。
+このパラメータを使う時には、マッチした値は `Request` オブジェクトの `request format` になります。
+
+最終的に、`request format` はレスポンスの　`Content-Type` に設定されたりします。
+例えば、`json` は、`Content-Type` では `application/json` に変換されます。
+また、コントローラー内で、 `_format` の値に応じて、異なるテンプレートを出力するためにも使用されます。
+`_format` パラメータは、同一のコンテンツを異なるフォーマットで出力する、とても強力な方法です。
+
+Symfony のバージョン 3.0 より前の物ではクエリーパラメータ名に `_format` を追加することで、 `request format` を上書き出来ました（例、`/foo/bar?_format=json`）。
+しかし、この動作に依存することは、悪い習慣であるだけでなく、アプリケーションをバージョン 3 にアップグレードすることを複雑にします。
+</well>
+
+<well>
+<wrap note></wrap>
+時々、ルートの特定の部分をグローバルに設定できるようにしたいことがあります。
+Symfony はサービスコンテナパラメータを活用して、これを可能にする方法を提供します。
+詳細は[ルート内でサービスコンテナパラメータを使う方法](/doc/cookbook/routing/service_container_parameters)を参照してください。
+
+</well>
+
+
+### 特別なルーティングパラメータ
+
+いままで見てきたように、各ルーティングパラメータやデフォルト値は、最終的に、コントローラメソッドの引数として使用できるようになります。
+加えて、３つの特別なパラメータがあります。それらは、アプリケーションに、それぞれ個別の機能を追加します。
+
+- `_controller`
+ - ルートがマッチした時に、どのコントローラを実行するのかを判断する為に使われます。
+- `_format`
+ - `request format` をセットする為に使われます。
+- `_locale`
+ - リクエストの `locale` をセットする為に使われます。詳細は[こちら](/doc/book/translation#book-translation-locale-url)
+
+
+
+## コントローラのネーミングパターン
+
+全てのルートには、ルートがマッチした時に、どのコントローラを実行するかを指示する、`_controller` パラメーターを指定する必要があります。
+このパラメータは、_論理コントローラ名_というシンプルな文字列パターンを使っています。
+これは、Symfony が特定の PHP メソッドやクラスにマップする為に使用されます。
+このパターンはコロンで区切られた３つのパートを持っています。
+
+> bundle:controller:action
+
+例えば、`_contoller` の値が `AppBundle:Blog:show` の時は、次のような意味になります。
+
+^ Bundle    ^ Controller Class ^ Method Name ^
+| AppBundle | BlogController   | showAction  |
+
+コントローラは次のようになります。
+
+<code php>
+// src/AppBundle/Controller/BlogController.php
+namespace AppBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class BlogController extends Controller
+{
+    public function showAction($slug)
+    {
+        // ...
+    }
+}
+</code>
+
+Symfony がクラス名に `Controller` を追加すること（`Blog` => `BlogController`）、メソッド名に `Action` を追加すること（`show` => `showAction`）に注意してください。 
+
+また、`AppBundle\Controller\BlogController::showAction` のような、完全なクラス名やメソッド名を使ってコントローラを参照することも可能です。
+しかし、いくつかのシンプルな規約に従えば、論理名はより簡素になり、より柔軟にすることができます。
+
+<well>
+<wrap note></wrap>
+論理名や完全なクラス名を使うことに加えて、Symfony はコントローラを参照する３つ目の方法をサポートします。
+この方法は１つのコロンだけを使って、コントローラをサービスとして参照します（例、`service_name:indexAction`）。
+詳細は、[サービスとしてのコントローラの定義方法](/doc/cookbook/controller/service)を参照してください。
+</well>
+
+

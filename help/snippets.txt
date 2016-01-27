@@ -12,17 +12,16 @@
   * [補足](#tab-sidebar)
   * [注意](#tab-caution)
 
+<WRAP tab-content>
 <pane id="tab-note">
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 ここに文章を書きます。
 </well>
 
 ```
 <well>
-<WRAP note></WRAP>
-
+<wrap note></wrap>
 ここに文章を書きます。
 </well>
 ```
@@ -30,15 +29,13 @@
 
 <pane id="tab-tip">
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 ここに文章を書きます。
 </well>
 
 ```
 <well>
-<WRAP hint></WRAP>
-
+<wrap hint></wrap>
 ここに文章を書きます。
 </well>
 ```
@@ -46,15 +43,13 @@
 
 <pane id="tab-seealso">
 <well>
-<WRAP ref></WRAP>
-
+<wrap ref></wrap>
 ここに文章を書きます。
 </well>
 
 ```
 <well>
-<WRAP ref></WRAP>
-
+<wrap ref></wrap>
 ここに文章を書きます。
 </well>
 ```
@@ -62,15 +57,13 @@
 
 <pane id="tab-sidebar">
 <well>
-<WRAP addon></WRAP>
-
+<wrap addon></wrap>
 ここに文章を書きます。
 </well>
 
 ```
 <well>
-<WRAP addon></WRAP>
-
+<wrap addon></wrap>
 ここに文章を書きます。
 </well>
 ```
@@ -78,20 +71,19 @@
 
 <pane id="tab-caution">
 <well>
-<WRAP caution></WRAP>
-
+<wrap caution></wrap>
 ここに文章を書きます。
 </well>
 
 ```
 <well>
-<WRAP caution></WRAP>
-
+<wrap caution></wrap>
 ここに文章を書きます。
 </well>
 ```
 </pane>
 
+</WRAP>
 </tabs>
 
 
@@ -101,6 +93,8 @@
   * [Twig](#tab-view-twig)
   * [PHP](#tab-view-php)
 
+<WRAP tab-content>
+
 <pane id="tab-view-twig"><code twig>
 // Twig
 </code></pane>
@@ -109,6 +103,7 @@
 // PHP
 </code></pane>
 
+</WRAP>
 </tabs>
 
 ```
@@ -116,6 +111,8 @@
   * [Twig](#tab-view-twig)
   * [PHP](#tab-view-php)
 
+<WRAP tab-content>
+
 <pane id="tab-view-twig"><code twig>
 // Twig
 </code></pane>
@@ -124,6 +121,7 @@
 // PHP
 </code></pane>
 
+</WRAP>
 </tabs>
 ```
 
@@ -139,6 +137,8 @@
   * [XML](#tab-code-xml)
   * [PHP](#tab-code-php)
 
+<WRAP tab-content>
+
 <pane id="tab-code-annotations"><code php>
 // Annotations
 </code></pane>
@@ -155,6 +155,7 @@
 // PHP
 </code></pane>
 
+</WRAP>
 </tabs>
 
 ```
@@ -164,6 +165,8 @@
   * [XML](#tab-code-xml)
   * [PHP](#tab-code-php)
 
+<WRAP tab-content>
+
 <pane id="tab-code-annotations"><code php>
 // Annotations
 </code></pane>
@@ -180,9 +183,24 @@
 // PHP
 </code></pane>
 
+</WRAP>
 </tabs>
 ```
 
+
+## バージョンに関する注意書き
+
+<alert type="info">
+<btn type="info" size="xs">2.8</btn>
+この機能は Symfony 2.8 で導入されました。それより前のバージョンでは...
+</alert>
+
+```
+<alert type="info">
+<btn type="info" size="xs">2.8</btn>
+この機能は Symfony 2.8 で導入されました。それより前のバージョンでは...
+</alert>
+```
 
 ## 表
 

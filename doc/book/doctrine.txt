@@ -1,5 +1,22 @@
 # データーベースと Doctrine
 
+アプリケーションにとって、最も一般的でチャレンジしがいのあるタスクは、データベースへの情報の永続化と取得です。
+しかし、Symfony フレームワークはデフォルトでは、いかなる ORM とも統合されていません。
+もっとも広く使われているディストリビューションである、Symfony スタンダードエディションは [Doctrine](http://www.doctrine-project.org/) と統合されています。このライブラリの唯一の目的は、このタスクを簡単にするパワフルなツールを提供することです。
+この章では、Doctrine の背後にある基本哲学を学び、データベースで作業することをどれだけ簡単にできるかを見ていきます。
+
+<well>
+<wrap note></wrap>
+Doctrine は、Symfony から完全に独立していて、それを使うことはオプションです。
+この章は、全て Doctrine ORM について書かれています。
+その目的は、オブジェクトをリレーショナルデータ（MySQL や PostgreSQL、Microsoft SQL等）ベースにマップできるようにすることです。
+もし、普通のデータベースクエリーを使うことが好みであれば、それも簡単にできます。詳細は[Doctrine DBALの使い方](/doc/cookbook/doctrine/dbal)を参照してください。
+
+また、Doctrine ODM ライブラリを使って [MongoDB](https://www.mongodb.org/) に永続化することも可能です。
+詳細は、[DoctrineMongoDBBundle](/doc/bundles/DoctrineMongoDBBundle/index)を参照してください。
+</well>
+
+
 ## シンプルな例：Product エンティティ
 
 ### データベースの設定

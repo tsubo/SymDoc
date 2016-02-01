@@ -10,7 +10,7 @@
 Doctrine は、Symfony から完全に独立していて、それを使うことはオプションです。
 この章は、全て Doctrine ORM について書かれています。
 その目的は、オブジェクトをリレーショナルデータ（MySQL や PostgreSQL、Microsoft SQL等）ベースにマップできるようにすることです。
-もし、普通のデータベースクエリーを使うことが好みであれば、それも簡単にできます。詳細は[Doctrine DBALの使い方](/doc/cookbook/doctrine/dbal)を参照してください。
+もし、普通のデータベースクエリーを使うのが好みであれば、それも簡単にできます。詳細は[Doctrine DBALの使い方](/doc/cookbook/doctrine/dbal)を参照してください。
 
 また、Doctrine ODM ライブラリを使って [MongoDB](https://www.mongodb.org/) に永続化することも可能です。
 詳細は、[DoctrineMongoDBBundle](/doc/bundles/DoctrineMongoDBBundle/index)を参照してください。
@@ -19,58 +19,1368 @@ Doctrine は、Symfony から完全に独立していて、それを使うこと
 
 ## シンプルな例：Product エンティティ
 
+Doctrine の動作を理解するのに一番簡単な方法は、実際に動かしてみることです。このセクションでは、データベースの設定を行い、`Product` オブジェクトを作成して、データベースに保存します。そして、それを読み出します。
+
+
 ### データベースの設定
+
+実際にはじめる前に、データベースの接続情報を設定する必要があります。
+慣習により、この情報は通常 `app/config/parameters.yml` ファイルで設定されます。
+
+<code yml>
+# app/config/parameters.yml
+parameters:
+    database_driver:    pdo_mysql
+    database_host:      localhost
+    database_name:      test_project
+    database_user:      root
+    database_password:  password
+
+# ...
+</code>
+
+<well>
+<wrap note></wrap>
+`parameters.yml` を通して設定を定義することは、単なる慣習です。
+このファイルで定義されたパラメータは、Doctrine のセットアップ時に、メインの設定ファイルから参照されます。
+
+<tabs>
+  * [YAML](#tab1-code-yaml)
+  * [XML](#tab1-code-xml)
+  * [PHP](#tab1-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab1-code-yaml"><code yml>
+# app/config/config.yml
+doctrine:
+    dbal:
+        driver:   '%database_driver%'
+        host:     '%database_host%'
+        dbname:   '%database_name%'
+        user:     '%database_user%'
+        password: '%database_password%'
+</code></pane>
+
+<pane id="tab1-code-xml"><code xml>
+<!-- app/config/config.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:doctrine="http://symfony.com/schema/dic/doctrine"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd
+        http://symfony.com/schema/dic/doctrine
+        http://symfony.com/schema/dic/doctrine/doctrine-1.0.xsd">
+
+    <doctrine:config>
+        <doctrine:dbal
+            driver="%database_driver%"
+            host="%database_host%"
+            dbname="%database_name%"
+            user="%database_user%"
+            password="%database_password%" />
+    </doctrine:config>
+</container>
+</code></pane>
+
+<pane id="tab1-code-php"><code php>
+// app/config/config.php
+$configuration->loadFromExtension('doctrine', array(
+    'dbal' => array(
+        'driver'   => '%database_driver%',
+        'host'     => '%database_host%',
+        'dbname'   => '%database_name%',
+        'user'     => '%database_user%',
+        'password' => '%database_password%',
+    ),
+));
+</code></pane>
+
+</WRAP>
+</tabs>
+
+データベース情報を、独立したファイルに分けておくことによって、各サーバ上で、異なるバージョンのファイルを簡単に保持することができます。
+また、データベースの設定(または、非公開情報)を、簡単にプロジェクトの外に置くこともできます。
+例えば、Apache 設定ファイル内に置くこともできます。詳細は、[サービスコンテナで外部パラメータをセットする方法](/doc/cookbook/configuration/external_parameters)を参照してください。
+</well>
+
+これで Doctrine はデータベースについて知ることができました。
+次のように、データベースを作成することができます。
+
+<code bash>
+$ php bin/console doctrine:database:create
+</code>
+
+<well>
+<wrap addon></wrap>
+**データベースを UTF8 に設定する**
+
+Symfony のプロジェクトを開始する時に、ベテランの開発者でも犯してしまうミスの１つは、データベースにデフォルトの文字セットと照合順序を設定しわすれてしまうことです。
+その結果、多くのデータベースのデフォルトである latin 型の照合になってしまいます。
+彼らは一番最初に以下のコマンドを実行することを思い出すかもしれませんが、
+開発中に比較的一般的なこのコマンドを実行した後は、データは全て無くなっている事を忘れています。
+
+<code bash>
+$ php bin/console doctrine:database:drop --force
+$ php bin/console doctrine:database:create
+</code>
+
+Doctrine 内部でこれらのデフォルトを設定する方法はありません。
+それは、環境設定に可能な限り関わらないようにしている為です。
+この問題を解決する１つの方法は、サーバーレベルのデフォルトを設定することです。
+MySQL のデフォルトに UTF8 を設定するには、設定ファイル（一般的には `my.cnf`）に数行追加するだけです。
+
+<code ini>
+[mysqld]
+# Version 5.5.3 introduced "utf8mb4", which is recommended
+collation-server     = utf8mb4_general_ci # Replaces utf8_general_ci
+character-set-server = utf8mb4            # Replaces utf8
+</code>
+
+MySQL の `utf8` キャラクタセットは４バイトの Unicode文字をサポートしておらず、それらを含む文字は切り捨てられてしまいます。これは新しい [utf8mb4 キャラクタセット](https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html)で解決します。
+</well>
+
+<well>
+<wrap note></wrap>
+データベースに SQLite を使いたい時は、データベースファイルのパスを設定する必要があります。
+
+<tabs>
+  * [YAML](#tab2-code-yaml)
+  * [XML](#tab2-code-xml)
+  * [PHP](#tab2-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab2-code-yaml"><code yml>
+# app/config/config.yml
+doctrine:
+    dbal:
+        driver: pdo_sqlite
+        path: '%kernel.root_dir%/sqlite.db'
+        charset: UTF8
+</code></pane>
+
+<pane id="tab2-code-xml"><code xml>
+<!-- app/config/config.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:doctrine="http://symfony.com/schema/dic/doctrine"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd
+        http://symfony.com/schema/dic/doctrine
+        http://symfony.com/schema/dic/doctrine/doctrine-1.0.xsd">
+
+    <doctrine:config>
+        <doctrine:dbal
+            driver="pdo_sqlite"
+            path="%kernel.root_dir%/sqlite.db"
+            charset="UTF-8" />
+    </doctrine:config>
+</container>
+</code></pane>
+
+<pane id="tab2-code-php"><code php>
+// app/config/config.php
+$container->loadFromExtension('doctrine', array(
+    'dbal' => array(
+        'driver'  => 'pdo_sqlite',
+        'path'    => '%kernel.root_dir%/sqlite.db',
+        'charset' => 'UTF-8',
+    ),
+));
+</code></pane>
+
+</WRAP>
+</tabs>
+</well>
+
 
 ### エンティティクラスの作成
 
+商品を表示するようなアプリケーションを作っているとしましょう。
+Doctrine や データベースについて考える以前に、それら商品を表す `Product` オブジェクトが必要になります。
+このクラスを AppBundle の `Entity` ディレクトリ内に作成します。
+
+<code php>
+// src/AppBundle/Entity/Product.php
+namespace AppBundle\Entity;
+
+class Product
+{
+    protected $name;
+    protected $price;
+    protected $description;
+}
+</code>
+
+データを保持する基本クラスであり、エンティティと呼ばれるこのクラスは、シンプルでアプリケーション内で商品が必要とするビジネス要件を全て満たします。まだ、このクラスはデータベースに保存することはできません。それは、単なる PHP のクラスです。
+
+<well>
+<wrap hint></wrap>
+一旦、Doctrine のコンセプトを学ぶと、Doctrine にシンプルなエンティティクラスを作成させることができます。
+以下のコマンドは、エンティティの作成を助けるために、対話形式で質問してきます。
+
+<code bash>
+$ php bin/console doctrine:generate:entity
+</code>
+</well>
+
+
 ### マッピング情報の追加
+
+Doctrineは、単にカラムベースのテーブルの行を配列に入れて取得するといったやり方よりも興味深いやり方で、データベースと作業することを可能にします。
+代わりに、Doctrine は、オブジェクト全体ををデータベースに保存したり、データベースからオブジェクト全体を取得することを可能にします。
+これは、PHP クラスをデータベーステーブルにマップし、クラスのプロパティをテーブルのカラムにマップすることで動作します。
+
+![Doctrine のイメージ](https://symfony.com/doc/current/_images/doctrine_image_1.png)
+
+Doctrine がこのようにできるようにするには、メタデータか設定を作成します。
+設定は `Product` クラスとそのプロパティがデータベースにどの様にマップされるのかを Doctrine に正確に伝えます。
+このメタデータは、YAML や XML 等のいくつかのフォーマットで指定するか、アノテーションを使って `Product` クラス内で直接指定することができます。
+
+<tabs>
+  * [Annotations](#tab3-code-annotations)
+  * [YAML](#tab3-code-yaml)
+  * [XML](#tab3-code-xml)
+
+<WRAP tab-content>
+
+<pane id="tab3-code-annotations"><code php>
+// src/AppBundle/Entity/Product.php
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="product")
+ */
+class Product
+{
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    protected $name;
+
+    /**
+     * @ORM\Column(type="decimal", scale=2)
+     */
+    protected $price;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $description;
+}
+</code></pane>
+
+<pane id="tab3-code-yaml"><code yml>
+# src/AppBundle/Resources/config/doctrine/Product.orm.yml
+AppBundle\Entity\Product:
+    type: entity
+    table: product
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        name:
+            type: string
+            length: 100
+        price:
+            type: decimal
+            scale: 2
+        description:
+            type: text
+</code></pane>
+
+<pane id="tab3-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/doctrine/Product.orm.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="AppBundle\Entity\Product" table="product">
+        <id name="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+        <field name="name" type="string" length="100" />
+        <field name="price" type="decimal" scale="2" />
+        <field name="description" type="text" />
+    </entity>
+</doctrine-mapping>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap note></wrap>
+バンドルは１つのメタデータ定義フォーマットしか受け付けません。
+例えば、YAML のメタデータ定義と アノテーションの定義を同時に使用することはできません。
+</well>
+
+<well>
+<wrap hint></wrap>
+テーブル名はオプションです。省略された場合は、エンティティクラス名に基づいて自動的に決定されます。
+</well>
+
+Doctrine では、広範囲に渡る様々なフィールドタイプを選ぶことができます。
+それぞれのフィールドタイプには固有のオプションがあります。
+利用可能なフィールドタイプの詳細は、[Doctrine フィールドタイプリファレンス](#Doctrine フィールドタイプリファレンス)を参照してください。
+
+<well>
+<wrap ref></wrap>
+マッピング情報の詳細は、Doctrine の [基本マッピング](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/basic-mapping.html)ドキュメントを参照することもできます。
+Doctrineのドキュメントにはありませんが、アノテーションを使用する場合は、全てのアノテーションの前に `ORM\`（例、`ORM\Column(...)`） を追加する必要があります。
+また、`use Doctrine\ORM\Mapping as ORM;` 文も宣言しておく必要があります。
+この宣言は、`ORM` アノテーションプレフィックスをインポートします。
+</well>
+
+<well>
+<wrap caution></wrap>
+クラスやプロパティの名前に、SQL の予約語（`group` や `user`）が使えないことに、注意してください。
+例えば、エンティティのクラス名が `Group` である場合、デフォルトでは、テーブル名が `group` となります。
+これは、いくつかのエンジンでは SQL エラーとなります。
+これらの名前をどうエスケープするは、Doctrine の [SQL 予約語](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/basic-mapping.html#quoting-reserved-words)ドキュメントを参照してください。
+あるいは、データベースのスキーマは自由に選択できるので、シンプルに違うテーブル名やカラム名にマップします。
+詳細は Doctrine の [データベースのクラス作成](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/basic-mapping.html#creating-classes-for-the-database)や[プロパティマッピング](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/basic-mapping.html#property-mapping)を参照してください。
+</well>
+
+<well>
+<wrap note></wrap>
+他のライブラリやプログラム(例えば [Doxygen](http://www.doxygen.jp/)) がアノテーションを使っている場合は、どのアノテーションを Symfony が無視すべきかを指示ために、クラスに `@IgnoreAnnotation` を配置する必要があります。
+
+例えば、`@fn` アノテーションで例外が発生するのを防ぐには、次のようにします。
+
+<code php>
+/**
+ * @IgnoreAnnotation("fn")
+ */
+class Product
+// ...
+</code>
+</well>
+
 
 ### ゲッターとセッターの生成
 
+Doctrineはこれで、データベースに `Product` オブジェクトを永続化する方法を知っているにもかかわらず、まだ、このクラス自体は、まったく便利ではありません。
+`Product` は普通の PHP クラスなので、そのプロパティにアクセスするには（プロパティが `protected` なので）、セッターやゲッターメソッドを作成する必要があります（例、`getName()`, `setName()`）。
+幸運にも、次のコマンドを実行すると、Doctrine がこれをやってくれます。
+
+<code bash>
+$ php bin/console doctrine:generate:entities AppBundle/Entity/Product
+</code>
+
+このコマンドは、`Product` クラスに全てのゲッターやセッターが生成されているかを確認します。
+これは安全なコマンドで、何度でも実行が可能です。存在していないゲッターとセッターだけを作成してくれます（既存のメソッドを上書きすることはありません）。
+
+<well>
+<wrap caution></wrap>
+Doctrine のエンティティジェネレーターはシンプルなゲッターとセッターを生成することを覚えておいてください。
+生成されたエンティティをチェックして、ニーズに合わせてゲッターとセッターのロジックを調整してください。
+</well>
+
+<well>
+<wrap addon></wrap>
+**doctrine:generate:entities の詳細**
+
+`doctrine:generate:entities` コマンドで以下のことができます。
+
+- ゲッターとセッターの生成
+- `@ORM\Entity(repositoryClass="...")` アノテーションで設定された、レポジトリクラスの生成
+- １対多、多対多リレーションの為の、適切なコンストラクタの生成
+
+`doctrine:generate:entities` コマンドは、オリジナルの `Product.php` のバックアップを `Product.php~` という名前で保存します。このファイルの存在は、"Cannot redeclare class" エラーを引き起こすことがあります。このファイルは安全に削除することができます。
+また、バックアップファイルの生成を防ぐために、`--no-backup` オプションを使うこともできます。
+
+このコマンドを使用することは必須ではないことに注意してください。Doctrine はコード生成に依存しません。
+通常の PHP クラスと同じように、protected/private プロパティーがゲッターやセッターメソッドを持っていることだけは、確認する必要があります。
+これは、Doctrine を使う時に、一般的に行うものなので、このコマンドが作成されました。
+</well>
+
+また、バンドルやネームスペースの全てのエンティティ（Doctrine マッピング情報を持っている PHP クラス）に対して生成を実行することもできます。
+
+<code bash>
+# generates all entities in the AppBundle
+$ php bin/console doctrine:generate:entities AppBundle
+
+# generates all entities of bundles in the Acme namespace
+$ php bin/console doctrine:generate:entities Acme
+</code>
+
+<well>
+<wrap note></wrap>
+Doctrine 自体は、プロパティが protected なのか private なのか、といったことや、ゲッターやセッターがあるかどうか、といったことは気にしません。ここでゲッターやセッターが生成されたのは、単に PHP オブジェクトと対話する為に必要だからです。
+</well>
+
 ### テーブルとスキーマの作成
+
+これで、Doctrine が保存方法を正確に知る為のマッピング情報をもった、`Product` クラスができました。
+もちろん、データベースには、まだ、対応する `product` テーブルがありません。
+幸運にも、Doctrine は、アプリケーション内の全てのエンティティに必要なデータベーステーブルを自動的に作成することができます。
+次のコマンドを実行してください。
+
+<code bash>
+$ php bin/console doctrine:schema:update --force
+</code>
+
+<well>
+<wrap hint></wrap>
+実際、このコマンドは信じられないくらい強力です。
+データベースがどうなるべきなのかと（エンティティのマッピング情報に基いて）、今どうなっているかを比較して、データベースの更新に必要な SQL を生成します。
+つまり、`Product` に 新しいプロパティとメタデータを追加して、このコマンドを再度実行すると、既存の `product` テーブルに新しいカラムを追加する "alter table" SQL 文が作成されます。
+
+この機能を活用するさらによい方法は、[マイグレーション](/doc/bundles/DoctrineMigrationsBundle/index)を使うことです。
+これは、これらのSQL 文を生成して、マイグレーションクラスにそれを保存します。
+そのクラスは本番運用サーバで、データベーススキーマの変更履歴の追跡と移行を、安全かつ確実に体系的に実行することを可能にします。
+</well>
+
+これで、指定したメタデータに一致するカラムを備えたフル機能の `product` テーブルがデータベースにできました。
 
 ### オブジェクトの保存
 
+マッピングされた `Product` エンティティと対応する `product` テーブルができたので、データベースへデータを保存する準備はできました。
+コントローラ内でこれを行うのはとても簡単です。
+バンドルの `DefaultController` に次のようなメソッドを追加してみましょう。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+
+// ...
+use AppBundle\Entity\Product;
+use Symfony\Component\HttpFoundation\Response;
+
+// ...
+public function createAction()
+{
+    $product = new Product();
+    $product->setName('A Foo Bar');
+    $product->setPrice('19.99');
+    $product->setDescription('Lorem ipsum dolor');
+
+    $em = $this->getDoctrine()->getManager();
+
+    $em->persist($product);
+    $em->flush();
+
+    return new Response('Created product id '.$product->getId());
+}
+</code>
+
+<well>
+<wrap note></wrap>
+この例に沿って追いかけている場合は、動作確認のために、このアクションを示すルートを作る必要があります。
+</well>
+
+<well>
+<wrap hint></wrap>
+この記事は、コントローラの `getDoctrine()` メソッドを使用した、コントローラ内での Doctrineの作業を示しています。
+このメソッドは `doctrine` サービスを取得するためのショートカットです。
+`doctrine` サービスを注入することで、どこでも Doctrine を使うことができます。
+サービス作成の詳細は、[サービスコンテナ](/doc/book/service_container)を参照してください。
+</well>
+
+先ほどの例をもう少し詳しく見ていきます（コメントに注目してください）。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+
+// ...
+use AppBundle\Entity\Product;
+use Symfony\Component\HttpFoundation\Response;
+
+// ...
+public function createAction()
+{
+    // 他の PHP オブジェクトと同じように $product をインスタン化して使用しています。
+    $product = new Product();
+    $product->setName('A Foo Bar');
+    $product->setPrice('19.99');
+    $product->setDescription('Lorem ipsum dolor');
+
+    // Doctrine エンティティマネージャを取得しています。
+    // それはデータベースからのオブジェクトの取得と保存を処理します。
+    $em = $this->getDoctrine()->getManager();
+
+    // persist() で Doctrine に $product オブジェクトを管理するよう伝えています。
+    // 実際には、まだデータベースへのクエリーは発生しません。
+    $em->persist($product);
+    
+    // flush() が呼ばれると、管理している全てのオブジェクトを見て DB に保存する必要があるかを判断します。
+    // この例では、$product は、まだ保存されていないので、エンティティマネージャは
+    // INSERT クエリーを実行し、product テーブルに行が作成されます。
+    $em->flush();
+
+    return new Response('Created product id '.$product->getId());
+}
+</code>
+
+<well>
+<wrap note></wrap>
+実際には、Doctrine は、管理しているエンティティを全て知っているので、fulsh() メソッドが呼ばれたときに、変更点を全て計算し、正しい順番で実行します。
+それは、少しパフォーマンスを改善する為に、キャッシュされたプリペアードステートメント（事前準備された文）を使用します。
+例えば、100 個の `Product` オブジェクトを `persist()` し、次に `flush()` を呼ぶと、Doctrine は１つのプリペアドステートメントを使って、100 の `INSERT` クエリーを実行します。
+</well>
+
+オブジェクトを作成する時と更新する時の、ワークフローはいつも同じです。
+次のセクションでは、すでにデータベース内にレコードを持っている場合に、
+どのように Doctrine が賢く自動的に `UPDATE` クエリーを発行するかを見ていきます。
+
+<well>
+<wrap hint></wrap>
+Doctrine は、プログラムでプロジェクトにテストデータをロードするライブラリを提供しています（フィクスチャデータ）。
+詳細は、[DoctrineFixtureBundle](/doc/bundles/DoctrineFixturesBundle/index)を参照してください。
+</well>
+
+
 ### オブジェクトの取得
+
+データベースからオブジェクトを取得するのは、もっと簡単です。
+例えば、`id` の値から特定の `Product` を表示するルートを設定したとしましょう。
+
+<code php>
+public function showAction($id)
+{
+    $product = $this->getDoctrine()
+        ->getRepository('AppBundle:Product')
+        ->find($id);
+
+    if (!$product) {
+        throw $this->createNotFoundException(
+            'No product found for id '.$id
+        );
+    }
+
+    // ... do something, like pass the $product object into a template
+}
+</code>
+
+<well>
+<wrap hint></wrap>
+`@ParamConverter` ショートカットを使うことで、コードを書かずに、これと同じことを行うことができます。
+詳細は、[FrameworkExtraBundle](/doc/bundles/SensioFrameworkExtraBundle/annotations/converters)を参照してください。
+</well>
+
+ある特定の種類のオブジェクトに対するクエリーの場合、常にリポジトリを使います。
+リポジトリは、特定のクラスのエンティティの取得を助けるためだけの PHP クラスと考えることができます。
+エンティティクラスに対するリポジトリオブジェクトには、次のようにアクセスできます。
+
+<code php>
+$repository = $this->getDoctrine()
+    ->getRepository('AppBundle:Product');
+</code>
+
+<well>
+<wrap note></wrap>
+`AppBundle:Product` という文字列は、エンティティのフルパス（例、`AppBundle\Entity\Product`）の代わりに、Doctrine で使用できるショートカットです。
+エンティティが、バンドル内の `Entity` ネームスペースに存在している限り、このショートカットは動作します。
+</well>
+
+一旦、リポジトリを取得すると、様々な便利なメソッドにアクセスすることができます。
+
+<code php>
+// プライマリキーによるクエリー（通常は "id"）
+$product = $repository->find($id);
+
+// 全ての商品を検索
+$products = $repository->findAll();
+
+// カラムの値に基づいて１件だけ検索をする、動的なメソッド名
+$product = $repository->findOneById($id);
+$product = $repository->findOneByName('foo');
+
+// カラムの値に基いて複数件検索をする、動的なメソッド名
+$products = $repository->findByPrice(19.99);
+</code>
+
+<well>
+<wrap note></wrap>
+もちろん、複雑なクエリーを発行することができます。詳細は[オブジェクトの為のクエリー](#オブジェクトの為のクエリー)のセクションを参照してください。
+</well>
+
+また、複数の条件で簡単にオブジェクトを取得できる、便利な `findBy` や `findOneBy` メソッドを活用することもできます。
+
+<code php>
+// name と price にマッチングする商品を１件取得するクエリー
+$product = $repository->findOneBy(
+    array('name' => 'foo', 'price' => 19.99)
+);
+
+// name にマッチングする全ての商品を price 順で取得するクエリー
+$products = $repository->findBy(
+    array('name' => 'foo'),
+    array('price' => 'ASC')
+);
+</code>
+
+<well>
+<wrap hint></wrap>
+ページがレンダリングされる時は、何本のクエリが実行されたかを、ウェブデバッグツールバーの右下で確認することができます。
+![ウェブデバッグツールバー](https://symfony.com/doc/current/_images/doctrine_web_debug_toolbar.png)
+ページ上に 50 以上のクエリがあった場合は、アイコンが黄色に変わります。
+これは、何かが正しくないことを示している可能性があります。
+</well>
+
 
 ### オブジェクトの更新
 
+一度、Doctrine からオブジェクトを取得できたら、それを更新することは簡単です。
+コントローラ内のアップデートアクションに、商品 ID がマップされたルートがあるとしましょう。
+
+<code php>
+public function updateAction($id)
+{
+    $em = $this->getDoctrine()->getManager();
+    $product = $em->getRepository('AppBundle:Product')->find($id);
+
+    if (!$product) {
+        throw $this->createNotFoundException(
+            'No product found for id '.$id
+        );
+    }
+
+    $product->setName('New product name!');
+    $em->flush();
+
+    return $this->redirectToRoute('homepage');
+}
+</code>
+
+オブジェクトを更新するには３つのステップが必要です。
+
+ 1. Doctrine からオブジェクトを取得する
+ 2. オブジェクトを修正する
+ 3. エンティティマネージャの `flash()` を呼ぶ
+
+`$em->persist($product)` の呼び出しが必要ないことに注意してください。
+このメッソドは `$product` オブジェクトを管理/監視することを Doctorine に伝えているだけであることを思い出してください。
+この場合、Doctrine から `$product` オブジェクトを取得したので、それは既に管理されています。
+
+
 ### オブジェクトの削除
 
-## オブジェクトのクエリー
+オブジェクトを削除することは、とても似ていますが、エンティティマネージャの `remove()` メソッドを呼ぶ必要があります。
+
+<code php>
+$em->remove($product);
+$em->flush();
+</code>
+
+期待したとおり、`remove()` メソッドは、データベースから与えられたエンティティを削除することを Doctrine に伝えます。
+しかし、実際の `DELETE` クエリーは、`flush()` メソッドが呼ばれるまでは、実行されません。
+
+## オブジェクトの為のクエリー
+
+既に、レポジトリオブジェクトが何もしなくても基本的なクエリーを実行できる事を見てきました。
+
+<code php>
+$repository->find($id);
+
+$repository->findOneByName('Foo');
+</code>
+
+もちろん、Doctrine はまた、Doctrine Query Language（DQL）を使って、もっと複雑なクエリーを書くこともできます。
+テーブル行の代わりに、エンティティオブジェクトをイメージしなければならない事を除けば、DQL は SQLと似ています。
+
+Doctrine で問い合わせをするには、２つの選択肢があります。純粋な Doctrine クエリーを書くか、Doctrine の クエリービルダーを使うかです。
+
 
 ### DQL でのクエリー
 
+値段が 19.9 以上の商品だけを、安い順に返すクエリーをイメージしてください。
+SQL のような、Doctrine の DQL を使って、次のようなクエリーを作成できます。
+
+<code php>
+$em = $this->getDoctrine()->getManager();
+$query = $em->createQuery(
+    'SELECT p
+    FROM AppBundle:Product p
+    WHERE p.price > :price
+    ORDER BY p.price ASC'
+)->setParameter('price', '19.99');
+
+$products = $query->getResult();
+// to get just one result:
+// $product = $query->setMaxResults(1)->getOneOrNullResult();
+</code>
+
+もし、SQL に慣れていれば、DQL は、とても自然に感じるでしょう。
+一番大きな違いは、データベースの行の代わりに、オブジェクトで考える必要があることです。
+こうした理由から、`AppBundle:Product`（`AppBundle\Entity\Product` のショートカット） からオブジェクトを抽出します。そしてその時、`AppBundle:Product` に `p` という別名を付けます。
+
+<well>
+<wrap hint></wrap>
+`setParameter()` メソッドをメモしておいてください。
+Doctrine を使う時に、常にプレースホルダー（上記の例では、`:price`）に外部から値をセットすることは、良いアイデアです。
+それは、SQL インジェクション攻撃を未然に防いでくれます。
+</well>
+
+`getResult()` メソッドは、結果の配列を返します。
+１つだけ結果を取得する為に、`getOneOrNullResult()` メソッドを使うことができます。
+
+<code php>
+$product = $query->setMaxResults(1)->getOneOrNullResult();
+</code>
+
+DQL 構文は驚異的にパワフルで、エンティティ間の JOIN やグルーピング等を簡単に行うことができます。
+詳細は [Doctrine クエリー言語](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/dql-doctrine-query-language.html)を参照してください。
+
 ### クエリービルダーを使ったクエリー
+
+DQL 文字列を書く代わりに、便利な `QueryBuilder` を使うことができます。
+これは、クエリーが、文字列の連結を使ってすぐに読みづらくなるような、動的な条件に依存している時に便利です。
+
+<code php>
+$repository = $this->getDoctrine()
+    ->getRepository('AppBundle:Product');
+
+// createQueryBuilder automatically selects FROM AppBundle:Product
+// and aliases it to "p"
+$query = $repository->createQueryBuilder('p')
+    ->where('p.price > :price')
+    ->setParameter('price', '19.99')
+    ->orderBy('p.price', 'ASC')
+    ->getQuery();
+
+$products = $query->getResult();
+// to get just one result:
+// $product = $query->setMaxResults(1)->getOneOrNullResult();
+</code>
+
+`QueryBuilder` オブジェクトはクエリーを作成するのに必要なメソッドを全て持っています。
+`getQuery()` メソッドを呼び出す事で、クエリービルダーは、クエリーの結果を取得する為に使う、クエリーオブジェクトを返します。
+
+詳細は[クエリービルダー](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/query-builder.html)を参照してください。
+
+
+
 
 ### カスタムレポジトリクラス
 
+前のセクションでは、コントローラ内でより複雑なクエリーを作成し、使い始めました。
+これらのクエリを分離して、テストや再利用できるようにするには、
+エンティティのカスタムリポジトリクラスを作成して、クエリーのロジックと共にメソッドを追加するのが良い方法です。
+
+このためには、マッピング情報にリポジトリクラスの名前を追加します。
+
+<tabs>
+  * [Annotations](#tab4-code-annotations)
+  * [YAML](#tab4-code-yaml)
+  * [XML](#tab4-code-xml)
+
+<WRAP tab-content>
+
+<pane id="tab4-code-annotations"><code php>
+// src/AppBundle/Entity/Product.php
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\ProductRepository")
+ */
+class Product
+{
+    //...
+}
+</code></pane>
+
+<pane id="tab4-code-yaml"><code yml>
+# src/AppBundle/Resources/config/doctrine/Product.orm.yml
+AppBundle\Entity\Product:
+    type: entity
+    repositoryClass: AppBundle\Entity\ProductRepository
+    # ...
+</code></pane>
+
+<pane id="tab4-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/doctrine/Product.orm.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity
+        name="AppBundle\Entity\Product"
+        repository-class="AppBundle\Entity\ProductRepository">
+
+        <!-- ... -->
+    </entity>
+</doctrine-mapping>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+Doctrine は、以前にゲッターやセッターメソッドを生成した時と同じコマンドで、レポジトリクラスを生成することができます。
+
+<code bash>
+$ php bin/console doctrine:generate:entities AppBundle
+</code>
+
+次に、新しく生成されたリポジトリクラスに、`findAllOrderedByName()` メソッドを新たに追加してみます。
+このメソッドは、すべての `Product` エンティティをアルファベット順に取得します。
+
+<code php>
+// src/AppBundle/Entity/ProductRepository.php
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\EntityRepository;
+
+class ProductRepository extends EntityRepository
+{
+    public function findAllOrderedByName()
+    {
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT p FROM AppBundle:Product p ORDER BY p.name ASC'
+            )
+            ->getResult();
+    }
+}
+</code>
+
+<well>
+<wrap hint></wrap>
+リポジトリ内では、`$this->getEntityManager()` を使ってエンティティマネージャにアクセスできます。
+</well>
+
+この新しいメソッドは、リポジトリのデフォルトのファインダーメソッドのように使用できます。
+
+<code php>
+$em = $this->getDoctrine()->getManager();
+$products = $em->getRepository('AppBundle:Product')
+    ->findAllOrderedByName();
+</code>
+
+<well>
+<wrap hint></wrap>
+カスタムリポジトリクラスを使用している場合でも、`find()` や `findAll()` といったデフォルトのファインダーメソッドへのアクセスは可能です。
+</well>
+
+
+
 ## エンティティのリレーション
+
+このアプリケーションの商品は、全てある１つの「カテゴリ」に属しているとしましょう。
+この場合、`Category` オブジェクトが必要になります。そして、`Product` オブジェクトを `Category` に関連付ける方法が必要になります。
+まずは `Category` エンティティを作ることから始めましょう。
+最終的に Doctrine を通して保存する必要があることが分かっているので、Doctrine にクラスを作成させてみましょう。
+
+<code bash>
+$ php bin/console doctrine:generate:entity --no-interaction \
+    --entity="AppBundle:Category" \
+    --fields="name:string(255)"
+</code>
+
+このタスクは、`id` や `name` フィールドと関連するゲッター、セッター関数と共に、`Category` エンティティを生成します。
+
 
 ### リレーションをマッピングするメタデータ
 
+Category と Product エンティティを関連付けるために、`Category` クラスに `products` プロパティを作成することから始めます。
+
+<tabs>
+  * [Annotations](#tab5-code-annotations)
+  * [YAML](#tab5-code-yaml)
+  * [XML](#tab5-code-xml)
+
+<WRAP tab-content>
+
+<pane id="tab5-code-annotations"><code php>
+// src/AppBundle/Entity/Category.php
+
+// ...
+use Doctrine\Common\Collections\ArrayCollection;
+
+class Category
+{
+    // ...
+
+    /**
+     * @ORM\OneToMany(targetEntity="Product", mappedBy="category")
+     */
+    protected $products;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+    }
+}
+</code></pane>
+
+<pane id="tab5-code-yaml"><code yml>
+# src/AppBundle/Resources/config/doctrine/Category.orm.yml
+AppBundle\Entity\Category:
+    type: entity
+    # ...
+    oneToMany:
+        products:
+            targetEntity: Product
+            mappedBy: category
+# Don't forget to initialize the collection in
+# the __construct() method of the entity
+</code></pane>
+
+<pane id="tab5-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/doctrine/Category.orm.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="AppBundle\Entity\Category">
+        <!-- ... -->
+        <one-to-many
+            field="products"
+            target-entity="Product"
+            mapped-by="category" />
+
+        <!--
+            don't forget to init the collection in
+            the __construct() method of the entity
+        -->
+    </entity>
+</doctrine-mapping>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+まず、`Category` クラスは複数の `Product` オブジェクトと関連するので、複数の `Product` オブジェクトを保持する為の、`products` 配列プロパティを追加します。これは Doctrine が必要とするからやっているのではありません。アプリケーション内で各 `Category` が `Product` オブジェクトの配列を持つことが、理にかなっているからです。
+
+<well>
+<wrap note></wrap>
+__construct() メソッド内のコードは重要です。なぜなら、Doctrine では、`$products` プロパティが `ArrayCollection` オブジェクトである必要があります。このオブジェクトは、ほとんど配列と同様にふるまいますが、いくつかの柔軟性が追加されています。もしあまり気に入らなくても、心配しないでください。単に配列だと思ってください。全てが上手く行きます。
+</well>
+
+<well>
+<wrap hint></wrap>
+上記の例の、`targetEntity` の値は、同じネームスペースにあるエンティティだけでなく、有効なネームスペースを持つエンティティを参照することができます。
+バンドルや別のクラス内で定義されたエンティティを関連付けるには、`targetEntity` に完全なネームスペースを入力します。
+</well>
+
+次に、各 `Product` クラスは１つの `Category` オブジェクトに関連付けることができます。
+`Product` クラスに `$category` プロパティーを追加します。
+
+<tabs>
+  * [Annotations](#tab6-code-annotations)
+  * [YAML](#tab6-code-yaml)
+  * [XML](#tab6-code-xml)
+
+<WRAP tab-content>
+
+<pane id="tab6-code-annotations"><code php>
+// src/AppBundle/Entity/Product.php
+
+// ...
+class Product
+{
+    // ...
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="products")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    protected $category;
+}
+</code></pane>
+
+<pane id="tab6-code-yaml"><code yml>
+# src/AppBundle/Resources/config/doctrine/Product.orm.yml
+AppBundle\Entity\Product:
+    type: entity
+    # ...
+    manyToOne:
+        category:
+            targetEntity: Category
+            inversedBy: products
+            joinColumn:
+                name: category_id
+                referencedColumnName: id
+</code></pane>
+
+<pane id="tab6-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/doctrine/Product.orm.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="AppBundle\Entity\Product">
+        <!-- ... -->
+        <many-to-one
+            field="category"
+            target-entity="Category"
+            inversed-by="products"
+            join-column="category">
+
+            <join-column name="category_id" referenced-column-name="id" />
+        </many-to-one>
+    </entity>
+</doctrine-mapping>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+`Category` と `Product` クラスの両方に新しいプロパティを追加したので、最後に、Doctrine に足りないゲッターとセッターを生成するように指示します。
+
+<code bash>
+$ php bin/console doctrine:generate:entities AppBundle
+</code>
+
+一旦、Doctrine のメタ−データのことは、忘れてください。
+現在、１対多の関連を持つ２つのクラス `Category` と `Product` を持っています。
+`Category` クラスは、`Product` オブジェクトの配列を持ち、`Product` は１つの `Category` オブジェクトを持つことができます。
+言い換えると、自分の要件に理にかなった方法で、クラスを作成したということです。
+データをデータベースに保存する必要があるという事実は、常に二の次です。
+
+では、`Product` クラスの `$category` プロパティのメタデータを見てください。
+ここでは、関連付けられるクラスは `Category` で、カテゴリレコードの `id` を `product` テーブル上の `category_id` に保存することを、Doctrine に伝えます。つまり、関連付けられる `Cateogry` オブジェクトは `$category` プロパティに格納されますが、その裏では、Doctrine は `product` テーブルの `category_id` カラムに、カテゴリの ID を保存することによって、この関連を保存しています。
+
+![Doctrine イメージ](https://symfony.com/doc/current/_images/doctrine_image_2.png)
+
+`Category` オブジェクトの `$products` プロパティのメタデータは、あまり重要ではありません。単に、リレーションがどのようにマップされているのかを把握する為に、`Product.category` プロパティを見ることを Doctrine に伝えているだけです。
+
+続けて行く前に、新しい `category` テーブルと `product.category_id` カラム、そして外部キーを追加するように Doctrine に指示することを、忘れないでください。
+
+<code bash>
+$ php bin/console doctrine:schema:update --force
+</code>
+
+<well>
+<wrap note></wrap>
+このコマンドは、開発中にだけ使ってください。より堅牢に本番運用環境のデータベースを体系的に更新する方法は、[マイグレーション](/doc/bundles/DoctrineMigrationsBundle/index)を参照してください。
+</well>
+
+
 ### 関連するエンティティの保存
+
+では、実際に新しいコードをみていきましょう。コントローラが次のようになっているとしましょう。
+
+<code php>
+// ...
+
+use AppBundle\Entity\Category;
+use AppBundle\Entity\Product;
+use Symfony\Component\HttpFoundation\Response;
+
+class DefaultController extends Controller
+{
+    public function createProductAction()
+    {
+        $category = new Category();
+        $category->setName('Main Products');
+
+        $product = new Product();
+        $product->setName('Foo');
+        $product->setPrice(19.99);
+        $product->setDescription('Lorem ipsum dolor');
+        // relate this product to the category
+        $product->setCategory($category);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($category);
+        $em->persist($product);
+        $em->flush();
+
+        return new Response(
+            'Created product id: '.$product->getId()
+            .' and category id: '.$category->getId()
+        );
+    }
+}
+</code>
+
+これで、`category` と `product` テーブルの両方に、１行づつ追加されました。
+新しい商品の `product.category_id` カラムには、新しいカテゴリの id がセットされます。
+Doctrine がこのリレーションの保存を管理します。
+
+
+
+
+
 
 ### 関連するオブジェクトの取得
 
-### 関連するオブジェクトの JOIN
+関連付けられたオブジェクトを取得する時のワークフローは今までやって来たのと同じです。
+まずは、`$product` オブジェクトを取得し、関連付けられた `Category` にアクセスします。
+
+<code php>
+public function showAction($id)
+{
+    $product = $this->getDoctrine()
+        ->getRepository('AppBundle:Product')
+        ->find($id);
+
+    $categoryName = $product->getCategory()->getName();
+
+    // ...
+}
+</code>
+
+この例では、最初に、商品の `id` で `Product` オブジェクトを問い合わせます。
+これは、商品データのみのクエリーを発行し、結果データを `$product` オブジェクト変換します。
+その後、`$product->getCategory()->getName()` を呼び出した時、Doctrine は、この `Product` に関連付けられた `Category` を探す為に、静かに２つ目のクエリーを作成します。それは、`$category` オブジェクトを用意して、返します。
+
+![Doctrine イメージ](https://symfony.com/doc/current/_images/doctrine_image_3.png)
+
+重要なのは、商品に関連したカテゴリに簡単にアクセスできたことと、
+実際のカテゴリのデータは、求められるまでは取得されない（遅延読み込み）ということです。
+
+逆方向からのクエリーも可能です。
+
+<code php>
+public function showProductsAction($id)
+{
+    $category = $this->getDoctrine()
+        ->getRepository('AppBundle:Category')
+        ->find($id);
+
+    $products = $category->getProducts();
+
+    // ...
+}
+</code>
+
+この場合でも、同じことが起こります。
+まず、`Category` オブジェクトを取得します。
+その後、Doctrine は関連する `Product` オブジェクトを取得する２つ目のクエリを作成します。
+ただし、それらが求められた時に（`getProducts()` が呼ばれた時）、１度だけ取得されます。
+`$products` 変数は、取得した `Category` に、`category_id` の値で関連する全ての `Product` オブジェクト配列です。
+
+<well>
+<wrap addon></wrap>
+**リレーションシップと Proxy クラス**
+
+この「遅延読み込み」は、必要な時に、Doctrine が本物のオブジェクトの代わりに、"proxy" オブジェクトを返すことで、可能になっています。再び、先ほどの例を見てみましょう。
+
+<code php>
+$product = $this->getDoctrine()
+    ->getRepository('AppBundle:Product')
+    ->find($id);
+
+$category = $product->getCategory();
+
+// prints "Proxies\AppBundleEntityCategoryProxy"
+dump(get_class($category));
+die();
+</code>
+
+この proxy オブジェクトは本物の `Category` オブジェクトを継承したもので、見た目も動きも同じです。
+違いは、proxy オブジェクトを使うことによって、Doctrine は 実際にデータが必要になるまで（`$category->getName()`が呼ばれるまで）、本物の `Categeory` データを問い合わせるのを遅らせることができることです。
+
+proxy クラスは Doctrine によって生成され、キャッシュディレクトリに保存されます。
+そして、`$category` が実際には proxy オブジェクトだと気づくことは無いとは思いますが、
+覚えておくべき重要な点です。
+
+次のセクションで見ますが、商品とカテゴリのデータを一度に全て取得する時には、遅延読み込みの必要がないので、Doctrine は本物の `Category` オブジェクトを返します。
+</well>
+
+### 関連するレコードの JOIN
+
+上記の例では、２つのクエリーが作成されました。
+１つは元のオブジェクト（`Cateogry`）に対するもの、もうひとつは関連付けられたオブジェクト（`Product`）です。
+
+<well>
+<wrap hint></wrap>
+ウェブデバッグツールでリクエストの間に作成された全てのクエリーを見れることを思い出してください。
+</well>
+
+もちろん、両方のオブジェクトにアクセスすることが前もって分かっている時は、元のクエリで join を発行することで、２つ目のクエリを避けることができます。
+次のメソッドを `ProductRepository` クラスに追加します。
+
+<code php>
+// src/AppBundle/Entity/ProductRepository.php
+public function findOneByIdJoinedToCategory($id)
+{
+    $query = $this->getEntityManager()
+        ->createQuery(
+            'SELECT p, c FROM AppBundle:Product p
+            JOIN p.category c
+            WHERE p.id = :id'
+        )->setParameter('id', $id);
+
+    try {
+        return $query->getSingleResult();
+    } catch (\Doctrine\ORM\NoResultException $e) {
+        return null;
+    }
+}
+</code>
+
+これで、コントローラ内からこのメソッドを使って、`Product` オブジェクトとそれに関連した  `Category` を、一度のクエリで取得することができます。
+
+<code php>
+public function showAction($id)
+{
+    $product = $this->getDoctrine()
+        ->getRepository('AppBundle:Product')
+        ->findOneByIdJoinedToCategory($id);
+
+    $category = $product->getCategory();
+
+    // ...
+}
+</code>
+
 
 ### リレーションの詳細情報
 
+このセクションでは、一般的なエンティティリレーションの一つである、１対多の関連を紹介してきました。
+より高度な詳細情報と、その他のリレーション（１対１や多対多）の例は、Doctrine の[アソシエーションマッピング](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/association-mapping.html)を参照してください。
+
+<well>
+<wrap note></wrap>
+アノテーションを使用している場合は、全てのアノテーションの先頭に `ORM\` を付加してください(例、`ORM\OneToMany`)。
+これは Doctrine のドキュメントでは反映されていません。
+また、`use Doctrine\ORM\Mapping as ORM;` 文を含める必要があります。
+これは、`ORM` アノテーションプリフィックスをインポートします。
+</well>
+
+
+
 ## 設定
 
-## コールバックのライフサイクル
+Doctrine は高度な設定が可能です。しかしながら、それらのオプションの多くは、心配する必要はありません。
+Doctrine の設定をもっと調べるには、[DoctrineBundleの設定](/doc/reference/configuration/doctrine)を参照してください。
+
+
+
+## ライフサイクルコールバック
+
+時には、エンティティが INSERT や UPDATE、DELETE される直前または、直後に、アクションを実行する必要があります。
+これらのタイプのアクションは、ライフサイクルコールバックとして知られています。
+これらは、エンティティのライフサイクルの異なる段階で（INSERT や UPDATE、DELETEされた時等）、実行する必要のあるコールバックメソッドです。
+
+メタデータにアノテーションを使用している場合は、ライフサイクルコールバックを有効にしてから始めてください。
+YAML や XML を使用している場合は必要ありません。
+
+<code php>
+/**
+ * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
+ */
+class Product
+{
+    // ...
+}
+</code>
+
+これで、全てのライフサイクルイベントで、メソッドを実行することを Doctrine に伝えることができます。
+例えば、エンティティが初めて保存（INSERT）された時に、`createdAt` という日付のカラムに現在の日付を入れたいとしましょう。
+
+<tabs>
+  * [Annotations](#tab7-code-annotations)
+  * [YAML](#tab7-code-yaml)
+  * [XML](#tab7-code-xml)
+
+<WRAP tab-content>
+
+<pane id="tab7-code-annotations"><code php>
+// src/AppBundle/Entity/Product.php
+
+/**
+ * @ORM\PrePersist
+ */
+public function setCreatedAtValue()
+{
+    $this->createdAt = new \DateTime();
+}
+</code></pane>
+
+<pane id="tab7-code-yaml"><code yml>
+# src/AppBundle/Resources/config/doctrine/Product.orm.yml
+AppBundle\Entity\Product:
+    type: entity
+    # ...
+    lifecycleCallbacks:
+        prePersist: [setCreatedAtValue]
+</code></pane>
+
+<pane id="tab7-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/doctrine/Product.orm.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="AppBundle\Entity\Product">
+        <!-- ... -->
+        <lifecycle-callbacks>
+            <lifecycle-callback type="prePersist" method="setCreatedAtValue" />
+        </lifecycle-callbacks>
+    </entity>
+</doctrine-mapping>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap note></wrap>
+上記の例では、`createdAt` プロパティの作成とマッピングは終わっているものとします（ここでは書いていません）。
+</well>
+
+これで、エンティティが初めて保存される直前に、Doctrine は自動的にこのメソッドを呼び、`createdAt` フィールドに現在の日付が設定されます。
+
+他にもフックできるいくつかのライフサイクルイベントがあります。
+他のライフサイクルイベントやライフサイクルコールバックの詳細は、[ライフサイクルイベント](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/events.html#lifecycle-events)を参照してください。
+
+<well>
+<wrap addon></wrap>
+**ライフサイクルイベントとイベントリスナー**
+
+`setCreatedValue()` メソッドに引数がないことに注意してください。
+これはその他のライフサイクルにも言えることですが、意図的にこうなっています。
+ライフサイクルコールバックは、エンティティのデータを内部で変換するような（例、作成日や更新日のセット、slug 値の生成等）、シンプルなメソッドであるべきです。
+
+もし、ロギングやメール送信のような、もっと重い処理の実行が必要な場合は、
+イベントリスナーもしくはサブスクライバーとして外部のクラスを登録して、それに必要なリソースへのアクセスを与えるべきです。
+詳細は [イベントリスナーとサブスクライバーの登録方法](/doc/cookbook/doctrine/event_listeners_subscribers)を参照してください。
+</well>
 
 ## Doctrine フィールドタイプリファレンス
 
+Doctrine には、利用可能な多数のフィールドタイプがあります。
+各フィールドタイプは、PHP のデータ型を、データベースのカラム型にマップします。
+各フィールドタイプ用に、`length` や `nullable`、`name`、その他のオプション等、カラムを詳細に設定することができます。
+利用可能なフィールドタイプの一覧や詳細情報を見るには、[マッピングタイプ](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/basic-mapping.html#property-mapping)を参照してください。
+
 ## まとめ
+
+Doctrine を使用することで、データベースへのデータの保存を二の次にして、オブジェクトと、それらがアプリケーション内でどの様に使われるかに集中できます。
+その訳は、Doctrine が、データを保持するのに、どんな PHP オブジェクトを使うことも可能にしていることや、マッピングメタデータ情報に基いて、オブジェクトのデータを特定のデータベーステーブルにマップしているからです。
+
+Doctrine はシンプルなコンセプトを中心にしているにもかかわらず、信じられないくらい強力です。
+複雑なクエリを作成したり、永続化ライフサイクルで別々のアクションを実行できるように、イベントを購読することができます。
 
 ## 詳細情報
 
+Doctrine の詳細情報は[クックブック](/doc/cookbook/start)の Doctrine セクションを参照してください。
 
+いくつかの有用な記事があります。
 
-
-
-
-
+- [Doctrine エクステンションの使い方：Timestampable, Slauggable, Translateable, etc.](/doc/cookbook/doctrine/common_extensions)
+- [コンソールコマンド](/doc/cookbook/doctrine/console)
+- [DoctrineFixturesBundle](/doc/bundles/DoctrineFixturesBundle/index)
+- [DoctrineMongoDBBundle](/doc/bundles/DoctrineMongoDBBundle/index)
 

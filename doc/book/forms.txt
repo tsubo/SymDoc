@@ -1,20 +1,485 @@
 # フォーム
 
+HTML のフォームを取り扱うことは、ウェブデベロッパーに取って、最も一般的で、チャレンジングなタスクの１つです。
+Symfony はフォームを簡単に取り扱う為のフォームコンポーネントと総合されています。
+この章では、１から複雑なフォームを構築します。そして、フォームライブラリの最も重要な機能を学びます。
+
+<well>
+<wrap note></wrap>
+Symfony の Form コンポーネントは、Symfony プロジェクト以外でも使用できる、単独のライブラリです。
+詳細は[コンポーネントのドキュメント](https://symfony.com/doc/current/components/form/introduction.html)を参照してください。
+</well>
+
 ## シンプルなフォームの作成
+
+タスクを表示する必要がある、シンプルな TODO リストアプリケーションを構築しているとしましょう。
+ユーザーがタスクを作成したり、編集する必要があるので、フォームを作成します。
+始める前に、最初に１つのタスクを表して、データを保存する為の、一般的な `Task`クラスに焦点を当てます。
+
+<code php>
+// src/AppBundle/Entity/Task.php
+namespace AppBundle\Entity;
+
+class Task
+{
+    protected $task;
+    protected $dueDate;
+
+    public function getTask()
+    {
+        return $this->task;
+    }
+
+    public function setTask($task)
+    {
+        $this->task = $task;
+    }
+
+    public function getDueDate()
+    {
+        return $this->dueDate;
+    }
+
+    public function setDueDate(\DateTime $dueDate = null)
+    {
+        $this->dueDate = $dueDate;
+    }
+}
+</code>
+
+このクラスは "plain-old-PHP-object" です。なぜなら、今のところ、それは Symfony や他のライブラリと何もしていないからです。
+それは、アプリケーション内で直接問題を解決する、完全にシンプルな普通の PHP オブジェクトです（例、アプリケーション内でタスクを表す）。
+もちろん、この章の終わりまでには、`Task` インスタンスにデータを送信し（HTTP フォームを経由して）、そのデータを検証し、データベースに保存します。
+
 
 ### フォームの組み立て
 
+`Task` クラスを作成したので、次は実際の HTML フォームを作成し、表示します。
+Symfony では、これは、フォームオブジェクトを構築することで実行します。そして、その時、テンプレート内でそれをレンダリングします。
+今のところ、これは全てコントローラ内で実行できます。
+
+<code php>
+// src/AppBundle/Controller/DefaultController.php
+namespace AppBundle\Controller;
+
+use AppBundle\Entity\Task;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
+class DefaultController extends Controller
+{
+    public function newAction(Request $request)
+    {
+        // create a task and give it some dummy data for this example
+        $task = new Task();
+        $task->setTask('Write a blog post');
+        $task->setDueDate(new \DateTime('tomorrow'));
+
+        $form = $this->createFormBuilder($task)
+            ->add('task', TextType::class)
+            ->add('dueDate', DateType::class)
+            ->add('save', SubmitType::class, array('label' => 'Create Task'))
+            ->getForm();
+
+        return $this->render('default/new.html.twig', array(
+            'form' => $form->createView(),
+        ));
+    }
+}
+</code>
+
+<well>
+<wrap hint></wrap>
+この例はコントローラ内で直接フォームを構築する方法を示します。
+後ほど、[フォームクラスの作成](#フォームクラスの作成)のセクションで、独立したクラスでフォームを構築する方法を学びます。
+それは、フォームを再利用できる様にする、推奨される方法です。
+</well>
+
+Symfony のフォームオブジェクトはフォームビルダーを使って、構築されるので、フォームを作成することは、比較的少ないコードで済みます。
+フォームビルダーの目的は、簡単なフォームレシピを記述できるようにし、実際のフォーム構築の困難な仕事を全て行うことです。
+この例では、`Task` クラスの `task` と `dueData` プロパティに対応する、２つのフィールド `task` と `dueData` をフォームに追加しました。また、それぞれに、完全修飾クラス名によって表される型（例、`TextType` や `DateType`）を割り当てました。
+とりわけ、それは、フィールドに対して表示される HTML フォームタグを決定します。
+
+<alert type="info">
+<btn type="info" size="xs">2.8</btn>
+フォームタイプを示すには、PHP 5.5 以上で使える `TextType::class` もしくは、`Symfony\Component\Form\Extension\Core\Type\TextType` のような、完全修飾クラス名を使う必要があります。
+Symfony 2.8 より前では、それぞれのタイプに `text` や `date` のようなエイリアス（別名）が使用できます。
+古いエイリアス構文は Symfony 3.0 までは動きます。
+詳細は、[2.8 アップグレード](https://github.com/symfony/symfony/blob/2.8/UPGRADE-2.8.md#form)を参照してください。
+</alert>
+
+最後に、サーバーにフォームを送信する為の送信ボタンをカスタムラベルと共に追加しました。
+
+<alert type="info">
+<btn type="info" size="xs">2.3</btn>
+送信ボタンのサポートは、Symfony 2.3 で導入されました。
+それより前は、手動で フォームの HTML にボタンを追加する必要がありました。
+</alert>
+
+Symfony には、この後で軽く説明する、多くの組み込みタイプが付属しています（[項目タイプ](#項目タイプ)を参照）。
+
 ### フォームの表示
 
-### フォーム送信の処理
+フォームが作成できたので、次はそれを表示します。
+これは、テンプレートに特別なフォームビューオブジェクトを渡すことで行います（上記例の `$form->createView()` に注目してください）。
+そして、フォームヘルパー関数のセットを使います。
+
+<tabs>
+  * [Twig](#tab1-view-twig)
+  * [PHP](#tab1-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab1-view-twig"><code twig>
+{# app/Resources/views/default/new.html.twig #}
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+</code></pane>
+
+<pane id="tab1-view-php"><code php>
+<!-- app/Resources/views/default/new.html.php -->
+<?php echo $view['form']->start($form) ?>
+<?php echo $view['form']->widget($form) ?>
+<?php echo $view['form']->end($form) ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+![フォーム](https://symfony.com/doc/current/_images/form-simple.png)
+
+<well>
+<wrap note></wrap>
+この例では、フォームが表示されたのと同じ URL へ、"POST" リクエストを使って、フォームを送信することを想定しています。
+後で、フォームのリクエストメソッドとターゲット URL の変更方法を学びます。
+</well>
+
+これで終わりです。わずか３行で完璧なフォームが表示できました。
+
+- `form_start(form)`
+ - form の開始タグを表示します。ファイルアップロードを使う時には、正しい enctype 属性を含みます。
+
+- `form_widget(form)`
+ - 全てのフィールドを表示します。フィールド要素自身とフィールドの為のラベルやエラーメッセージを含みます。
+
+- `form_end(form)`
+ - form の閉じタグを表示します。そして、各フォールドを手動で表示しているケースで、まだ表示されていない全てのフィールドを表示します。これは、hidden フィールドの表示や 自動的な [CSRF 保護](#CSRF 保護)を利用するのに便利です。
+
+<well>
+<wrap ref></wrap>
+簡単であればある程、柔軟ではなくなります（まだ）。大抵は、フォームがどの様に見えるかを制御するために、個々にフォームフィールドを表示したいと思います。[テンプレートでのフォーム表示](#テンプレートでのフォーム表示)セクションで、その方法を学びます。
+</well>
+
+次に進む前に、`$task` オブジェクトの `task` プロパティの値（例、"ブログを書く"）を持つ `task` 入力フィールドがどの様に表示されているかに注目してください。オブジェクトからデータを取り出し、HTML フォームで表示する為の適切なフォーマットに変換することが、フォームの最初の仕事です。
+
+<well>
+<wrap hint></wrap>
+フォームシステムは `Task` クラスの `getTask()` や `setTask()`メソッドを通して、protected な `task` プロパティの値にアクセスできるように、賢くできています。
+プロパティが public でない限り、フォームコンポーネントがプロパティのデータにアクセスできるように、ゲッターやセッターメソッドが必要になります。
+boolean プロパティの為に、ゲッター（例、`getPublished()`, `getReminder()`）の代わりに、"isser" または "hasser" メソッド（例、`isPublished()`, `hasReminder()`）を使用することができます。
+</well>
+
+
+
+### フォーム送信のハンドリング
+
+フォームの２つめの仕事は、ユーザーから送信されたデータをオブジェクトのプロパティに変換することです。
+これを行うために、ユーザーからの送信データを、フォームオブジェクト内に書き込む必要があります。
+コントローラに次の機能を追加します。
+
+<code php>
+// ...
+use Symfony\Component\HttpFoundation\Request;
+
+public function newAction(Request $request)
+{
+    // just setup a fresh $task object (remove the dummy data)
+    $task = new Task();
+
+    $form = $this->createFormBuilder($task)
+        ->add('task', TextType::class)
+        ->add('dueDate', DateType::class)
+        ->add('save', SubmitType::class, array('label' => 'Create Task'))
+        ->getForm();
+
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // ... perform some action, such as saving the task to the database
+
+        return $this->redirectToRoute('task_success');
+    }
+
+    return $this->render('default/new.html.twig', array(
+        'form' => $form->createView(),
+    ));
+}
+</code>
+
+<well>
+<wrap caution></wrap>
+`createView()` メソッドは `handleRequest` が呼ばれた後に、呼ばれる必要があることに注意してください。
+さもないと、`*_SUBMIT` イベントで行われた変更がビューに反映されません（バリデーションエラーのような）。
+</well>
+
+<alert type="info">
+<btn type="info" size="xs">2.3</btn>
+`handleRequest()` メソッドは Symfony 2.3 で導入されました。
+それより前は、`$request` は　`submit` メソッドに渡されていました。
+`submit` メソッドは現在、非推奨となっており、Symfony 3.0 で削除されます。
+詳細は、[Form::submit() にリクエストを渡す（Deprecated）](/doc/cookbook/form/direct_submit#cookbook-form-submit-request)を参照してください。
+</alert>
+
+このコントローラはフォームをハンドリングする為の一般的なパターンに従っています。
+そして、３つの経路を持っています。
+
+ 1. 最初にブラウザでページが表示された時、フォームはシンプルに作成されて、表示されます。[handleRequest()](http://api.symfony.com/3.0/Symfony/Component/Form/FormInterface.html#method_handleRequest) は、フォームが送信されていないことを認識し、そして何もしません。[isValid()](http://api.symfony.com/3.0/Symfony/Component/Form/FormInterface.html#method_isValid) は、フォームが送信されていない時は `false` を返します。\\
+\\
+
+ 2. ユーザーがフォームを送信した時、[handleRequest()](http://api.symfony.com/3.0/Symfony/Component/Form/FormInterface.html#method_handleRequest) は、これを認識し、即座に送信されたデータを `$task` オブジェクトの　`task` と `dueDate` プロパティに書き込みます。その時、このオブジェクトは検証されます。それが不正だった時は、[isValid()](http://api.symfony.com/3.0/Symfony/Component/Form/FormInterface.html#method_isValid) は、再び `false` を返します。そして、フォームは全てのエラーメッセージと共に表示されます。\\
+<well>
+<wrap note></wrap>
+送信されたデータの検証を行わずに、フォームが送信されたかどうかをチェックする為に、[isSubmitted()](http://api.symfony.com/3.0/Symfony/Component/Form/FormInterface.html#method_isSubmitted) メソッドを使うことができます。
+</well>
+
+ 3. ユーザーが正しいデータでフォームを送信した時、送信されたデータは再びフォームに書き込まれます。しかし、今回は、[isValid()](http://api.symfony.com/3.0/Symfony/Component/Form/FormInterface.html#method_isValid) は、`true` を返します。ここで、ユーザーを別のページ（例、成功メッセージを表示するページ等）にリダイレクトする前に、`$task` オブジェクトを使って何かのアクションを実行することができます（例、データベースに保存する等）。\\
+<well>
+<wrap note></wrap>
+フォーム送信が成功した後に、ユーザーをリダイレクトすることで、ユーザーがブラウザで「再読み込み」ボタンを押して、再度、フォームデータを送信してくる事を防ぐことができます。
+</well>
+
+<well>
+<wrap ref></wrap>
+フォームが送信されたか、どのデータが渡されたかをより正確に制御したい時は、[submit()](http://api.symfony.com/3.0/Symfony/Component/Form/FormInterface.html#method_submit) を使います。
+詳細は、[クックブック内](/doc/cookbook/form/direct_submit#cookbook-form-call-submit-directly)を参照してください。
+</well>
+
 
 ### 複数のボタンを持つフォームの送信
 
+<alert type="info">
+<btn type="info" size="xs">2.3</btn>
+フォーム内でのボタンのサポートは、Symfony 2.3 で導入されました。
+</alert>
+
+フォームが１つ以上の送信ボタンを持っている時、コントローラ内のプログラムフローに当てはめる為に、どのボタンがクリックされたかをチェックする必要があります。これを行うには、フォームに見出しと共に、２つ目のボタンを追加します。
+
+<code php>
+$form = $this->createFormBuilder($task)
+    ->add('task', TextType::class)
+    ->add('dueDate', DateType::class)
+    ->add('save', SubmitType::class, array('label' => 'Create Task'))
+    ->add('saveAndAdd', SubmitType::class, array('label' => 'Save and Add'))
+    ->getForm();
+</code>
+
+コントローラ内で、"Save and add" ボタンがクリックされたかを問い合わせる為に、ボタンの[isClicked()](http://api.symfony.com/3.0/Symfony/Component/Form/ClickableInterface.html#method_isClicked) メソッドを使用します。
+
+<code php>
+if ($form->isValid()) {
+    // ... perform some action, such as saving the task to the database
+
+    $nextAction = $form->get('saveAndAdd')->isClicked()
+        ? 'task_new'
+        : 'task_success';
+
+    return $this->redirectToRoute($nextAction);
+}
+</code>
+
+
 ## フォームバリデーション
+
+前のセクションで、フォームがどの様に正しいデータや不正なデータと共に送信されてくるかを学びました。
+Symfony では、検証はオブジェクト（例、`Task`）に対して適用されます。
+つまり、フォームに送信データを適用した後、フォームが正しいかどうかではなく、`$task` オブジェクトが正しいかどうかを検証します。
+`$form->isValid()` を呼び出すことは、`$task` オブジェクトが正しいかどうかを尋ねるショートカットです。
+
+バリデーションはクラスにルール（制約）のセットを追加することで行います。
+この動作を確認するには、「`task` フィールドは空でないこと」、「`dueDate` フィールドは空でないこと、DateTime オジェジェクトであること」といった制約を追加します。
+
+<tabs>
+  * [Annotations](#tab2-code-annotations)
+  * [YAML](#tab2-code-yaml)
+  * [XML](#tab2-code-xml)
+  * [PHP](#tab2-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab2-code-annotations"><code php>
+// src/AppBundle/Entity/Task.php
+namespace AppBundle\Entity;
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Task
+{
+    /**
+     * @Assert\NotBlank()
+     */
+    public $task;
+
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Type("\DateTime")
+     */
+    protected $dueDate;
+}
+</code></pane>
+
+<pane id="tab2-code-yaml"><code yml>
+# src/AppBundle/Resources/config/validation.yml
+AppBundle\Entity\Task:
+    properties:
+        task:
+            - NotBlank: ~
+        dueDate:
+            - NotBlank: ~
+            - Type: \DateTime
+</code></pane>
+
+<pane id="tab2-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
+        http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="AppBundle\Entity\Task">
+        <property name="task">
+            <constraint name="NotBlank" />
+        </property>
+        <property name="dueDate">
+            <constraint name="NotBlank" />
+            <constraint name="Type">\DateTime</constraint>
+        </property>
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab2-code-php"><code php>
+// src/AppBundle/Entity/Task.php
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Type;
+
+class Task
+{
+    // ...
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('task', new NotBlank());
+
+        $metadata->addPropertyConstraint('dueDate', new NotBlank());
+        $metadata->addPropertyConstraint(
+            'dueDate',
+            new Type('\DateTime')
+        );
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+これだけです。不正なデータでフォームを再送信した時には、フォームに関連するエラーが表示されます。
+
+<well>
+<wrap addon></wrap>
+**HTML5 バリデーション**
+
+HTML5 では、多くのブラウザは、クライアント側で特定の検証制約を適用することができます。
+最も一般的な検証は、必須の入力フィールドに `require` 属性をレンダリングする事により有効化されます。
+HTML5 をサポートするブラウザでは、ユーザーが入力フィールドを未入力のまま、フォームを送信した時に、
+ブラウザ側でエラーメッセージが表示されます。
+
+生成されたフォームは、検証の引き金になる HTML 属性を適切に追加することで、この新しい機能の利点をフル活用します。
+しかし、クライアント側の検証は、`novalidate` 属性を `form` タグに追加するか、`formnovalidate` を submit タグに追加することで、無効にすることができます。
+これは、サーバ側の検証制約をテストしたいのに、空白フィールドの送信をブラウザが阻止しているような時に、特に便利です。
+
+<tabs>
+  * [Twig](#tab3-view-twig)
+  * [PHP](#tab3-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab3-view-twig"><code twig>
+{# app/Resources/views/default/new.html.twig #}
+{{ form(form, {'attr': {'novalidate': 'novalidate'}}) }}
+</code></pane>
+
+<pane id="tab3-view-php"><code php>
+<!-- app/Resources/views/default/new.html.php -->
+<?php echo $view['form']->form($form, array(
+    'attr' => array('novalidate' => 'novalidate'),
+)) ?>
+</code></pane>
+
+</WRAP>
+</tabs>
+</well>
+
+バリデーションは Symfony の非常に強力な機能です。そして、それ[専用の章](/doc/book/validation)があります。
+
 
 ### バリデーショングループ
 
+[バリデーショングループ](/doc/book/forms#バリデーショングループ)を使用したい時は、フォームが使用するバリデーショングループを指定する必要があります。
+
+<code php>
+$form = $this->createFormBuilder($users, array(
+    'validation_groups' => array('registration'),
+))->add(...);
+</code>
+
+[フォームクラス](#フォームクラスの作成)を作成している場合、次のように `configureOptions()` メソッドを追加する必要があります。
+
+<code php>
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+public function configureOptions(OptionsResolver $resolver)
+{
+    $resolver->setDefaults(array(
+        'validation_groups' => array('registration'),
+    ));
+}
+</code>
+
+<alert type="info">
+<btn type="info" size="xs">2.7</btn>
+`configureOptions()` メソッドは Symfony 2.7 で導入されました。それより前のバージョンでは、そのメソッドは `setDefaultOptions()` と呼ばれていました。
+</alert>
+
+これらの両方で、`registration` バリデーショングループだけが、オブジェクトの検証に使用されます。
+
+
+
+
 ### バリデーションの無効化
+
+フォームの全ての検証を無効にすると便利な時があります。
+この様な時は、`validation_groups` オプションに `false` をセットします。
+
+<code php>
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+public function configureOptions(OptionsResolver $resolver)
+{
+    $resolver->setDefaults(array(
+        'validation_groups' => false,
+    ));
+}
+</code>
+
+これを行う時には、フォームがまだ、基本的な整合性チェックを行うことに注意してください。
+例えば、アップロードされたファイルが大きすぎないかどうかや、存在しないフィールドが送信されたがどうか等です。
+検証を無効にする時、[POST_SUBMIT イベント](/doc/cookbook/form/dynamic_form_modification#cookbook-dynamic-form-modification-suppressing-form-validation)を使用することもできます。
 
 ### Groups based on the Submitted Data
 

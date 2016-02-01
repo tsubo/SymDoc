@@ -1,56 +1,1371 @@
 # バリデーション
 
+バリデーションは、WEB アプリケーションでとても一般的なタスクです。
+フォームに入力されたデータは、バリデーションする必要があります。
+また、データはデータベースに書かれる前や、ウェブサービスに渡す前にもバリデーションが必要です。
+
+Symfony は、このタスクを簡単で分かりやすくする、[Validator](https://github.com/symfony/validator) コンポーネントを搭載しています。
+このコンポーネントは、[JSR303 Bean Validation specification](https://jcp.org/en/jsr/detail?id=303) に基づいています。
+
+
 ## バリデーションの基本
 
-### validator サービス
+バリデーションを理解するのに最も良い方法は、実際にやってみることです。
+まず、アプリケーションのどこかで使用する PHP クラスを作成します。
+
+<code php>
+// src/AppBundle/Entity/Author.php
+namespace AppBundle\Entity;
+
+class Author
+{
+    public $name;
+}
+</code>
+
+今のところ、このクラスはアプリケーション内で何かするための、至って普通のクラスです。
+バリデーションの目的は、オブジェクトのデータが妥当であるかどうかを知らせることです。
+そのためには、妥当性ルール（[制約](#制約)）の一覧を設定します。
+このルールは、様々なフォーマット（YAML、XML、アノテーション、PHP）で指定することができます。
+
+例えば、`$name` プロパティが空で無い事を保証するには、次のようにします。
+
+<tabs>
+  * [Annotations](#tab1-code-annotations)
+  * [YAML](#tab1-code-yaml)
+  * [XML](#tab1-code-xml)
+  * [PHP](#tab1-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab1-code-annotations"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Author
+{
+    /**
+     * @Assert\NotBlank()
+     */
+    public $name;
+}
+</code></pane>
+
+<pane id="tab1-code-yaml"><code yml>
+AppBundle\Entity\Author:
+    properties:
+        name:
+            - NotBlank: ~
+</code></pane>
+
+<pane id="tab1-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="AppBundle\Entity\Author">
+        <property name="name">
+            <constraint name="NotBlank" />
+        </property>
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab1-code-php"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints\NotBlank;
+
+class Author
+{
+    public $name;
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('name', new NotBlank());
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap hint></wrap>
+protected や private プロパティ及び、ゲッターメソッドでもバリデートすることが可能です（[制約の対象](#制約の対象)を参照）。
+</well>
+
+<alert type="info">
+<btn type="info" size="xs">2.7</btn>
+Symfony 2.7 から、バンドルの `Resources/config/validation` サブディレクトリに配置された XML と Yaml の制約ファイルが読み込まれるようになりました。 
+それより前のバージョンでは、`Resources/config/validation.yml (or .xml) ` だけが読み込まれます。
+</alert>
+
+
+### validator サービスの使用
+
+続いて `Author` オブジェクトを実際にバリデートしてみます。
+これは `validator` サービス（[Validator](http://api.symfony.com/3.0/Symfony/Component/Validator/Validator.html) クラス）の `validate` メソッドを使用します。
+`validator` の仕事は簡単です。クラスの制約（ルール）を読み込んで、そのオブジェクトのデータがそれらの制約を満たしているかどうかを検証することです。
+もし、検証に失敗したら、エラーの配列（[ConstraintViolationList](http://api.symfony.com/3.0/Symfony/Component/Validator/ConstraintViolationList.html) クラス）が返ってきます。
+では、コントローラ内でのシンプルな例を見てみましょう。
+
+<code php>
+// ...
+use Symfony\Component\HttpFoundation\Response;
+use AppBundle\Entity\Author;
+
+// ...
+public function authorAction()
+{
+    $author = new Author();
+
+    // ... do something to the $author object
+
+    $validator = $this->get('validator');
+    $errors = $validator->validate($author);
+
+    if (count($errors) > 0) {
+        /*
+         * Uses a __toString method on the $errors variable which is a
+         * ConstraintViolationList object. This gives us a nice string
+         * for debugging.
+         */
+        $errorsString = (string) $errors;
+
+        return new Response($errorsString);
+    }
+
+    return new Response('The author is valid! Yes!');
+}
+</code>
+
+もし、`$name` プロパティが空であれば、次のようなエラーが表示されます。
+
+<code>
+AppBundle\Author.name:
+    This value should not be blank
+</code>
+
+`$name` プロパティに値を設定すると、成功メッセージが表示されます。
+
+<well>
+<wrap hint></wrap>
+大抵の場合、`validator` サービスを直接使用することや、エラーメッセージを表示する必要はありません。
+フォームから送信されたデータを処理する時に、間接的にバリデーションを使用します。
+詳細は[バリデーションとフォーム](#バリデーションとフォーム)を参照してください。
+</well>
+
+また、テンプレートにエラーのコレクションを渡すこともできます。
+
+<code php>
+if (count($errors) > 0) {
+    return $this->render('author/validation.html.twig', array(
+        'errors' => $errors,
+    ));
+}
+</code>
+
+テンプレート内では、必要に応じてエラーリストを出力することができます。
+
+<tabs>
+  * [Twig](#tab2-view-twig)
+  * [PHP](#tab2-view-php)
+
+<WRAP tab-content>
+
+<pane id="tab2-view-twig"><code twig>
+{# app/Resources/views/author/validation.html.twig #}
+<h3>The author has the following errors</h3>
+<ul>
+{% for error in errors %}
+    <li>{{ error.message }}</li>
+{% endfor %}
+</ul>
+</code></pane>
+
+<pane id="tab2-view-php"><code php>
+<!-- app/Resources/views/author/validation.html.php -->
+<h3>The author has the following errors</h3>
+<ul>
+<?php foreach ($errors as $error): ?>
+    <li><?php echo $error->getMessage() ?></li>
+<?php endforeach ?>
+</ul>
+</code></pane>
+
+</WRAP>
+</tabs>
+
+<well>
+<wrap note></wrap>
+各バリデーションエラー（制約違反）は [ConstraintViolation](http://api.symfony.com/3.0/Symfony/Component/Validator/ConstraintViolation.html) オブジェクトで表現されます。
+</well>
 
 ### バリデーションとフォーム
 
+`validator` サービスは、いつでも、どんなオブジェクトでも検証することができます。
+しかし、実際には、フォームと共に、間接的に `validator` を使用します。
+Symfony のフォームライブラリは、フォームがサブミットされた後、送信データのオブジェクトの値を検証する為に、内部で`validator` サービスを使用します。
+オブジェクトの制約違反は、 `FormError` オブジェクトに変換され、フォームと共に簡単に表示することができます。
+コントローラ内での典型的なフォーム送信のワークフローは、次のようになります。
+
+<code php>
+// ...
+use AppBundle\Entity\Author;
+use AppBundle\Form\AuthorType;
+use Symfony\Component\HttpFoundation\Request;
+
+// ...
+public function updateAction(Request $request)
+{
+    $author = new Author();
+    $form = $this->createForm(AuthorType::class, $author);
+
+    $form->handleRequest($request);
+
+    if ($form->isValid()) {
+        // the validation passed, do something with the $author object
+
+        return $this->redirectToRoute(...);
+    }
+
+    return $this->render('author/form.html.twig', array(
+        'form' => $form->createView(),
+    ));
+}
+</code>
+
+<well>
+<wrap note></wrap>
+この例では、`AuthorType` フォームクラスを使用しています。ここでは割愛しています。
+</well>
+
+詳細は[フォーム](/doc/book/forms)の章を参照してください。
+
+
+
 ## 設定
+
+Symfony のバリデータはデフォルトで有効になっていますが、制約の指定にアノテーションを使っている場合は、明示的に有効にする必要があります。
+
+<tabs>
+  * [YAML](#tab3-code-yaml)
+  * [XML](#tab3-code-xml)
+  * [PHP](#tab3-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab3-code-yaml"><code yml>
+# app/config/config.yml
+framework:
+    validation: { enable_annotations: true }
+</code></pane>
+
+<pane id="tab3-code-xml"><code xml>
+<!-- app/config/config.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:framework="http://symfony.com/schema/dic/symfony"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+        http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
+
+    <framework:config>
+        <framework:validation enable-annotations="true" />
+    </framework:config>
+</container>
+</code></pane>
+
+<pane id="tab3-code-php"><code php>
+// app/config/config.php
+$container->loadFromExtension('framework', array(
+    'validation' => array(
+        'enable_annotations' => true,
+    ),
+));
+</code></pane>
+
+</WRAP>
+</tabs>
+
+
 
 ## 制約
 
+`validator` は、制約（ルール）に対してオブジェクトを検証する為に設計されています。
+オブジェクトを検証したい時は、単に一つ以上の制約をクラスにマッピングし、それを `validator` サービスに渡します。
+
+裏では、制約は、アサート文（断定文）を作る、単なる PHP オブジェクトです。
+現実の世界では、制約は「ケーキは焦がしてはいけない」といった感じのアサート文になります。
+Symfony内でも、制約は同様に、条件が真になるアサート文です。
+値が与えられると、制約は、その値が制約ルールに合っているかを教えてくれます。
+
+
+
 ### サポートされている制約
+
+Symfony は多くの最も一般的に必要な制約を持っています。
+
+
 
 ### 基本制約
 
+これらは基本的な制約で、プロパティの値やメソッドの戻り値に関する非常に基本的な検証をする為に使用されます。
+
+- [NotBlank](https://symfony.com/doc/current/reference/constraints/NotBlank.html)
+- [Blank](https://symfony.com/doc/current/reference/constraints/Blank.html)
+- [NotNull](https://symfony.com/doc/current/reference/constraints/NotNull.html)
+- [IsNull](https://symfony.com/doc/current/reference/constraints/IsNull.html)
+- [IsTrue](https://symfony.com/doc/current/reference/constraints/IsTrue.html)
+- [IsFalse](https://symfony.com/doc/current/reference/constraints/IsFalse.html)
+- [Type](https://symfony.com/doc/current/reference/constraints/Type.html)
+
 ### 文字列制約
+
+- [Email](https://symfony.com/doc/current/reference/constraints/Email.html)
+- [Length](https://symfony.com/doc/current/reference/constraints/Length.html)
+- [Url](https://symfony.com/doc/current/reference/constraints/Url.html)
+- [Regex](https://symfony.com/doc/current/reference/constraints/Regex.html)
+- [Ip](https://symfony.com/doc/current/reference/constraints/Ip.html)
+- [Uuid](https://symfony.com/doc/current/reference/constraints/Uuid.html)
 
 ### 数値制約
 
+- [Range](https://symfony.com/doc/current/reference/constraints/Range.html)
+
 ### 比較制約
+
+- [EqualTo](https://symfony.com/doc/current/reference/constraints/EqualTo.html)
+- [NotEqualTo](https://symfony.com/doc/current/reference/constraints/NotEqualTo.html)
+- [IdenticalTo](https://symfony.com/doc/current/reference/constraints/IdenticalTo.html)
+- [NotIdenticalTo](https://symfony.com/doc/current/reference/constraints/NotIdenticalTo.html)
+- [LessThan](https://symfony.com/doc/current/reference/constraints/LessThan.html)
+- [LessThanOrEqual](https://symfony.com/doc/current/reference/constraints/LessThanOrEqual.html)
+- [GreaterThan](https://symfony.com/doc/current/reference/constraints/GreaterThan.html)
+- [GreaterThanOrEqual](https://symfony.com/doc/current/reference/constraints/GreaterThanOrEqual.html)
+
 
 ### 日付制約
 
+- [Date](https://symfony.com/doc/current/reference/constraints/Date.html)
+- [DateTime](https://symfony.com/doc/current/reference/constraints/DateTime.html)
+- [Time](https://symfony.com/doc/current/reference/constraints/Time.html)
+
 ### コレクション制約
+
+- [Choice](https://symfony.com/doc/current/reference/constraints/Choice.html)
+- [Collection](https://symfony.com/doc/current/reference/constraints/Collection.html)
+- [Count](https://symfony.com/doc/current/reference/constraints/Count.html)
+- [UniqueEntity](https://symfony.com/doc/current/reference/constraints/UniqueEntity.html)
+- [Language](https://symfony.com/doc/current/reference/constraints/Language.html)
+- [Locale](https://symfony.com/doc/current/reference/constraints/Locale.html)
+- [Country](https://symfony.com/doc/current/reference/constraints/Country.html)
 
 ### ファイル制約
 
+- [File](https://symfony.com/doc/current/reference/constraints/File.html)
+- [Image](https://symfony.com/doc/current/reference/constraints/Image.html)
+
 ### 金融やその他の数値制約
+
+- [Bic](https://symfony.com/doc/current/reference/constraints/Bic.html)
+- [CardScheme](https://symfony.com/doc/current/reference/constraints/CardScheme.html)
+- [Currency](https://symfony.com/doc/current/reference/constraints/Currency.html)
+- [Luhn](https://symfony.com/doc/current/reference/constraints/Luhn.html)
+- [Iban](https://symfony.com/doc/current/reference/constraints/Iban.html)
+- [Isbn](https://symfony.com/doc/current/reference/constraints/Isbn.html)
+- [Issn](https://symfony.com/doc/current/reference/constraints/Issn.html)
 
 ### その他の制約
 
+- [Callback](https://symfony.com/doc/current/reference/constraints/Callback.html)
+- [Expression](https://symfony.com/doc/current/reference/constraints/Expression.html)
+- [All](https://symfony.com/doc/current/reference/constraints/All.html)
+- [UserPassword](https://symfony.com/doc/current/reference/constraints/UserPassword.html)
+- [Valid](https://symfony.com/doc/current/reference/constraints/Valid.html)
+
+また、独自のカスタム制約を作成することもできます。
+詳細は[カスタムバリデーション制約の作り方](/doc/cookbook/validation/custom_constraint)を参照してください。
+
 ### 制約の設定
+
+[NotBlank](https://symfony.com/doc/current/reference/constraints/NotBlank.html) のようなシンプルな制約もあれば、[Choice](https://symfony.com/doc/current/reference/constraints/Choice.html) のように複数の設定オプションが存在する制約もあります。
+`Auhtor` クラスが、値に "mail" か "femail"、"other" の何れかをセットできる、`gender` プロパティを持っているとしましょう。
+
+<tabs>
+  * [Annotations](#tab4-code-annotations)
+  * [YAML](#tab4-code-yaml)
+  * [XML](#tab4-code-xml)
+  * [PHP](#tab4-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab4-code-annotations"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Author
+{
+    /**
+     * @Assert\Choice(
+     *     choices = { "male", "female", "other" },
+     *     message = "Choose a valid gender."
+     * )
+     */
+    public $gender;
+
+    // ...
+}
+</code></pane>
+
+<pane id="tab4-code-yaml"><code yml>
+# src/AppBundle/Resources/config/validation.yml
+AppBundle\Entity\Author:
+    properties:
+        gender:
+            - Choice: { choices: [male, female, other], message: Choose a valid gender. }
+        # ...
+</code></pane>
+
+<pane id="tab4-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="AppBundle\Entity\Author">
+        <property name="gender">
+            <constraint name="Choice">
+                <option name="choices">
+                    <value>male</value>
+                    <value>female</value>
+                    <value>other</value>
+                </option>
+                <option name="message">Choose a valid gender.</option>
+            </constraint>
+        </property>
+
+        <!-- ... -->
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab4-code-php"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Author
+{
+    public $gender;
+
+    // ...
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        // ...
+
+        $metadata->addPropertyConstraint('gender', new Assert\Choice(array(
+            'choices' => array('male', 'female', 'other'),
+            'message' => 'Choose a valid gender.',
+        )));
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+制約のオプションは、常に配列で渡されます。
+しかし、いくつかの制約では、配列の代わりに １つのデフォルト値だけを渡すことも可能です。
+`Choice` 制約の場合、`choices` オプションを次のように指定できます。
+
+<tabs>
+  * [Annotations](#tab5-code-annotations)
+  * [YAML](#tab5-code-yaml)
+  * [XML](#tab5-code-xml)
+  * [PHP](#tab5-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab5-code-annotations"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Author
+{
+    /**
+     * @Assert\Choice({"male", "female", "other"})
+     */
+    protected $gender;
+
+    // ...
+}
+</code></pane>
+
+<pane id="tab5-code-yaml"><code yml>
+# src/AppBundle/Resources/config/validation.yml
+AppBundle\Entity\Author:
+    properties:
+        gender:
+            - Choice: [male, female, other]
+        # ...
+</code></pane>
+
+<pane id="tab5-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="AppBundle\Entity\Author">
+        <property name="gender">
+            <constraint name="Choice">
+                <value>male</value>
+                <value>female</value>
+                <value>other</value>
+            </constraint>
+        </property>
+
+        <!-- ... -->
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab5-code-php"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Author
+{
+    protected $gender;
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        // ...
+
+        $metadata->addPropertyConstraint(
+            'gender',
+            new Assert\Choice(array('male', 'female', 'other'))
+        );
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+これは、純粋に、制約の最も一般的なオプションの設定を、短く、素早く作成することを意味しています。
+
+もし、オプションの指定の仕方がわからない場合は、制約の API ドキュメントを確認するか、大事を取って常にオプション配列を渡してください(上記の最初の方法)。
+
 
 ## 制約メッセージの翻訳
 
+制約メッセージを翻訳する方法については、[制約メッセージの翻訳](/doc/book/translation#book-translation-constraint-messages)を参照してください。
+
 ## 制約の対象
+
+制約は、クラスのプロパティ(例、`name`) や、public なゲッターメソッド(例、`getFullName`) に適用することができます。
+前者は、最も一般的で簡単です。後者の方は、より複雑なバリデーションルールを指定することができます。
+
+
 
 ### プロパティ
 
+クラスのプロパティを検証することは、最も基本的な検証のテクニックです。
+Symfony は、private や protected、public なプロパティを検証することができます。
+次の例は、`Author` クラスの `$firstName` プロパティが、「３文字以上であること」と設定しています。
+
+<tabs>
+  * [Annotations](#tab6-code-annotations)
+  * [YAML](#tab6-code-yaml)
+  * [XML](#tab6-code-xml)
+  * [PHP](#tab6-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab6-code-annotations"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Author
+{
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min=3)
+     */
+    private $firstName;
+}
+</code></pane>
+
+<pane id="tab6-code-yaml"><code yml>
+# src/AppBundle/Resources/config/validation.yml
+AppBundle\Entity\Author:
+    properties:
+        firstName:
+            - NotBlank: ~
+            - Length:
+                min: 3
+</code></pane>
+
+<pane id="tab6-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="AppBundle\Entity\Author">
+        <property name="firstName">
+            <constraint name="NotBlank" />
+            <constraint name="Length">
+                <option name="min">3</option>
+            </constraint>
+        </property>
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab6-code-php"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Author
+{
+    private $firstName;
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('firstName', new Assert\NotBlank());
+        $metadata->addPropertyConstraint(
+            'firstName',
+            new Assert\Length(array("min" => 3))
+        );
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+
 ### ゲッター
+
+制約は、メソッドの返り値に対しても適用することができます。
+Symfony は、"get" や "is", "has" で始まる public メソッドに、制約を追加することができます。
+このガイドでは、これらのタイプのメソッドを「ゲッター」と呼ぶことにします。
+
+このテクニックの利点は、オブジェクトを動的に検証することができることです。
+例えば、パスワード項目がユーザーのファーストネームと一致していなことを確認したいとしましょう（セキュリティ的な理由で）。
+これは、`isPasswordLegal` というメソッドを作成することで可能になります。
+そして、このメソッドが true を返さなければならない、という検証を行います。
+
+<tabs>
+  * [Annotations](#tab7-code-annotations)
+  * [YAML](#tab7-code-yaml)
+  * [XML](#tab7-code-xml)
+  * [PHP](#tab7-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab7-code-annotations"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Author
+{
+    /**
+     * @Assert\IsTrue(message = "The password cannot match your first name")
+     */
+    public function isPasswordLegal()
+    {
+        // ... return true or false
+    }
+}
+</code></pane>
+
+<pane id="tab7-code-yaml"><code yml>
+# src/AppBundle/Resources/config/validation.yml
+AppBundle\Entity\Author:
+    getters:
+        passwordLegal:
+            - 'IsTrue': { message: 'The password cannot match your first name' }
+</code></pane>
+
+<pane id="tab7-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="AppBundle\Entity\Author">
+        <getter property="passwordLegal">
+            <constraint name="IsTrue">
+                <option name="message">The password cannot match your first name</option>
+            </constraint>
+        </getter>
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab7-code-php"><code php>
+// src/AppBundle/Entity/Author.php
+
+// ...
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
+
+class Author
+{
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addGetterConstraint('passwordLegal', new Assert\IsTrue(array(
+            'message' => 'The password cannot match your first name',
+        )));
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+そして、`isPasswordLegal()` メソッドを作成し、必要なロジックを入れます。
+
+<code php>
+public function isPasswordLegal()
+{
+    return $this->firstName !== $this->password;
+}
+</code>
+
+<well>
+<wrap note></wrap>
+鋭い目をお持ちの方は、マッピング情報内でゲッターのプリフィックス("get" や "is", "has")が省略されていることに気がついたでしょう。
+こうすることで、後で、バリデーションロジックを変更すること無く、制約を同じ名前でプロパティに（もしくはその逆）移動できるようにしてくれます。
+</well>
+
+
 
 ### クラス
 
+いくつかの制約は、カスタムバリデーションクラスを使用します。
+例えば、[Callback](https://symfony.com/doc/current/reference/constraints/Callback.html)制約は、そのクラス自身をカスタムバリデーションクラスとして使用する、汎用的な制約です。
+クラスがバリデートされた時、制約によって指定されたメソッドは、カスタムバリデーションを提供する為に、単純に実行されます。
+
+
 ## バリデーショングループ
+
+ここまでで、クラスに対して制約を追加し、定義した制約がパスするかどうかを確認することが出来るようになりました。
+しかし、いくつかのケースでは、特定の制約のみ検証したいことがあります。
+これを行う為に、複数の「バリデーショングループ」を作成することができます。
+そして、１つのグループに対してだけ、バリデーションを適用することができます。
+
+例えば、`User` クラスがあるとしましょう。
+このクラスは、ユーザー登録と、ユーザーの連絡先を更新する時の両方で使用されます。
+
+<tabs>
+  * [Annotations](#tab8-code-annotations)
+  * [YAML](#tab8-code-yaml)
+  * [XML](#tab8-code-xml)
+  * [PHP](#tab8-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab8-code-annotations"><code php>
+// src/AppBundle/Entity/User.php
+namespace AppBundle\Entity;
+
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+
+class User implements UserInterface
+{
+    /**
+     * @Assert\Email(groups={"registration"})
+     */
+    private $email;
+
+    /**
+     * @Assert\NotBlank(groups={"registration"})
+     * @Assert\Length(min=7, groups={"registration"})
+     */
+    private $password;
+
+    /**
+     * @Assert\Length(min=2)
+     */
+    private $city;
+}
+</code></pane>
+
+<pane id="tab8-code-yaml"><code yml>
+# src/AppBundle/Resources/config/validation.yml
+AppBundle\Entity\User:
+    properties:
+        email:
+            - Email: { groups: [registration] }
+        password:
+            - NotBlank: { groups: [registration] }
+            - Length: { min: 7, groups: [registration] }
+        city:
+            - Length:
+                min: 2
+</code></pane>
+
+<pane id="tab8-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://symfony.com/schema/dic/constraint-mapping
+        http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd
+    ">
+
+    <class name="AppBundle\Entity\User">
+        <property name="email">
+            <constraint name="Email">
+                <option name="groups">
+                    <value>registration</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="password">
+            <constraint name="NotBlank">
+                <option name="groups">
+                    <value>registration</value>
+                </option>
+            </constraint>
+            <constraint name="Length">
+                <option name="min">7</option>
+                <option name="groups">
+                    <value>registration</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="city">
+            <constraint name="Length">
+                <option name="min">7</option>
+            </constraint>
+        </property>
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab8-code-php"><code php>
+// src/AppBundle/Entity/User.php
+namespace AppBundle\Entity;
+
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
+
+class User
+{
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('email', new Assert\Email(array(
+            'groups' => array('registration'),
+        )));
+
+        $metadata->addPropertyConstraint('password', new Assert\NotBlank(array(
+            'groups' => array('registration'),
+        )));
+        $metadata->addPropertyConstraint('password', new Assert\Length(array(
+            'min'    => 7,
+            'groups' => array('registration'),
+        )));
+
+        $metadata->addPropertyConstraint('city', new Assert\Length(array(
+            "min" => 3,
+        )));
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+この設定には、３つのバリデーショングループがあります。
+
+- Default
+ - どのクループにも属していない全ての制約を含みます。
+
+- User
+ - `Default` グループ内の `User` オブジェクトの全ての制約と同等です。これは、常にクラスの名前になります。`Default` との違いは、後ほど説明します。
+
+- registration
+ - `email` と `password` フィールド上の制約のみを含みます。
+
+クラスの `Default` グループ内の制約は、明示的なグループ設定がないか、クラス名と同じグループが設定されているか、`Defatult` が設定されている、何れかの物になります。
+
+<well>
+<wrap caution></wrap>
+User オブジェクトだけを検証する時、`Default` グループと `User` グループに違いはありません。
+しかし、`User` が埋め込みオブジェクトを持っている時は違いがあります。
+例えば、`User` が `Address` オブジェクトを含んでいる `address` プロパティを持っているとイメージしてください。
+しかも、`User` オブジェクトを検証する時に、そのプロパティが検証されるように、そのプロパティに [Valid](https://symfony.com/doc/current/reference/constraints/Valid.html) 制約を追加しました。
+
+`Default` グループを使って `User` を検証する時は、`Defatult` グループに属している `Address` クラスの全ての制約が使用されます。
+`User` グループを使って `User` を検証する時は、`Address` クラス上の `User` グループの制約だけが、検証されます。
+
+つまり、`Default` グループとクラスネームグループ（例、`User`）は、クラスが別のオブジェクト内に実際に検証される物として埋め込まれた時を除けば、まったく同じです。
+
+継承を使っていて（例、`User` が　`BsseUser` を拡張している）、サブクラス名（`User`）で検証をする時は、`User` と `BaseUser` の全ての制約が検証されます。
+もし、ベースクラス名（`BaseUser`）で検証をする時には、`BaseUser`　クラス内のデフォルト制約だけが検証されます。
+</well>
+
+バリデータに特定のグループを使用するように指示するには、`validate()` メソッドの第３引数に１つ以上のグループ名を渡します。
+
+<code php>
+// If you're using the new 2.5 validation API (you probably are!)
+$errors = $validator->validate($author, null, array('registration'));
+
+// If you're using the old 2.4 validation API, pass the group names as the second argument
+// $errors = $validator->validate($author, array('registration'));
+</code>
+
+グループの指定がない時には、`Default` グループに属する全ての制約が適用されます。
+
+もちろん、通常はフォームライブラリを通して間接的にバリデーションを使用します。
+フォーム内でのバリデーショングループの使用方法は、[バリデーショングループ](/doc/book/forms#バリデーショングループ)を参照してください。
 
 ## グループの順番
 
+グループバリデーションを順番に行いたいことがあります。
+これを行うには、`GroupSequence` 機能を使います。
+この場合、検証されるグループの順番を決める為の、グループ順を定義します。
+
+例えば、`User` クラスを持っているとします。
+そして、他の検証をパスした時だけ、ユーザー名とパスワードが違っていることを検証したいとします（複数のエラーメッセージ表示は行いません）。
+
+<tabs>
+  * [Annotations](#tab9-code-annotations)
+  * [YAML](#tab9-code-yaml)
+  * [XML](#tab9-code-xml)
+  * [PHP](#tab9-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab9-code-annotations"><code php>
+// src/AppBundle/Entity/User.php
+namespace AppBundle\Entity;
+
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * @Assert\GroupSequence({"User", "Strict"})
+ */
+class User implements UserInterface
+{
+    /**
+     * @Assert\NotBlank
+     */
+    private $username;
+
+    /**
+     * @Assert\NotBlank
+     */
+    private $password;
+
+    /**
+     * @Assert\IsTrue(message="The password cannot match your username", groups={"Strict"})
+     */
+    public function isPasswordLegal()
+    {
+        return ($this->username !== $this->password);
+    }
+}
+</code></pane>
+
+<pane id="tab9-code-yaml"><code yml>
+# src/AppBundle/Resources/config/validation.yml
+AppBundle\Entity\User:
+    group_sequence:
+        - User
+        - Strict
+    getters:
+        passwordLegal:
+            - 'IsTrue':
+                message: 'The password cannot match your username'
+                groups: [Strict]
+    properties:
+        username:
+            - NotBlank: ~
+        password:
+            - NotBlank: ~
+</code></pane>
+
+<pane id="tab9-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="AppBundle\Entity\User">
+        <property name="username">
+            <constraint name="NotBlank" />
+        </property>
+
+        <property name="password">
+            <constraint name="NotBlank" />
+        </property>
+
+        <getter property="passwordLegal">
+            <constraint name="IsTrue">
+                <option name="message">The password cannot match your username</option>
+                <option name="groups">
+                    <value>Strict</value>
+                </option>
+            </constraint>
+        </getter>
+
+        <group-sequence>
+            <value>User</value>
+            <value>Strict</value>
+        </group-sequence>
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab9-code-php"><code php>
+// src/AppBundle/Entity/User.php
+namespace AppBundle\Entity;
+
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
+
+class User
+{
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('username', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('password', new Assert\NotBlank());
+
+        $metadata->addGetterConstraint('passwordLegal', new Assert\IsTrue(array(
+            'message' => 'The password cannot match your first name',
+            'groups'  => array('Strict'),
+        )));
+
+        $metadata->setGroupSequence(array('User', 'Strict'));
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+この例では、`User` グループ（`Default` グループと同じ）の全ての制約が最初に検証されます。
+`User` グループの全ての制約をパスした時だけ、２番目の `Strict` グループが検証されます。
+
+<well>
+<wrap caution></wrap>
+既に前のセクションで見たように、`Default` グループとクラス名を含むグループ（例、`User`）は同じでした。
+しかし、グループシーケンスを使う時は、もはや同じではありません。
+`Default` グループは、どのグループに属さない制約の代わりに、現在のグループシーケンスを参照します。
+
+これは、グループシーケンスを指定する時は、クラス名のグループ（例、`User`）を使う必要があることを意味します。
+`Default` を使うと、無限ループを起こします（`Defarult` グループが `Default` を含むグループシーケンスを参照し、その `Defautl` グループがまた、`Default` グループ含むグループシーケンスを参照し...）。
+</well>
+
+
 ### Group Sequence プロバイダ
 
-## 値と配列のバリデーション
+`User` エンティティが通常のユーザーもしくはプレミアムユーザーになるとイメージしてください。
+プレミアムユーザの時は、ユーザーエンティティにいくつかの拡張制約が追加されるべきです（例、クレジットカードの詳細等）。
+どの制約グループを有効にするかを動的に決定するには、グループシーケンスプロバイダーを作成します。
+初めに、エンティティを作成し、新しく `Premium` 制約グループを設定します。
+
+<tabs>
+  * [Annotations](#tab10-code-annotations)
+  * [YAML](#tab10-code-yaml)
+  * [XML](#tab10-code-xml)
+  * [PHP](#tab10-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab10-code-annotations"><code php>
+// src/AppBundle/Entity/User.php
+namespace AppBundle\Entity;
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+class User
+{
+    /**
+     * @Assert\NotBlank()
+     */
+    private $name;
+
+    /**
+     * @Assert\CardScheme(
+     *     schemes={"VISA"},
+     *     groups={"Premium"},
+     * )
+     */
+    private $creditCard;
+
+    // ...
+}
+</code></pane>
+
+<pane id="tab10-code-yaml"><code yml>
+# src/AppBundle/Resources/config/validation.yml
+AppBundle\Entity\User:
+    properties:
+        name:
+            - NotBlank: ~
+        creditCard:
+            - CardScheme:
+                schemes: [VISA]
+                groups: [Premium]
+</code></pane>
+
+<pane id="tab10-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="AppBundle\Entity\User">
+        <property name="name">
+            <constraint name="NotBlank" />
+        </property>
+
+        <property name="creditCard">
+            <constraint name="CardScheme">
+                <option name="schemes">
+                    <value>VISA</value>
+                </option>
+                <option name="groups">
+                    <value>Premium</value>
+                </option>
+            </constraint>
+        </property>
+
+        <!-- ... -->
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab10-code-php"><code php>
+// src/AppBundle/Entity/User.php
+namespace AppBundle\Entity;
+
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+
+class User
+{
+    private $name;
+    private $creditCard;
+
+    // ...
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('name', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('creditCard', new Assert\CardScheme(
+            'schemes' => array('VISA'),
+            'groups'  => array('Premium'),
+        ));
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+ここで、[GroupSequenceProviderInterface](http://api.symfony.com/3.0/Symfony/Component/Validator/GroupSequenceProviderInterface.html)を実装するように `User` クラスを修正します。
+そして、使用する制約グループの配列を返す、[getGroupSequence()](http://api.symfony.com/3.0/Symfony/Component/Validator/GroupSequenceProviderInterface.html#method_getGroupSequence) メソッドを追加します。
+
+<code php>
+// src/AppBundle/Entity/User.php
+namespace AppBundle\Entity;
+
+// ...
+use Symfony\Component\Validator\GroupSequenceProviderInterface;
+
+class User implements GroupSequenceProviderInterface
+{
+    // ...
+
+    public function getGroupSequence()
+    {
+        $groups = array('User');
+
+        if ($this->isPremium()) {
+            $groups[] = 'Premium';
+        }
+
+        return $groups;
+    }
+}
+</code>
+
+最後に、`User` クラスがグループシーケンスを提供することを、バリデーターコンポーネントに知らせる必要があります。
+
+<tabs>
+  * [Annotations](#tab11-code-annotations)
+  * [YAML](#tab11-code-yaml)
+  * [XML](#tab11-code-xml)
+  * [PHP](#tab11-code-php)
+
+<WRAP tab-content>
+
+<pane id="tab11-code-annotations"><code php>
+// src/AppBundle/Entity/User.php
+namespace AppBundle\Entity;
+
+// ...
+
+/**
+ * @Assert\GroupSequenceProvider
+ */
+class User implements GroupSequenceProviderInterface
+{
+    // ...
+}
+</code></pane>
+
+<pane id="tab11-code-yaml"><code yml>
+# src/AppBundle/Resources/config/validation.yml
+AppBundle\Entity\User:
+    group_sequence_provider: true
+</code></pane>
+
+<pane id="tab11-code-xml"><code xml>
+<!-- src/AppBundle/Resources/config/validation.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
+        http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="AppBundle\Entity\User">
+        <group-sequence-provider />
+        <!-- ... -->
+    </class>
+</constraint-mapping>
+</code></pane>
+
+<pane id="tab11-code-php"><code php>
+// src/AppBundle/Entity/User.php
+namespace AppBundle\Entity;
+
+// ...
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+
+class User implements GroupSequenceProviderInterface
+{
+    // ...
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->setGroupSequenceProvider(true);
+        // ...
+    }
+}
+</code></pane>
+
+</WRAP>
+</tabs>
+
+## 値と配列の検証
+
+いままでの所、どのようにオブジェクト全体を検証できるかを見てきました。
+しかし、時々、文字列がメールアドレスとして正しいかをチェックするような、シンプルな値の検証をしたいことがあります。
+これをやることは、簡単です。
+コントローラ内でで次のようにします。
+
+<code php>
+// ...
+use Symfony\Component\Validator\Constraints as Assert;
+
+// ...
+public function addEmailAction($email)
+{
+    $emailConstraint = new Assert\Email();
+    // all constraint "options" can be set this way
+    $emailConstraint->message = 'Invalid email address';
+
+    // use the validator to validate the value
+    // If you're using the new 2.5 validation API (you probably are!)
+    $errorList = $this->get('validator')->validate(
+        $email,
+        $emailConstraint
+    );
+
+    // If you're using the old 2.4 validation API
+    /*
+    $errorList = $this->get('validator')->validateValue(
+        $email,
+        $emailConstraint
+    );
+    */
+
+    if (0 === count($errorList)) {
+        // ... this IS a valid email address, do something
+    } else {
+        // this is *not* a valid email address
+        $errorMessage = $errorList[0]->getMessage();
+
+        // ... do something with the error
+    }
+
+    // ...
+}
+</code>
+
+バリデーターの `validate` を呼ぶことによって、検証したい値と、その値に対する制約オブジェクトを渡すことができます。
+利用できる制約のリスト及び、各制約の名前は[制約リファレンス](https://symfony.com/doc/current/reference/constraints.html)を参照してください。
+
+`validate` メソッドは [ConstraintViolationList](http://api.symfony.com/3.0/Symfony/Component/Validator/ConstraintViolationList.html) オブジェクトを返します。それは、ちょうどエラーの配列の様に振る舞います。
+コレクション内の各エラーは [ConstraintViolation](http://api.symfony.com/3.0/Symfony/Component/Validator/ConstraintViolation.html) オブジェクトです。それは、`getMessage` メソッドで取得できるエラーメッセージを保持しています。
+
+
 
 ## まとめ
 
+Symfony の `validator` は、オブジェクトのデータが正しいことを保証する為に活用する、パワフルなツールです。
+バリデーションの背後にあるパワーの源は、制約にあります。
+それは、オブジェクトのプロパティやゲッターメソッドに提供することが出来る、ルールです。
+多くの場合、フォームを使用する時に間接的に、バリデーションフレームワークを使用しますが、
+オブジェクトを検証する為に、どこでも使用できることを覚えておいてください。
+
+
+
 ## クックブックの参照先
 
+- [カスタムバリデーション制約の作成方法](/doc/current/cookbook/validation/custom_constraint)

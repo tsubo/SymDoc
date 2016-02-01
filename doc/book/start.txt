@@ -12,11 +12,11 @@
 | [テンプレートの作成と使い方](/doc/book/templating)             |  v3.0                |  2016/01/27  | |
 | [Symfony の設定と環境](/doc/book/configuration)               |  v3.0                |  2016/01/20  | |
 | [バンドルシステム](/doc/book/bundles)                         |  v3.0                |  2016/01/20  | |
-| [データベースと Doctrine](/doc/book/doctrine)                  |  **翻訳中**              |              | |
+| [データベースと Doctrine](/doc/book/doctrine)                  |  v3.0               |  2016/01/30  | |
 | [データベースと Propel](/doc/book/propel)                     |  v3.0                |  2016/01/20  | |
 | [Testing](/doc/book/testing)                                  |  募集中              |              | |
-| [Validation](/doc/book/validation)                            |  募集中              |              | |
-| [Forms](/doc/book/forms)                                      |  募集中              |              | |
+| [バリデーション](/doc/book/validation)                         |  v3.0               |  2016/01/31  | |
+| [フォーム](/doc/book/forms)                                   |  **翻訳中**          |              | |
 | [Security](/doc/book/security)                                |  募集中              |              | |
 | [HTTP Cache](/doc/book/http_cache)                            |  募集中              |              | |
 | [Translations](/doc/book/translation)                         |  募集中              |              | |
